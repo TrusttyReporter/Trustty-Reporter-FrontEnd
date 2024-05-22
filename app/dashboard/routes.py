@@ -1,0 +1,186 @@
+import requests
+import tempfile
+import os
+import chardet
+import json
+import asyncio
+import time
+from flask import render_template, redirect, url_for, request, session, jsonify, Response
+from flask_login import current_user, login_required
+from flask import stream_with_context, current_app
+#from flaskext.markdown import Markdown
+from werkzeug.utils import secure_filename
+from langserve import RemoteRunnable
+from app.dashboard import dashboard_bp
+from .utils import convert_csv_to_utf8
+
+main_url="https://reporting-tool-api.onrender.com"
+api_key = '12345'  # Replace with your actual API key
+
+@dashboard_bp.route('/', methods=['GET', 'POST'])
+@login_required
+def index():
+    
+    error_message = None  # Initialize error_message variable
+    
+    # Handle form submission
+    if request.method == 'POST':
+        description = request.form['description']
+        resources = request.files.getlist('resources')
+        print(f"Resouce: {resources}")
+
+        session['description'] = description
+
+        # Create a temporary directory to store the uploaded files
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Save each uploaded file to the temporary directory
+            file_paths = []
+            for resource in resources:
+                filename = secure_filename(resource.filename)
+                print(f"FileName: {filename}")
+                file_path = os.path.join(temp_dir, filename)
+                resource.save(file_path)
+                file_paths.append(file_path)
+            
+            # Check the encoding of CSV files and convert to UTF-8 if necessary
+            for file_path in file_paths:
+                _, file_extension = os.path.splitext(file_path)
+                if file_extension.lower() == '.csv':
+                    with open(file_path, 'rb') as file:
+                        file_content = file.read()
+                        encoding = chardet.detect(file_content)['encoding']
+                        print(encoding)
+                        if encoding != 'utf-8':
+                            try:
+                                convert_csv_to_utf8(file_path, encoding)
+                            except Exception as e:
+                                print("e")
+            
+            
+            # Prepare the files for the API request
+            files = []
+            for file_path in file_paths:
+                with open(file_path, 'rb') as file:
+                    files.append(('files', (os.path.basename(file_path), file.read(), 'application/octet-stream')))
+            
+            # Make the API request
+            api_url = f"{main_url}/api/v1/upload/"  # Replace with your API endpoint
+            
+            headers = {
+                'accept': 'application/json',
+                'X-API-KEY': api_key
+            }
+
+            
+            response = requests.post(api_url, headers=headers, files=files)
+            
+
+            # Check the API response
+            if response.status_code == 200:
+                # API request successful
+                # Store the API response in the session
+                session['api_response'] = response.json()
+                print(response.json())
+                return redirect(url_for("dashboard.result"))
+
+            else:
+                #API request failed
+                error_message = response.json().get('error', 'Unknown error occurred')
+                print(error_message)
+            # except:
+            #     error_message = "An error occured. Please try again"
+
+    return render_template('report-inputs.html',username = current_user.first_name, error_message=error_message)
+    
+@dashboard_bp.route('/result')
+def result():
+    return render_template('report-results.html')
+
+@dashboard_bp.route('/api/result')
+def api_result():
+    # Retrieve the API response from the session
+    api_response = session.get('api_response')
+    print(api_response)
+    url = f"{main_url}/api/v1/preprocessing/"
+    payload = {
+        "tmp_dir": api_response['temp_dir_name'],
+        "pdf_files": api_response['pdf_files'],
+        "csv_file": api_response['csv_file']
+    }
+    headers = {
+        'accept': 'application/json',
+        "X-API-KEY": api_key
+    }
+    response = requests.request("POST", url, headers=headers, json=payload)
+
+    response_json = json.loads(response.text)
+    if response.status_code == 200:
+        doc_chunks = response_json['doc_chunks']
+        session['csv_summary'] = response_json['csv_summary']
+        session['doc_summaries'] = [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
+        session['event_stream_status'] = True
+        # Create a dictionary with the extracted values
+        result_data = {
+            'doc_summaries': session['doc_summaries'],
+            'csv_summary':session['csv_summary']['summary']
+        }
+        print(result_data)
+        return jsonify(result_data)
+    else:
+        return jsonify("No API response found.")
+
+
+@dashboard_bp.route('/stream')
+def stream():
+    
+    event_stream_status = session.get('event_stream_status')
+    if event_stream_status == True:
+        api_response = session.get('api_response')
+        doc_summaries = session.get('doc_summaries')
+        csv_summary = session.get('csv_summary')
+        description = session.get('description')
+        inputs = {
+            "query": description,
+            "tmp_dir": api_response['temp_dir_name'],
+            "csv_file": api_response['csv_file'],
+            "summary_list": doc_summaries,
+            "csv_summary": csv_summary['summary'],
+            "doc_num": len(doc_summaries)
+        }
+        url = f"{main_url}/api/v1/report/"
+        headers = {"X-API-KEY": api_key}
+        remote_runnable = RemoteRunnable(url,headers=headers)        
+
+        @stream_with_context
+        def event_stream():
+            with current_app.app_context():
+                for chunk in remote_runnable.stream(input=inputs):
+                    if chunk.get('html_report'):
+                        print('complete')
+                        yield f"data: {json.dumps({'chunk': {'complete': True, 'html_report': chunk['html_report']}})}\n\n"
+
+                    else:
+                        print(chunk, end='|', flush=True)
+                        yield f"data: {json.dumps({'chunk':chunk})}\n\n"
+                
+                print("Sending complete message")  # Log the complete message   
+        
+        session['event_stream_status'] = False
+        return Response(event_stream(), mimetype='text/event-stream')
+    else:
+        return "data: {json.dumps({'complete:True})}\n\n"
+    
+@dashboard_bp.route('/report')
+def report():
+    print(session['html_report']) #Printing blank list
+    html_report = session['html_report']
+    return html_report
+
+@dashboard_bp.route('/report_input', methods=['GET', 'POST'])
+def report_input():
+    if request.method == 'POST':
+        session['html_report']=request.json.get('html_report', 'No report')
+        print(session['html_report'])
+        return 'OK'
+    else:
+        return 'Method Not Allowed', 405

@@ -1,0 +1,40 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_session import Session
+from authlib.integrations.flask_client import OAuth
+from app.config import appConf
+
+db = SQLAlchemy()
+login_manager = LoginManager()
+oauth = OAuth()
+session = Session()
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('app.config')
+
+    db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.signin'
+    oauth.init_app(app)
+    session.init_app(app)
+
+    oauth.register(
+        "myApp",
+        client_id=appConf.get("OAUTH2_CLIENT_ID"),
+        client_secret=appConf.get("OAUTH2_CLIENT_SECRET"),
+        client_kwargs={
+            "scope": "openid profile email https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read",
+            # 'code_challenge_method': 'S256'  # enable PKCE
+        },
+        server_metadata_url=f'{appConf.get("OAUTH2_META_URL")}',
+    )
+
+    from app.auth import auth_bp
+    from app.dashboard import dashboard_bp
+
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+
+    return app

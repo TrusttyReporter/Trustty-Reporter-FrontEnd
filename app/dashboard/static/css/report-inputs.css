@@ -1,0 +1,135 @@
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+html {
+    height: -webkit-fill-available;
+}
+
+main {
+    display: flex;
+    flex-wrap: nowrap;
+    flex: 1;
+    /*height: 100vh;
+    height: -webkit-fill-available;
+    max-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: hidden;*/
+    background: #fff;
+    /*margin-bottom: 5px;*/
+}
+
+.sidebar-section {
+    position: fixed;
+}
+
+.sidebar-divider {
+    background-color: transparent;
+    background-image: linear-gradient(90deg,transparent,rgba(0,0,0,.4),transparent);
+    border: 0;
+    color: inherit;
+    height: 1px;
+    margin: 0;
+        margin-bottom: 0px;
+    opacity: .25;
+    overflow: hidden;
+    padding: 0;
+}
+
+.sidebar-upload-section {
+    align-items: center;
+    display: flex;
+    font-size: .875rem;
+}
+
+.sidebar-upload-section .nav-link-icon {
+    margin-right: .7rem;
+}
+
+.nav .nav-item .nav-link[data-bs-toggle="collapse"]::after {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M13.65 4.77c-.46-.46-1.15-.46-1.62 0L7.99 8.81 3.96 4.77c-.46-.46-1.15-.46-1.62 0s-.46 1.15 0 1.62l4.85 4.85c.23.23.46.35.81.35s.58-.12.81-.35l4.85-4.85c.46-.46.46-1.15 0-1.62Z%27/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+    content: "";
+    display: inline-block;
+    height: 16px;
+    margin-left: auto;
+    opacity: .5;
+    transition: all .2s ease-in-out;
+    vertical-align: -.125em;
+    width: 16px;
+}
+
+.nav .nav-item .nav-link[data-bs-toggle="collapse"][aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
+
+#uploadForm .form-control-sm {
+    border-radius: .375rem;
+}
+
+.fs-7 {
+    font-size: .875rem;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    background-color: #f0f0f0;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.main-section {
+    background: #fff;
+    margin-bottom: 10px;
+    height: 90vh;
+    overflow-y: auto;
+}
+
+.main-section .chat-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 85vh; /* Set the height of the container to 100% of viewport height */
+}
+.chat-history {
+    flex-grow: 1; /* Allow the chat history to grow and occupy remaining space */
+}
+
+.profile-icon {
+    width: 40px; /* Adjust the width and height as needed */
+    height: 40px;
+    border-radius: 50%; /* Make it circular */
+    margin-right: 10px; /* Add some space between the icon and the text */
+}
+  
+.card-body {
+    display: flex;
+    align-items: center;
+}
+
+  
+.chat-history .card-body {
+    display: flex;
+    align-items: flex-start; /* Align items to the top */
+}
+
+#inputGroup {
+    position: fixed;
+    bottom: 10px;
+    width: 77vw;
+}
+
+#inputGroup .btn {
+    border-radius: 0 .375rem .375rem 0;
+}
+
+#inputGroup #messageInput {
+    height: 22px;
+}

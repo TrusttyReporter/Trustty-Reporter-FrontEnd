@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.umd.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{url_for('dashboard.api_result')}}",
+                type: 'GET',
+                dataType: 'json',
+                timeout: 30*10000, // Set timeout to 5 minutes (300000 milliseconds)
+                success: function(response) {
+                    var resultHtml = '';
+
+                    // Display document summaries
+                    resultHtml += '<h2>Document Summaries:</h2>';
+                    //resultHtml += '<pre>' + JSON.stringify(response.doc_summaries, null, 2) + '</pre>';
+                    response.doc_summaries.forEach(function(summary, index) {
+                        resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(summary) + '</div>';
+                    });
+
+                    // Display csv_summary
+                    resultHtml += '<h2>CSV Summary:</h2>';
+                    resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+
+                    //Alert for Generating Plan
+                    resultHtml += '<br>'
+                    resultHtml += '<div class="alert alert-success" role="alert"> Generating Plan... <div>'
+
+                    $('#result-content').html(resultHtml);
+
+                    // Scroll to the bottom of the page
+                    window.scrollTo(0, document.body.scrollHeight);
+
+                    // Start streaming the report content
+                    var source = new EventSource("{{url_for('dashboard.stream')}}");
+                    source.onmessage = function(event) {
+                        var data = JSON.parse(event.data);
+                        
+                        if (data.complete) {
+                            source.close();
+                            return;
+                        }
+                        var result = "";
+                        switch (true) {
+                            case !!data.chunk.plan:
+                                result +=  '<h2> Research Plan: </h2>';
+                                result += '<div>'
+                                result += '<ol class="mb-4">';
+                                data.chunk.plan.forEach(function(step,index){
+                                    result += '<li>' + step + '</li><br>';
+                                })
+                                result += '</ol>';
+                                result += '</div>';
+                                result += '<div class="alert alert-success" role="alert"> Executing plan... <div>'
+                                break;
+                            case !!data.chunk.next:
+                                result += '<div class="alert alert-info" role="alert">';
+                                result += 'Working on...' + '<br>'
+                                result += data.chunk.next
+                                result += '</div>'
+                                break;
+                            case !!data.chunk.final_report:
+                                result += '<div class="alert alert-success" role="alert"> Generating preliminary report... </div>'     
+                                result += '<h2> Preliminary Report: </h2>'
+                                result += '<div class="alert alert-light" role="alert">' + marked.parse(data.chunk.final_report) + '</div>';
+                                break;
+                            default:
+                                result = '<pre>' + JSON.stringify(data.chunk, null, 2) + '</pre>';
+                        }
+
+                        document.getElementById('result-content').innerHTML += result;
+                        
+                        // Scroll to the bottom of the page
+                        window.scrollTo(0, document.body.scrollHeight);
+                    };
+                },
+                error: function(xhr, status, error) {
+                    if (status === 'timeout') {
+                        $('#result-content').html('<p>The request timed out. Please try again later.</p>');
+                    } else {
+                        $('#result-content').html('<p>Error occurred while fetching the API response.</p>');
+                    }
+                }
+            });
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+        ul, ol {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Results</h1><br>
+    <div class="alert alert-success" role="alert">
+        Processing documents and generating summaries...
+    </div>
+    <div id="result-content">
+        <p class="placeholder-glow">
+            <span class="placeholder col-6"></span>
+            <span class="placeholder w-75"></span>
+            <span class="placeholder" style="width: 25%;"></span>
+        </p>
+    </div>
+</body>
+</html>

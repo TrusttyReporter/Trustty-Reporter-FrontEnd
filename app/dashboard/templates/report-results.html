@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access your AI-generated report results instantly. Get detailed document summaries, CSV summaries, and a well-structured research plan. Review the preliminary report and download the final report with ease. Our AI-powered report generation service delivers comprehensive insights to support your decision-making process.">
+    <title>AI-Generated Report Results | trusttyreporter.com</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('dashboard.static', filename='css/report-inputs.css') }}" rel="stylesheet">
+    <!--JS-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.umd.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{url_for('dashboard.api_result')}}",
+                type: 'GET',
+                dataType: 'json',
+                timeout: 30*10000, // Set timeout to 5 minutes (300000 milliseconds)
+                success: function(response) {
+                    var resultHtml = '';
+
+                    // Display document summaries
+                    resultHtml += '<h2>Document Summaries:</h2>';
+                    //resultHtml += '<pre>' + JSON.stringify(response.doc_summaries, null, 2) + '</pre>';
+                    response.doc_summaries.forEach(function(summary, index) {
+                        resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(summary) + '</div>';
+                    });
+
+                    // Display csv_summary
+                    resultHtml += '<h2>CSV Summary:</h2>';
+                    resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+
+                    //Alert for Generating Plan
+                    resultHtml += '<br>'
+                    resultHtml += '<div class="alert alert-success" role="alert"> Generating Plan... <div>'
+
+                    $('#result-content').html(resultHtml);
+
+                    // Scroll to the bottom of the page
+                    // window.scrollTo(0, document.body.scrollHeight);
+                    const resultSection = document.getElementById('result-content');
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+                    // Start streaming the report content
+                    var source = new EventSource("{{url_for('dashboard.stream')}}");
+                    source.onmessage = function(event) {
+                        var data = JSON.parse(event.data);
+                        
+                        if (data.complete) {
+                            source.close();
+                            return;
+                        }
+                        var result = "";
+                        switch (true) {
+                            case !!data.chunk.plan:
+                                result +=  '<h2> Research Plan: </h2>';
+                                result += '<div>'
+                                result += '<ol class="mb-4">';
+                                data.chunk.plan.forEach(function(step,index){
+                                    result += '<li>' + step + '</li><br>';
+                                })
+                                result += '</ol>';
+                                result += '</div>';
+                                result += '<div class="alert alert-success" role="alert"> Executing plan... <div>';
+                                break;
+                            case !!data.chunk.next:
+                                result += '<div class="alert alert-info" role="alert">';
+                                result += 'Working on...' + '<br>';
+                                result += data.chunk.next;
+                                result += '</div>';
+                                break;
+                            case !!data.chunk.final_report:
+                                result += '<div class="alert alert-success" role="alert"> Generating preliminary report... </div>';     
+                                result += '<h2> Preliminary Report: </h2>';
+                                result += '<div class="alert alert-light" role="alert">' + marked.parse(data.chunk.final_report) + '</div>';
+                                break;
+                            case !!data.chunk.complete:
+                                var htmlReport = data.chunk.html_report;
+                                console.log(htmlReport)
+                                fetch("{{url_for('dashboard.report_input')}}", {
+                                    method: 'POST',
+                                    headers: {
+                                    'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ html_report: htmlReport })
+                                })
+                                .then(response => response.text())
+                                .then(data => {
+                                    if (data === 'OK') {
+                                        console.log('OK');
+                                    }
+                                })
+                                .catch(error => {
+                                console.error('Error:', error);
+                                });
+                                result += '<br>';
+                                result += '<div class="text-end width-90">';
+                                result += '<button class="btn btn-primary button" onclick="openReport()"> Final Report </button>';
+                                result += '</div>';
+                                source.close();
+                                break;
+                            default:
+                                result = '<pre>' + JSON.stringify(data.chunk, null, 2) + '</pre>';
+                        }
+
+                        document.getElementById('result-content').innerHTML += result;
+                        
+                        // Scroll to the bottom of the page
+                        // window.scrollTo(0, document.body.scrollHeight);
+                        const resultSection = document.getElementById('result-content');
+                        resultSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    };
+                },
+                error: function(xhr, status, error) {
+                    if (status === 'timeout') {
+                        $('#result-content').html('<p>The request timed out. Please try again later.</p>');
+                    } else {
+                        $('#result-content').html('<p>Error occurred while fetching the API response.</p>');
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar sticky-top navbar-expand-sm bg-body-tertiary bsb-navbar-1 shadow-sm">
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#!">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#!">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#!">Contact</a>
+                    </li>
+                </ul>             
+                <div class="collapse navbar-collapse" id="bsbNavbar">
+                    <ul class="navbar-nav bsb-dropdown-menu-responsive ms-auto align-items-center">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="position-relative pt-1">
+                                    <i class="bi bi-person-fill fs-4"></i>
+                                        <span class="visually-hidden">User</span>
+                                    </span>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-md-end bsb-dropdown-animation bsb-fadeIn">
+                                <li>
+                                    <h6 class="dropdown-header fs-7 text-center">Welcome, {{username}}</h6>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-center" href="{{url_for('auth.signout')}}">
+                                        <span>
+                                            <span class="fs-7">Log Out</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="row" >
+            <!-- Sidebar -->
+            <div class="d-flex flex-column flex-shrink-0 px-3 bg-light" style="width: 20vw;">
+                
+                <hr class="sidebar-divider mb-3">
+                <ul class="nav nav-pills flex-column mb-auto ps-3">
+                    <a class= "nav-link p-1 link-dark" role="button" href="{{url_for('dashboard.index')}}">
+                        <li class="nav-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-post" viewBox="0 0 20 20">
+                                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                <path d="M4 6.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5H7a.5.5 0 0 1 0 1H4.5a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                            <span class="text-tertiary ms-1">AI Generated Report</span>
+                        </li>
+                    </a>
+                    <hr class="sidebar-divider mt-3 mb-3">
+                    <a class= "nav-link p-1 link-dark" role="button" href="!#">
+                        <li class="nav-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-right-dots-fill" viewBox="0 0 20 20">
+                                <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                            </svg>
+                            <span class="text-tertiary ms-1">Chat Report</span>
+                        </li>
+                    </a>
+                </ul>
+            </div>
+            <div class="main-section" style="width: 80vw;">
+                <!--Section where the results are dispalyed-->
+                <div class="container col-md-10">
+                    <section id="result-section" class="my-2 my-md-4 px-1">
+                        <h1>Results</h1><br>
+                        <div class="alert alert-success" role="alert">
+                            Processing documents and generating summaries...
+                        </div>
+                        <div id="result-content">
+                            <p class="placeholder-glow">
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder w-75"></span>
+                                <span class="placeholder" style="width: 25%;"></span>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://unpkg.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <!-- <script src="{{ url_for('dashboard.static', filename='js/report-results.js') }}"></script> -->
+    <script>
+        function openReport() {
+          window.open("{{ url_for('dashboard.report') }}", '_blank');
+        }
+    </script>
+</body>
+</html>
