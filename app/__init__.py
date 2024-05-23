@@ -3,7 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_session import Session
 from authlib.integrations.flask_client import OAuth
+from api_analytics.flask import add_middleware
 from app.config import appConf
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -13,6 +17,8 @@ session = Session()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('app.config')
+
+    add_middleware(app, '319ce073-e486-45de-91cc-c42ac0a0ba4d')  # Add middleware
 
     db.init_app(app)
     login_manager.init_app(app)

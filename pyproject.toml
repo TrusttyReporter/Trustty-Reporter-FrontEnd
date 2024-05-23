@@ -27,6 +27,7 @@ fastapi-cli = "^0.0.3"  # Missing from initial list, added here
 langchain-community = "^0.0.38"  # Missing from initial list, added here
 langchain-core = "^0.1.52"  # Missing from initial list, added here
 langchain-text-splitters = "^0.0.1"  # Missing from initial list, added here
+api-analytics = {extras = ["fastapi"], version = "*"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
