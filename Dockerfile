@@ -23,7 +23,9 @@ RUN poetry install --no-interaction --no-ansi
 EXPOSE 5000
 
 # Install Gunicorn
-RUN pip install --no-cache-dir gunicorn
+#RUN pip install --no-cache-dir gunicorn
 
 # Start the application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "4", "--threads", "4"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "4", "--threads", "4"]
+
+CMD exec uvicorn app.server:app --host 0.0.0.0 --port 8080
