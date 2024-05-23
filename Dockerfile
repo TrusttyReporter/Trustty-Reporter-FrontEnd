@@ -2,7 +2,7 @@
 FROM python:3.11-slim-bullseye
 
 # Install Poetry
-RUN pip install --no-cache-dir poetry==1.6.1
+RUN pip install poetry==1.6.1
 
 RUN poetry config virtualenvs.create false
 # Set the working directory
