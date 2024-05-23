@@ -27,4 +27,4 @@ EXPOSE 5000
 RUN pip install --no-cache-dir gunicorn
 
 # Start the application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "4", "--threads", "4"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "2", "--threads", "1"]
