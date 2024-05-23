@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_session import Session
 from authlib.integrations.flask_client import OAuth
 from app.config import appConf
@@ -30,6 +30,12 @@ def create_app():
         },
         server_metadata_url=f'{appConf.get("OAUTH2_META_URL")}',
     )
+
+    @app.route('/')
+    def home():
+        if current_user.is_authenticated:
+            return redirect(url_for("dashboard.index"))
+        return render_template('landing.html')
 
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp

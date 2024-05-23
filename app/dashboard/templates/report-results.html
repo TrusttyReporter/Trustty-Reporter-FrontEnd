@@ -59,7 +59,7 @@
                         switch (true) {
                             case !!data.chunk.plan:
                                 result +=  '<h2> Research Plan: </h2>';
-                                result += '<div>'
+                                result += '<div class="alert alert-info" role="alert">'
                                 result += '<ol class="mb-4">';
                                 data.chunk.plan.forEach(function(step,index){
                                     result += '<li>' + step + '</li><br>';
@@ -134,6 +134,11 @@
             <div class="container-fluid">
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="navbar-brand" href="{{url_for('home')}}">
+                            <img src="./static/images/logo.png" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#!">Home</a>
                     </li>
                     <li class="nav-item">
@@ -183,9 +188,8 @@
                 <ul class="nav nav-pills flex-column mb-auto ps-3">
                     <a class= "nav-link p-1 link-dark" role="button" href="{{url_for('dashboard.index')}}">
                         <li class="nav-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-post" viewBox="0 0 20 20">
-                                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                <path d="M4 6.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5H7a.5.5 0 0 1 0 1H4.5a.5.5 0 0 1-.5-.5"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic" viewBox="0 0 20 20">
+                                <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"/>
                             </svg>
                             <span class="text-tertiary ms-1">AI Generated Report</span>
                         </li>

@@ -155,6 +155,8 @@ cython_debug/
 
 # other folders/files
 rough/
+.run.py
+run.py
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
