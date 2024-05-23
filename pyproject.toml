@@ -17,13 +17,17 @@ Jinja2 = "^3.1.4"
 Werkzeug = "^3.0.3"
 pandas = "^2.2.2"
 chardet = "^5.2.0"
-langchain = "*"
-langserve = "*"
-fastapi = "*"
-"Flask-Ext" = "*"
-"flask[async]" = "*"
-flask-session = "*"
-redis = "*"
+langchain = "^0.1.20"  # Specific version provided
+langserve = "^0.1.1"  # Specific version provided
+fastapi = "^0.111.0"  # Specific version provided
+"Flask-Ext" = "^0.1"  # Specific version provided
+"flask[async]" = "^3.0.3"
+flask-session = "^0.4.0"  # Adjust version if necessary
+redis = "^5.0.4"  # Specific version provided
+fastapi-cli = "^0.0.3"  # Missing from initial list, added here
+langchain-community = "^0.0.38"  # Missing from initial list, added here
+langchain-core = "^0.1.52"  # Missing from initial list, added here
+langchain-text-splitters = "^0.0.1"  # Missing from initial list, added here
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
