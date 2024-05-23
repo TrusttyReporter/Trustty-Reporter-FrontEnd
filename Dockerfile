@@ -6,7 +6,7 @@ RUN pip install poetry==1.6.1
 
 RUN poetry config virtualenvs.create false
 # Set the working directory
-WORKDIR /app
+WORKDIR /code
 
 # Copy only the necessary files for Poetry to install dependencies
 COPY ./pyproject.toml ./poetry.lock* ./
@@ -15,7 +15,8 @@ COPY ./pyproject.toml ./poetry.lock* ./
 RUN poetry install --no-interaction --no-ansi --no-root
 
 # Copy the rest of the application code
-COPY ./app ./app
+COPY app ./app
+COPY wsgi.py ./
 
 RUN poetry install --no-interaction --no-ansi
 
