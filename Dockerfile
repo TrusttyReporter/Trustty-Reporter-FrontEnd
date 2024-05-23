@@ -4,6 +4,7 @@ FROM python:3.11-slim-bullseye
 # Install Poetry
 RUN pip install --no-cache-dir poetry==1.6.1
 
+RUN poetry config virtualenvs.create false
 # Set the working directory
 WORKDIR /app
 
@@ -11,11 +12,12 @@ WORKDIR /app
 COPY ./pyproject.toml ./poetry.lock* ./
 
 # Install dependencies without creating a virtual environment
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --no-root
+RUN poetry install --no-interaction --no-ansi --no-root
 
 # Copy the rest of the application code
 COPY ./app ./app
+
+RUN poetry install --no-interaction --no-ansi
 
 # Expose the port the app will run on
 EXPOSE 5000
