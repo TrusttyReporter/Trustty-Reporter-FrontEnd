@@ -14,7 +14,7 @@
     <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #ffffff;">
         <div class="container">
             <a class="navbar-brand" href="{{url_for('home')}}">
-                <img src="./static/images/logo.png" alt="BootstrapBrain Logo" width="135" height="44">
+                <img src="./static/images/logo.png" alt="BootstrapBrain Logo" width="200" height="70">
             </a>
             <a href="{{url_for('auth.signin')}}">
             <button class="btn btn-primary">Get Started</button>
@@ -31,18 +31,18 @@
         <div class="container overflow-hidden">
             <div class="row gy-5 gy-lg-0 align-items-lg-center justify-content-lg-between">
                 <div class="col-12 col-lg-6 order-1 order-lg-0">
-                    <h2 class="display-3 fw-bold mb-3">Generate Stunning Reports with AI</h2>
-                    <p class="fs-4 mb-5">Create professional reports effortlessly with our AI tool</p>
+                    <h2 class="display-2 fw-bold mb-3">Generate Stunning Reports with AI</h2>
+                    <p class="fs-2 mb-5">Transform your data into professional reports at the click of a button</p>
                     <div class="d-grid gap-2 d-sm-flex">
-                        <a href="{{url_for('auth.signin')}}" class="btn btn-primary bsb-btn-2xl rounded-pill">Get Started</a>
+                        <a href="{{url_for('auth.signin')}}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Get Started</a>
                         <!--<button type="button" class="btn btn-outline-primary bsb-btn-2xl rounded-pill">Free
                             Trial</button>-->
                     </div>
                 </div>
-                <div class="col-12 col-lg-5 text-center">
+                <div class="col-12 col-lg-6 text-center">
                     <div class="position-relative">
                         <img class="img-fluid position-relative z-2" loading="lazy" src="./static/images/hero-img.png"
-                            alt="A Digital Agency Specialized in AI and Web 3.0">
+                            alt="An AI tool to automate reporting">
                     </div>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" class="bi bi-magic text-primary mb-4" viewBox="0 0 16 16">
                                             <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"/>
                                         </svg>
-                                        <h4 class="fw-bold text-uppercase mb-4">Automated Report</h4>
+                                        <h4 class="fw-bold text-uppercase mb-4">Generate Reports</h4>
                                         <p class="mb-4 text-secondary">Upload your PDFs and CSVs, provide a prompt, 
                                             and let our AI tool work its magic. It will analyze the data 
                                             from your files and generate a comprehensive report complete with visuals 
@@ -104,7 +104,7 @@
                                                 <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM3.5 3h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1"/>
                                               </g>
                                           </svg>
-                                        <h4 class="fw-bold text-uppercase mb-4">Chat Report</h4>
+                                        <h4 class="fw-bold text-uppercase mb-4">Chat Reports</h4>
                                         <p class="mb-4 text-secondary">Engage in a conversation with your PDFs and CSVs to create a report tailored to your needs. 
                                             Ask questions, seek analysis, and gain insights based on the content of your files. 
                                             Our AI tool will transform the chat into a presentable report. You can even opt to conduct further research over the 
@@ -291,7 +291,7 @@
                 <div class="col-12 col-md-10 col-xl-8 col-xxl-7">
                 <h2 class="h5 mb-4 text-primary text-uppercase">Revolutionize Your Reporting</h2>
                 <h2 class="display-5 text-dark mb-5">Automate report creation, engage in conversational analysis, and collaborate with AI to produce stunning, insightful reports.</h2>
-                <a href="#!" class="btn btn-primary bsb-btn-3xl rounded mb-0 text-nowrap">Get Started</a>
+                <a href="{{url_for('auth.signin')}}" class="btn btn-primary btn-lg px-7 py-4 fs-3 rounded mb-0 text-nowrap w-50">Get Started</a>
                 </div>
             </div>
             </div>

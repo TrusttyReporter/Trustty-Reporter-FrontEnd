@@ -119,19 +119,16 @@
                           </button>
                         </div>
                         <!--Error message-->
-                        <!-- {% if error_message %}
+                        {% if error_message %}
                             <br>
                             <div class="alert alert-danger" role="alert">
                                 {{ error_message }}
                             </div>
                             <script>
-                                // Reset the submit button
-                                var spinner = submitButton.querySelector(".spinner-border");
-                                spinner.classList.add("d-none");
-                                var submitButton = document.getElementById("submitButton");
-                                submitButton.disabled = false;
+                                // Call the function to reset the submit button
+                                resetSubmitButton();
                             </script>
-                        {% endif %} -->
+                        {% endif %}
                       </section>
                     </form>
                   </div>

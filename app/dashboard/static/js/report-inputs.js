@@ -68,3 +68,9 @@ submitButton.addEventListener("click", function(event) {
 
   submitButton.disabled = true;
 });
+
+function resetSubmitButton() {
+    var spinner = submitButton.querySelector(".spinner-border");
+    spinner.classList.add("d-none");
+    submitButton.disabled = false;
+}

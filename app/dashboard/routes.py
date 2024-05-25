@@ -20,81 +20,82 @@ api_key = '12345'  # Replace with your actual API key
 @dashboard_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    
     error_message = None  # Initialize error_message variable
-    
+
     # Handle form submission
     if request.method == 'POST':
         description = request.form['description']
         resources = request.files.getlist('resources')
-        print(f"Resouce: {resources}")
-
+        print(f"Resource: {resources}")
         session['description'] = description
 
-        # Create a temporary directory to store the uploaded files
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Save each uploaded file to the temporary directory
-            file_paths = []
-            for resource in resources:
-                filename = secure_filename(resource.filename)
-                print(f"FileName: {filename}")
-                file_path = os.path.join(temp_dir, filename)
-                resource.save(file_path)
-                file_paths.append(file_path)
-            
-            # Check the encoding of CSV files and convert to UTF-8 if necessary
-            for file_path in file_paths:
-                _, file_extension = os.path.splitext(file_path)
-                if file_extension.lower() == '.csv':
+        if resources:
+            # Create a temporary directory to store the uploaded files
+            with tempfile.TemporaryDirectory() as temp_dir:
+                # Save each uploaded file to the temporary directory
+                file_paths = []
+                for resource in resources:
+                    if resource.filename:
+                        filename = secure_filename(resource.filename)
+                        print(f"FileName: {filename}")
+                        file_path = os.path.join(temp_dir, filename)
+                        resource.save(file_path)
+                        file_paths.append(file_path)
+                    else:
+                        error_message = "No file selected for upload. Please upload a file and try again."
+                        return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
+
+                # Check the encoding of CSV files and convert to UTF-8 if necessary
+                for file_path in file_paths:
+                    _, file_extension = os.path.splitext(file_path)
+                    if file_extension.lower() == '.csv':
+                        with open(file_path, 'rb') as file:
+                            file_content = file.read()
+                            encoding = chardet.detect(file_content)['encoding']
+                            print(encoding)
+                            if encoding != 'utf-8':
+                                try:
+                                    convert_csv_to_utf8(file_path, encoding)
+                                except Exception as e:
+                                    print("e")
+                                    error_message = "An error occurred while converting CSV file encoding. Unable to process CSV due to unsupported encoding."
+                                    return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
+
+                # Prepare the files for the API request
+                files = []
+                for file_path in file_paths:
                     with open(file_path, 'rb') as file:
-                        file_content = file.read()
-                        encoding = chardet.detect(file_content)['encoding']
-                        print(encoding)
-                        if encoding != 'utf-8':
-                            try:
-                                convert_csv_to_utf8(file_path, encoding)
-                            except Exception as e:
-                                print("e")
-            
-            
-            # Prepare the files for the API request
-            files = []
-            for file_path in file_paths:
-                with open(file_path, 'rb') as file:
-                    files.append(('files', (os.path.basename(file_path), file.read(), 'application/octet-stream')))
-            
-            # Make the API request
-            api_url = f"{main_url}/api/v1/upload/"  # Replace with your API endpoint
-            
-            headers = {
-                'accept': 'application/json',
-                'X-API-KEY': api_key
-            }
+                        files.append(('files', (os.path.basename(file_path), file.read(), 'application/octet-stream')))
 
-            
-            response = requests.post(api_url, headers=headers, files=files)
-            
+                # Make the API request
+                api_url = f"{main_url}/api/v1/upload/"  # Replace with your API endpoint
+                headers = {
+                    'accept': 'application/json',
+                    'X-API-KEY': api_key
+                }
+                try:
+                    response = requests.post(api_url, headers=headers, files=files)
+                    response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
 
-            # Check the API response
-            if response.status_code == 200:
-                # API request successful
-                # Store the API response in the session
-                session['api_response'] = response.json()
-                print(response.json())
-                return redirect(url_for("dashboard.result"))
+                    # API request successful
+                    session['api_response'] = response.json()
+                    print(response.json())
+                    return redirect(url_for("dashboard.result"))
+                except requests.exceptions.RequestException as e:
+                    print(e)
+                    error_message = "Oops! Something went wrong while processing your request. Please try again later."
+                except (KeyError, json.JSONDecodeError) as e:
+                    print(e)
+                    error_message = "Hmm, looks like we received an unexpected response. Don't worry, our team is on it!"
 
-            else:
-                #API request failed
-                error_message = response.json().get('error', 'Unknown error occurred')
-                print(error_message)
-            # except:
-            #     error_message = "An error occured. Please try again"
+        else:
+            error_message = "No files were uploaded. Please upload a file and try again."
 
-    return render_template('report-inputs.html',username = current_user.first_name, error_message=error_message)
+    return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
     
 @dashboard_bp.route('/result')
 def result():
-    return render_template('report-results.html')
+    return render_template('report-results.html',username = current_user.first_name)
 
 @dashboard_bp.route('/api/result')
 def api_result():

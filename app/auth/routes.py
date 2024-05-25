@@ -31,10 +31,28 @@ def signin():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        
+        if not email:
+            error = "Please enter your email address."
+            return render_template("signin.html", error=error)
+        
+        if not password:
+            error = "Please enter your password."
+            return render_template("signin.html", error=error)
+        
         user = Local_users.query.filter_by(user_email=email).first()
-        if user and user.check_password(password):
-            login_user(user)
-            return redirect(url_for("dashboard.index"))
+        
+        if user:
+            if user.check_password(password):
+                login_user(user)
+                return redirect(url_for("dashboard.index"))
+            else:
+                error = "Invalid password. Please try again."
+                return render_template("signin.html", error=error)
+        else:
+            error = "No account found with the provided email address."
+            return render_template("signin.html", error=error)
+    
     return render_template("signin.html")
 
 @auth_bp.route('/signup', methods=["GET", "POST"])
@@ -44,10 +62,25 @@ def signup():
         last_name = request.form['lastName']
         email = request.form['email']
         password = request.form['password']
+
+        # Check if the email is already registered
+        existing_user = Local_users.query.filter_by(user_email=email).first()
+        if existing_user:
+            error = "Email is already registered. Please use a different email."
+            return render_template("signup.html", error=error)
+
+        # Check if any required fields are empty
+        if not first_name or not last_name or not email or not password:
+            error = "Please fill in all the required fields."
+            return render_template("signup.html", error=error)
+
+        # Create a new user
         new_user = Local_users(first_name=first_name, last_name=last_name, user_email=email, password=password, auth_provider='local')
         db.session.add(new_user)
         db.session.commit()
+
         return redirect(url_for("auth.signin"))
+
     return render_template("signup.html")
 
 @auth_bp.route('/resetpassword')
