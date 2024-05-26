@@ -9,6 +9,7 @@ appConf = {
     "SESSION_TYPE": 'redis',
     "SESSION_REDIS": redis.from_url('redis://red-cp6u63i0si5c73akiku0:6379')
     #"SESSION_REDIS": redis.from_url('redis://localhost:6379')
+    #"SESSION_REDIS": redis.from_url('rediss://red-cp6u63i0si5c73akiku0:xpdVwG97463HyBDa4Y8t09srpw0BNQ1M@oregon-redis.render.com:6379')
 }
 
 SQLALCHEMY_DATABASE_URI = "postgresql://postgres.qswtiyzhtnalwqxmpbgz:6EryE4*(5yQc%s#@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"

@@ -23,15 +23,6 @@
                             <img src="./static/images/logo.png" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#!">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Contact</a>
-                    </li>
                 </ul>             
                 <div class="collapse navbar-collapse" id="bsbNavbar">
                     <ul class="navbar-nav bsb-dropdown-menu-responsive ms-auto align-items-center">
@@ -96,16 +87,25 @@
                       <section class="my-2 my-md-4 px-1">
                         <!-- Task description textarea -->
                         <div class="mb-3">
-                          <h4 class="mb-3">Please enter the report <b>description</b> and <b>resources</b></h4>
+                          <h1 class="mb-3">Enter the report description and resources below:</h1>
+                          <div class="alert alert-info" role="alert">
+                            <h4 style="font-size: 14px; color: #555;">Instructions:</h4>
+                            <ol style="font-size: 12px; color: #555;">
+                                <li>Always begin your 'Report Description' with <b>"Generate/Write a report on &lt;topic&gt;. (Optional)Answer the following questions... (Optional)Include the following in the report..."</b> followed by a list of specific analysis.</li>
+                                <li>The tool will automatically generate suitable graphs for each data piece. <b>If you need specific graphs, you can request them later by clicking 'Edit Report'</b>.</li>
+                                <li>You can upload <b>multiple PDFs but only one CSV</b> file. If you upload multiple CSVs, only the last one will be used. For optimal performance, upload 5 or fewer PDFs. Uploading multiple CSVs will be supported soon.</li>
+                                <li>The tool can automatically understand and utilize each resource(PDFs or CSV) to generate the report. But if you want to use a specific resource for specific data or analysis, specify it under the 'Include' section of the description.</li>
+                                <li><b>Generating the report may take 5-10 minutes, depending on its complexity and the size of the provided resources.</b></li>
+                            </ol>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <h3 class="mb-2">Enter Report Description:</h3>
+                          <textarea rows="5" class="form-control mb-3 description-area width-90 border-2" id="taskDescription" name="description" placeholder="Generate/Write a report on &lt;topic&gt;. (Optional)Answer the following questions... (Optional)Include the following in the report..."></textarea>
                         </div>
                         <br>
                         <div class="mb-3">
-                          <h5 class="mb-2">Enter Report Description</h5>
-                          <textarea rows="5" class="form-control mb-3 description-area width-90 border-2" id="taskDescription" name="description" placeholder="Enter Task Description"></textarea>
-                        </div>
-                        <br>
-                        <div class="mb-3">
-                            <h5 class="mb-2">Upload Resources</h5>
+                            <h3 class="mb-2">Upload Resources:</h3>
                             <input type="file" class="form-control width-90" id="pdfFile" name="resources" multiple accept=".pdf, .csv, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         </div>
                         <div id="uploadedFiles" class="mt-3"></div>

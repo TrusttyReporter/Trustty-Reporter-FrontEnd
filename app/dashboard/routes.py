@@ -94,10 +94,12 @@ def index():
     return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
     
 @dashboard_bp.route('/result')
+@login_required
 def result():
     return render_template('report-results.html',username = current_user.first_name)
 
 @dashboard_bp.route('/api/result')
+@login_required
 def api_result():
     # Retrieve the API response from the session
     api_response = session.get('api_response')
@@ -132,6 +134,7 @@ def api_result():
 
 
 @dashboard_bp.route('/stream')
+@login_required
 def stream():
     
     event_stream_status = session.get('event_stream_status')
@@ -172,16 +175,26 @@ def stream():
         return "data: {json.dumps({'complete:True})}\n\n"
     
 @dashboard_bp.route('/report')
+@login_required
 def report():
-    print(session['html_report']) #Printing blank list
+    print(session['html_report'])
     html_report = session['html_report']
     return html_report
 
-@dashboard_bp.route('/report_input', methods=['GET', 'POST'])
+@dashboard_bp.route('/report-input', methods=['GET', 'POST'])
+@login_required
 def report_input():
     if request.method == 'POST':
         session['html_report']=request.json.get('html_report', 'No report')
+        session['final_report']=request.json.get('final_report','No report')
         print(session['html_report'])
+        print(f"FINAL REPORT IN MARKDOWN: {session['final_report']}")
         return 'OK'
     else:
         return 'Method Not Allowed', 405
+
+@dashboard_bp.route('/report/edit', methods=['GET', 'POST'])
+@login_required
+def report_edit():
+    final_report = session.get('final_report', '')
+    return render_template('report-edits.html', username = current_user.first_name, report = final_report)

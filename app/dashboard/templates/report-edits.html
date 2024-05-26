@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Generate comprehensive AI-powered reports effortlessly. Simply upload resources and provide a description, and our advanced AI technology will create insightful, tailored reports to meet your specific needs. Save time and gain valuable insights with our user-friendly report generation tool.">
-    <title>Generate AI-Powered Reports | trusttyreporter.com</title>
+    <meta name="description" content="Edit and customize AI-generated reports effortlessly. Make changes to the report content using our intuitive Markdown editor, download the report, or generate a final version with just a few clicks.">
+    <title>Edit AI-Generated Reports | TrustyReporter</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -22,17 +22,8 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="navbar-brand" href="{{url_for('home')}}">
-                            <img src="./static/images/logo.png" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
+                            <img src="{{ url_for('dashboard.static', filename='images/logo.png')}}" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#!">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Contact</a>
                     </li>
                 </ul>             
                 <div class="collapse navbar-collapse" id="bsbNavbar">
@@ -94,47 +85,84 @@
             </div>
             <div class="main-section" style="width: 80vw;">
                 <div class="container col-md-10">
+                    <section id="result-section" class="my-2 my-md-4 px-1">
 
-                    <!-- Create the editor container -->
-                    <textarea id="editor"></textarea>
+                        <h1>Make changes to your report below:</h1>
+                        <div class="alert alert-info" role="alert">
+                            <h2 style="font-size: 14px; color: #888;">Instructions:</h2>
+                            <ol style="font-size: 12px; color: #555;">
+                              <li>Edit the preliminary report in the Markdown editor below. Add text, data, images, and links as needed.</li>
+                              <li>To provide feedback to the report generation agent, add comments prefixed with 'COMMENT' in all caps, e.g., 'COMMENT: Add a pie chart for the above data here.' or 'COMMENT: Explain the above concept in more detail.'</li>
+                              <li>Once you've made your changes and added comments, click 'Generate New Report' to create an updated version with charts and graphs, or click 'Download as Markdown' to download the preliminary report as a Markdown file.</li>
+                            </ol>
+                        </div>
 
-                    <!-- Add a button to print the editor content -->
-                    <button onclick="printEditorContent()">Print Editor Content</button>
-                    
-                    <!-- Add a container for the printed content -->
-                    <div id="printed-content"></div>
+                        <!-- Create the editor container -->
+                        <textarea id="editor"></textarea>
+
+                        <div class="text-end width-90">
+                            <button class="btn btn-primary button" onclick="downloadReport()"> Download as Markdown </button>
+                            <button class="btn btn-primary button" onclick="openModal()"> Generate New Report </button>
+                        </div>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="helloModal" tabindex="-1" aria-labelledby="helloModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="helloModalLabel">Generating Report</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Generating final report...</p>
+                                    <div class="spinner-border text-primary" role="status">
+                                      <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="btn btn-primary">View Report</a>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                    </section>
 
                     <!-- Include the SimpleMDE library -->
                     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.umd.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
                     <script>
                         // Initialize SimpleMDE
                         var simplemde = new SimpleMDE({
-                        element: document.getElementById("editor"),
-                        spellChecker: false,
-                        autosave: {
-                            enabled: true,
-                            unique_id: "editor-content"
-                        }
+                            element: document.getElementById("editor"),
+                            hideIcons: ["fullscreen", "side-by-side"],
+                            spellChecker: false,
+                            autosave: {
+                                enabled: true,
+                                unique_id: "editor-content"
+                            },
+                            // Enable the preview functionality
+                            previewRender: function(plainText) {
+                                return this.parent.markdown(plainText);
+                            },
                         });
 
-                        // Set initial content as Markdown
-                        var initialContent = `
-                    # Hello World!
-
-                    Some initial **bold** text
-
-                    - List item 1
-                    - List item 2
-                    `;
+                        // Set the initial content from the 'report' variable using Jinja
+                        var initialContent = `{{ report | safe }}`;
 
                         // Set the initial content in the editor
                         simplemde.value(initialContent);
 
-                        // Function to print the editor content
-                        function printEditorContent() {
-                        var editorContent = simplemde.value();
-                        var printedContent = document.getElementById("printed-content");
-                        printedContent.innerHTML = "<p>" + editorContent + "</p>";
+                        // Function to download the current content as a report.md file
+                        function downloadReport() {
+                            var content = simplemde.value();
+                            var blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+                            saveAs(blob, "report.md");
+                        }
+                        function openModal() {
+                            var modal = new bootstrap.Modal(document.getElementById('helloModal'));
+                            modal.show();
                         }
                     </script>
                   </div>

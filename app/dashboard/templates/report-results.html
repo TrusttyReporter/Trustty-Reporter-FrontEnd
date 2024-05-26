@@ -48,6 +48,7 @@
 
                     // Start streaming the report content
                     var source = new EventSource("{{url_for('dashboard.stream')}}");
+                    var finalReport = ''; 
                     source.onmessage = function(event) {
                         var data = JSON.parse(event.data);
                         
@@ -75,6 +76,7 @@
                                 result += '</div>';
                                 break;
                             case !!data.chunk.final_report:
+                                finalReport = data.chunk.final_report;
                                 result += '<div class="alert alert-success" role="alert"> Generating preliminary report... </div>';     
                                 result += '<h2> Preliminary Report: </h2>';
                                 result += '<div class="alert alert-light" role="alert">' + marked.parse(data.chunk.final_report) + '</div>';
@@ -87,7 +89,7 @@
                                     headers: {
                                     'Content-Type': 'application/json'
                                     },
-                                    body: JSON.stringify({ html_report: htmlReport })
+                                    body: JSON.stringify({ 'html_report': htmlReport, 'final_report': finalReport })
                                 })
                                 .then(response => response.text())
                                 .then(data => {
@@ -100,6 +102,7 @@
                                 });
                                 result += '<br>';
                                 result += '<div class="text-end width-90">';
+                                result += '<button class="btn btn-primary button me-3" onclick="editReport()"> Edit Report </button>';
                                 result += '<button class="btn btn-primary button" onclick="openReport()"> Final Report </button>';
                                 result += '</div>';
                                 source.close();
@@ -137,15 +140,6 @@
                         <a class="navbar-brand" href="{{url_for('home')}}">
                             <img src="./static/images/logo.png" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#!">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#!">Contact</a>
                     </li>
                 </ul>             
                 <div class="collapse navbar-collapse" id="bsbNavbar">
@@ -209,7 +203,7 @@
                 <!--Section where the results are dispalyed-->
                 <div class="container col-md-10">
                     <section id="result-section" class="my-2 my-md-4 px-1">
-                        <h1>Results</h1><br>
+                        <h1>Generating your report. Sit back and relax...</h1><br>
                         <div class="alert alert-success" role="alert">
                             Processing documents and generating summaries...
                         </div>
@@ -231,6 +225,9 @@
     <script>
         function openReport() {
           window.open("{{ url_for('dashboard.report') }}", '_blank');
+        }
+        function editReport() {
+          window.open("{{ url_for('dashboard.report_edit') }}", '_blank');
         }
     </script>
 </body>
