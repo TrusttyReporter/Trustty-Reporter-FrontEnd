@@ -114,7 +114,7 @@ def api_result():
         'accept': 'application/json',
         "X-API-KEY": api_key
     }
-    response = requests.request("POST", url, headers=headers, json=payload)
+    response = requests.request("POST", url, headers=headers, json=payload, timeout=5*60)
 
     response_json = json.loads(response.text)
     if response.status_code == 200:
