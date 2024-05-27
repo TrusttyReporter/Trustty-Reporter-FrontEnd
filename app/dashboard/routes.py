@@ -149,7 +149,8 @@ def stream():
             "csv_file": api_response['csv_file'],
             "summary_list": doc_summaries,
             "csv_summary": csv_summary['summary'],
-            "doc_num": len(doc_summaries)
+            "doc_num": len(doc_summaries),
+            "data_num": 1
         }
         url = f"{main_url}/api/v1/report/"
         headers = {"X-API-KEY": api_key}
