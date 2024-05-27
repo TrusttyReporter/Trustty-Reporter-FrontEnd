@@ -24,7 +24,7 @@ RUN poetry install --no-interaction --no-ansi
 EXPOSE 5000
 
 # Install Gunicorn
-RUN pip install --no-cache-dir gunicorn
+RUN pip install --no-cache-dir gunicorn gevent
 
 # Start the application with Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "1", "--worker-class", "gevent", "--threads", "2", "--timeout", "240"]
