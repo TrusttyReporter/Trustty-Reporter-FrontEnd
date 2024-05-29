@@ -120,12 +120,12 @@ def api_result():
     if response.status_code == 200:
         doc_chunks = response_json['doc_chunks']
         session['csv_summary'] = response_json['csv_summary']
-        session['doc_summaries'] = [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
+        session['doc_summaries'] = [] if response_json['doc_chunks'] == "" else [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
         session['event_stream_status'] = True
         # Create a dictionary with the extracted values
         result_data = {
             'doc_summaries': session['doc_summaries'],
-            'csv_summary':session['csv_summary']['summary']
+            'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary']['summary']
         }
         #print(result_data)
         return jsonify(result_data)
@@ -146,11 +146,11 @@ def stream():
         inputs = {
             "query": description,
             "tmp_dir": api_response['temp_dir_name'],
-            "csv_file": api_response['csv_file'],
+            "csv_file": "" if csv_summary == "" else api_response['csv_file'],
             "summary_list": doc_summaries,
-            "csv_summary": csv_summary['summary'],
-            "doc_num": len(doc_summaries),
-            "data_num": 1
+            "csv_summary": "" if csv_summary == "" else csv_summary['summary'],
+            "doc_num": 0 if doc_summaries == [] else len(doc_summaries),
+            "data_num": 0 if csv_summary == "" else 1
         }
         url = f"{main_url}/api/v1/report/"
         headers = {"X-API-KEY": api_key}

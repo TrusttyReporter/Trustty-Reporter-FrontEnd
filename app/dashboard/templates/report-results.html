@@ -25,15 +25,19 @@
                     var resultHtml = '';
 
                     // Display document summaries
-                    resultHtml += '<h2>Document Summaries:</h2>';
-                    //resultHtml += '<pre>' + JSON.stringify(response.doc_summaries, null, 2) + '</pre>';
-                    response.doc_summaries.forEach(function(summary, index) {
-                        resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(summary) + '</div>';
-                    });
+                    if (response.doc_summaries?.length) {
+                        resultHtml += '<h2>Document Summaries:</h2>';
+                        //resultHtml += '<pre>' + JSON.stringify(response.doc_summaries, null, 2) + '</pre>';
+                        response.doc_summaries.forEach(function(summary, index) {
+                            resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(summary) + '</div>';
+                        });
+                    }
 
                     // Display csv_summary
-                    resultHtml += '<h2>CSV Summary:</h2>';
-                    resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+                    if (response.csv_summary?.trim()) {
+                        resultHtml += '<h2>CSV Summary:</h2>';
+                        resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+                    }
 
                     //Alert for Generating Plan
                     resultHtml += '<br>'
