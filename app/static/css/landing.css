@@ -1,0 +1,15 @@
+#data-type {
+    display: inline-block;
+    width: 2em;
+  }
+  
+  .data-text {
+    display: inline-block;
+    opacity: 1;
+    transition: opacity 0.5s;
+    color: #009DF7;
+  }
+  
+  .data-text.fade {
+    opacity: 0;
+  }

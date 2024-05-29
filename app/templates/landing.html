@@ -6,6 +6,8 @@
     <meta name="description" content="Effortlessly generate professional reports from PDFs and CSVs using TrustyReporter's AI-powered tool. Automate report creation, engage in conversational analysis, and collaborate with AI to produce stunning, insightful reports. Streamline your reporting process and unlock valuable insights with ease.">
     <title>TrustyReporter</title>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/landing.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -32,7 +34,10 @@
             <div class="row gy-5 gy-lg-0 align-items-lg-center justify-content-lg-between">
                 <div class="col-12 col-lg-6 order-1 order-lg-0">
                     <h2 class="display-2 fw-bold mb-3">Generate Stunning Reports with AI</h2>
-                    <p class="fs-2 mb-5">Transform your PDF and CSV data into professional reports at the click of a button</p>
+                    <p class="fs-2 mb-5">
+                        Transform your <span id="data-type" class="text-center"><span class="data-text">PDF</span></span> data into professional reports at the click of a button
+                      </p>
+                    
                     <div class="d-grid gap-2 d-sm-flex">
                         <a href="{{url_for('auth.signin')}}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Get Started</a>
                         <!--<button type="button" class="btn btn-outline-primary bsb-btn-2xl rounded-pill">Free
@@ -48,6 +53,8 @@
             </div>
         </div>
     </section>
+
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 
     <!-- Services -->
     <section class="bsb-service-7 py-5 py-xl-8">
