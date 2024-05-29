@@ -1,15 +1,18 @@
 #data-type {
     display: inline-block;
     width: 2em;
+    perspective: 1000px;
   }
   
   .data-text {
     display: inline-block;
     opacity: 1;
-    transition: opacity 0.5s;
-    color: #009DF7;
+    transition: opacity 0.5s, transform 0.5s;
+    color: #007DD3;
+    transform-style: preserve-3d;
   }
   
   .data-text.fade {
     opacity: 0;
+    transform: rotateX(180deg);
   }
