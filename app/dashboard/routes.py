@@ -127,7 +127,7 @@ def api_result():
             'doc_summaries': session['doc_summaries'],
             'csv_summary':session['csv_summary']['summary']
         }
-        print(result_data)
+        #print(result_data)
         return jsonify(result_data)
     else:
         return jsonify("No API response found.")
@@ -165,7 +165,7 @@ def stream():
                         yield f"data: {json.dumps({'chunk': {'complete': True, 'html_report': chunk['html_report']}})}\n\n"
 
                     else:
-                        print(chunk, end='|', flush=True)
+                        #print(chunk, end='|', flush=True)
                         yield f"data: {json.dumps({'chunk':chunk})}\n\n"
                 
                 print("Sending complete message")  # Log the complete message   
@@ -178,7 +178,7 @@ def stream():
 @dashboard_bp.route('/report')
 @login_required
 def report():
-    print(session['html_report'])
+    #print(session['html_report'])
     html_report = session['html_report']
     return html_report
 
@@ -188,8 +188,8 @@ def report_input():
     if request.method == 'POST':
         session['html_report']=request.json.get('html_report', 'No report')
         session['final_report']=request.json.get('final_report','No report')
-        print(session['html_report'])
-        print(f"FINAL REPORT IN MARKDOWN: {session['final_report']}")
+        #print(session['html_report'])
+        #print(f"FINAL REPORT IN MARKDOWN: {session['final_report']}")
         return 'OK'
     else:
         return 'Method Not Allowed', 405
@@ -199,3 +199,28 @@ def report_input():
 def report_edit():
     final_report = session.get('final_report', '')
     return render_template('report-edits.html', username = current_user.first_name, report = final_report)
+
+@dashboard_bp.route('/report/generate_report', methods=['GET', 'POST'])
+@login_required
+def report_new():
+    if request.method == 'POST':
+        final_report = request.json.get('report', 'No report')
+        url = f"{main_url}/api/v1/htmlreport/invoke/"
+        headers = {
+            'accept': 'application/json',
+            "X-API-KEY": api_key
+        }
+        response = requests.request("POST", url, headers=headers, json={"input": final_report})
+        if response.status_code == 200:
+            response_json = json.loads(response.text)
+            session['new_html_report'] = response_json['output']['content']
+            #print(session['new_html_report'])
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"status": "error", "message": "No API response found."})
+        
+@dashboard_bp.route('/new_report')
+@login_required
+def new_report():
+    new_html_report = session['new_html_report']
+    return new_html_report

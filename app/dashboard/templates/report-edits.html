@@ -106,23 +106,23 @@
                         </div>
                         
                         <!-- Modal -->
-                        <div class="modal fade" id="helloModal" tabindex="-1" aria-labelledby="helloModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="generateReportModal" tabindex="-1" aria-labelledby="generateReportModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h5 class="modal-title" id="helloModalLabel">Generating Report</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Generating final report...</p>
-                                    <div class="spinner-border text-primary" role="status">
-                                      <span class="visually-hidden">Loading...</span>
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="generateReportModalLabel">Generating Report</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Generating final report...</p>
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="viewReportButton" class="btn btn-primary button" onclick="openReport()" disabled> View Report </button>
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <a href="#!" class="btn btn-primary">View Report</a>
-                                </div>
-                            </div>
                             </div>
                         </div>
 
@@ -161,9 +161,52 @@
                             saveAs(blob, "report.md");
                         }
                         function openModal() {
-                            var modal = new bootstrap.Modal(document.getElementById('helloModal'));
+                            var modal = new bootstrap.Modal(document.getElementById('generateReportModal'));
                             modal.show();
+
+                            var reportContent = simplemde.value();
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => {
+                                controller.abort();
+                            }, 120000); // Set the timeout to 120 seconds (2 minutes)
+
+                            fetch("{{ url_for('dashboard.report_new') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ report: reportContent }),
+                                signal: controller.signal // Pass the signal to the fetch request
+                            })
+                            .then(response => {
+                                clearTimeout(timeoutId);
+                                if (response.ok) {
+                                    // If the response is successful, display a success message
+                                    document.querySelector('#generateReportModal .modal-body').innerHTML = `<p>Report successfully generated</p>`;
+                                    document.getElementById('viewReportButton').disabled = false;
+                                } else {
+                                    // If the response is not successful, display a failure message
+                                    document.querySelector('#generateReportModal .modal-body').innerHTML = `<p>Report not generated</p>`;
+                                }
+                            })
+                            .catch(() => {
+                                // Handle the error case, including timeouts
+                                document.querySelector('#generateReportModal .modal-body').innerHTML = '<p>An error occurred while generating the report.</p>';
+                            });
                         }
+                        function openReport() {
+                            window.open("{{ url_for('dashboard.new_report') }}", '_blank');
+                        }
+                        document.getElementById('generateReportModal').addEventListener('hidden.bs.modal', function () {
+                        // Reset the modal contents
+                        document.querySelector('#generateReportModal .modal-body').innerHTML = `
+                            <p>Generating final report...</p>
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        `;
+                        document.getElementById('viewReportButton').disabled = true;
+                        });
                     </script>
                   </div>
             </div>
