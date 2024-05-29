@@ -15,7 +15,7 @@ from app.dashboard import dashboard_bp
 from .utils import convert_csv_to_utf8
 
 main_url="https://reporting-tool-api.onrender.com"
-api_key = '12345'  # Replace with your actual API key
+api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
 
 @dashboard_bp.route('/', methods=['GET', 'POST'])
 @login_required
