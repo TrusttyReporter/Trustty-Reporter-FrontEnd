@@ -85,6 +85,7 @@
                                 result += '<div class="alert alert-success" role="alert"> Generating preliminary report... </div>';     
                                 result += '<h2> Preliminary Report: </h2>';
                                 result += '<div class="alert alert-light" role="alert">' + marked.parse(data.chunk.final_report) + '</div>';
+                                result += '<div class="alert alert-success" role="alert"> Generating final report... </div>';
                                 break;
                             case !!data.chunk.complete:
                                 var htmlReport = data.chunk.html_report;
@@ -105,6 +106,7 @@
                                 .catch(error => {
                                 console.error('Error:', error);
                                 });
+                                result += '<div class="alert alert-success" role="alert"> Final Report Complete </div>';
                                 result += '<br>';
                                 result += '<div class="text-end width-90">';
                                 result += '<button class="btn btn-primary button me-3" onclick="editReport()"> Edit Report </button>';
