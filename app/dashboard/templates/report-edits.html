@@ -169,7 +169,7 @@
                             const controller = new AbortController();
                             const timeoutId = setTimeout(() => {
                                 controller.abort();
-                            }, 120000); // Set the timeout to 120 seconds (2 minutes)
+                            }, 300000); // Set the timeout to 300 seconds (5 minutes)
 
                             fetch("{{ url_for('dashboard.report_new') }}", {
                                 method: 'POST',
