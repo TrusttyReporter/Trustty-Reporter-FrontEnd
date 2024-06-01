@@ -6,6 +6,7 @@ appConf = {
     "OAUTH2_META_URL": "https://accounts.google.com/.well-known/openid-configuration",
     "FLASK_SECRET": "bd40525b-319d-4f34-a046-705ad18d5009",
     "FLASK_PORT": 5000,
+    "PREFERRED_URL_SCHEME" : 'https',
     "SESSION_TYPE": 'redis',
     "SESSION_REDIS": redis.from_url('redis://red-cp6u63i0si5c73akiku0:6379')
     #"SESSION_REDIS": redis.from_url('redis://localhost:6379')
