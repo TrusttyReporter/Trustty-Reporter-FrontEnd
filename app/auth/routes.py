@@ -89,7 +89,7 @@ def restpassword():
 
 @auth_bp.route("/google-login")
 def googleLogin():
-    return oauth.myApp.authorize_redirect(redirect_uri=url_for("auth.googleCallback", _external=True))
+    return oauth.myApp.authorize_redirect(redirect_uri=url_for("auth.googleCallback", _external=True, _scheme='https'))
 
 @auth_bp.route("/signin-google")
 def googleCallback():
