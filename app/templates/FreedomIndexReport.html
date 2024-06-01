@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)https://www.trusttyreporter.com/dashboard/report -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report on the Freedom Index of France</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script async="" src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        table {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Report on the Freedom Index of France</h1>
+
+        <h2>Introduction</h2>
+        <p>Economic freedom is a crucial determinant of a country's prosperity and overall economic health. It encompasses various factors such as property rights, government integrity, judicial effectiveness, tax burden, government spending, fiscal health, business freedom, labor freedom, monetary freedom, trade freedom, investment freedom, and financial freedom. This report focuses on the economic freedom index of France for the year 2024, providing a detailed analysis of each economic indicator, comparisons with regional and global averages, highlighted trends, and a conclusion summarizing France's overall economic freedom and performance.</p>
+
+        <h2>Detailed Analysis of Each Economic Indicator</h2>
+        <h3>France's Economic Indicators in 2024</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Indicator</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Overall Score</td>
+                    <td>70.1</td>
+                </tr>
+                <tr>
+                    <td>Property Rights</td>
+                    <td>70.0</td>
+                </tr>
+                <tr>
+                    <td>Government Integrity</td>
+                    <td>70.0</td>
+                </tr>
+                <tr>
+                    <td>Judicial Effectiveness</td>
+                    <td>70.0</td>
+                </tr>
+                <tr>
+                    <td>Tax Burden</td>
+                    <td>48.7</td>
+                </tr>
+                <tr>
+                    <td>Government Spending</td>
+                    <td>56.4</td>
+                </tr>
+                <tr>
+                    <td>Fiscal Health</td>
+                    <td>33.3</td>
+                </tr>
+                <tr>
+                    <td>Business Freedom</td>
+                    <td>75.0</td>
+                </tr>
+                <tr>
+                    <td>Labor Freedom</td>
+                    <td>60.0</td>
+                </tr>
+                <tr>
+                    <td>Monetary Freedom</td>
+                    <td>70.0</td>
+                </tr>
+                <tr>
+                    <td>Trade Freedom</td>
+                    <td>80.0</td>
+                </tr>
+                <tr>
+                    <td>Investment Freedom</td>
+                    <td>75.0</td>
+                </tr>
+                <tr>
+                    <td>Financial Freedom</td>
+                    <td>75.0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="franceChart" width="2592" height="1296" style="display: block; box-sizing: border-box; height: 648px; width: 1296px;"></canvas>
+
+        <h2>Comparisons with Regional and Global Averages</h2>
+        <h3>Regional and Global Averages</h3>
+        <h4>Europe (Regional Average)</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Indicator</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Overall Score</td>
+                    <td>67.2</td>
+                </tr>
+                <tr>
+                    <td>Property Rights</td>
+                    <td>76.5</td>
+                </tr>
+                <tr>
+                    <td>Government Integrity</td>
+                    <td>61.6</td>
+                </tr>
+                <tr>
+                    <td>Judicial Effectiveness</td>
+                    <td>69.4</td>
+                </tr>
+                <tr>
+                    <td>Tax Burden</td>
+                    <td>73.7</td>
+                </tr>
+                <tr>
+                    <td>Government Spending</td>
+                    <td>41.4</td>
+                </tr>
+                <tr>
+                    <td>Fiscal Health</td>
+                    <td>60.0</td>
+                </tr>
+                <tr>
+                    <td>Business Freedom</td>
+                    <td>77.2</td>
+                </tr>
+                <tr>
+                    <td>Labor Freedom</td>
+                    <td>61.5</td>
+                </tr>
+                <tr>
+                    <td>Monetary Freedom</td>
+                    <td>69.4</td>
+                </tr>
+                <tr>
+                    <td>Trade Freedom</td>
+                    <td>78.7</td>
+                </tr>
+                <tr>
+                    <td>Investment Freedom</td>
+                    <td>73.8</td>
+                </tr>
+                <tr>
+                    <td>Financial Freedom</td>
+                    <td>63.2</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Global (Average across all countries)</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Indicator</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Overall Score</td>
+                    <td>58.6</td>
+                </tr>
+                <tr>
+                    <td>Property Rights</td>
+                    <td>54.6</td>
+                </tr>
+                <tr>
+                    <td>Government Integrity</td>
+                    <td>44.4</td>
+                </tr>
+                <tr>
+                    <td>Judicial Effectiveness</td>
+                    <td>49.8</td>
+                </tr>
+                <tr>
+                    <td>Tax Burden</td>
+                    <td>78.1</td>
+                </tr>
+                <tr>
+                    <td>Government Spending</td>
+                    <td>64.0</td>
+                </tr>
+                <tr>
+                    <td>Fiscal Health</td>
+                    <td>52.2</td>
+                </tr>
+                <tr>
+                    <td>Business Freedom</td>
+                    <td>62.2</td>
+                </tr>
+                <tr>
+                    <td>Labor Freedom</td>
+                    <td>56.1</td>
+                </tr>
+                <tr>
+                    <td>Monetary Freedom</td>
+                    <td>67.6</td>
+                </tr>
+                <tr>
+                    <td>Trade Freedom</td>
+                    <td>69.8</td>
+                </tr>
+                <tr>
+                    <td>Investment Freedom</td>
+                    <td>56.3</td>
+                </tr>
+                <tr>
+                    <td>Financial Freedom</td>
+                    <td>48.6</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="comparisonChart" width="2592" height="2592" style="display: block; box-sizing: border-box; height: 1296px; width: 1296px;"></canvas>
+
+        <h3>Comparison Insights</h3>
+        <ul>
+            <li><strong>France vs. Europe</strong>:
+                <ul>
+                    <li>France performs above the European regional average in Overall Score, Property Rights, Government Integrity, Judicial Effectiveness, Business Freedom, Trade Freedom, Investment Freedom, and Financial Freedom.</li>
+                    <li>France falls below the European regional average in Tax Burden, Government Spending, Fiscal Health, Labor Freedom, and Monetary Freedom.</li>
+                </ul>
+            </li>
+            <li><strong>France vs. Global</strong>:
+                <ul>
+                    <li>France surpasses the global average in most indicators, showcasing a higher level of economic freedom and performance compared to the global average.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>Highlighted Trends</h2>
+        <ol>
+            <li><strong>Strengths</strong>:
+                <ul>
+                    <li>France excels in Business Freedom, Trade Freedom, Investment Freedom, and Financial Freedom, indicating a favorable environment for businesses, trade, investments, and financial activities.</li>
+                    <li>The country's scores in Property Rights, Government Integrity, and Judicial Effectiveness are also commendable, reflecting a robust legal and institutional framework.</li>
+                </ul>
+            </li>
+            <li><strong>Areas for Improvement</strong>:
+                <ul>
+                    <li>France could focus on improving Tax Burden, Government Spending efficiency, Fiscal Health management, Labor market flexibility, and Monetary policies to align more closely with regional and global standards.</li>
+                </ul>
+            </li>
+            <li><strong>Overall Performance</strong>:
+                <ul>
+                    <li>France demonstrates a solid economic performance in 2024, with strengths in key areas of economic freedom. However, there are specific indicators where improvements could enhance the overall economic freedom index.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>Conclusion</h2>
+        <p>In conclusion, France's economic freedom index in 2024 reflects a strong performance in several key areas, particularly in Business Freedom, Trade Freedom, Investment Freedom, and Financial Freedom. The country also shows robust scores in Property Rights, Government Integrity, and Judicial Effectiveness. However, there are areas such as Tax Burden, Government Spending, Fiscal Health, Labor Freedom, and Monetary Freedom where France lags behind the regional and global averages. By addressing these areas, France can further enhance its economic freedom and maintain a competitive position in the global economic landscape. Recommendations for improvement include enhancing tax policies, improving government spending efficiency, managing fiscal health, increasing labor market flexibility, and refining monetary policies.</p>
+    </div>
+
+    <script>
+        // France's Economic Indicators Chart
+        var franceCtx = document.getElementById('franceChart').getContext('2d');
+        var franceChart = new Chart(franceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Overall Score', 'Property Rights', 'Government Integrity', 'Judicial Effectiveness', 'Tax Burden', 'Government Spending', 'Fiscal Health', 'Business Freedom', 'Labor Freedom', 'Monetary Freedom', 'Trade Freedom', 'Investment Freedom', 'Financial Freedom'],
+                datasets: [{
+                    label: 'Score',
+                    data: [70.1, 70.0, 70.0, 70.0, 48.7, 56.4, 33.3, 75.0, 60.0, 70.0, 80.0, 75.0, 75.0],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Comparison Chart
+        var comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+        var comparisonChart = new Chart(comparisonCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Overall Score', 'Property Rights', 'Government Integrity', 'Judicial Effectiveness', 'Tax Burden', 'Government Spending', 'Fiscal Health', 'Business Freedom', 'Labor Freedom', 'Monetary Freedom', 'Trade Freedom', 'Investment Freedom', 'Financial Freedom'],
+                datasets: [
+                    {
+                        label: 'France',
+                        data: [70.1, 70.0, 70.0, 70.0, 48.7, 56.4, 33.3, 75.0, 60.0, 70.0, 80.0, 75.0, 75.0],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Europe',
+                        data: [67.2, 76.5, 61.6, 69.4, 73.7, 41.4, 60.0, 77.2, 61.5, 69.4, 78.7, 73.8, 63.2],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Global',
+                        data: [58.6, 54.6, 44.4, 49.8, 78.1, 64.0, 52.2, 62.2, 56.1, 67.6, 69.8, 56.3, 48.6],
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    </script>
+
+</body></html>

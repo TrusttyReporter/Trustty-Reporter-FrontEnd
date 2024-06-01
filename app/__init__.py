@@ -42,6 +42,18 @@ def create_app():
         if current_user.is_authenticated:
             return redirect(url_for("dashboard.index"))
         return render_template('landing.html')
+    
+    @app.route('/example/sales-report')
+    def salesReport():
+        return render_template('SalesReport.html')
+    
+    @app.route('/example/freedom-index-report')
+    def freedomIndexReport():
+        return render_template('FreedomIndexReport.html')
+    
+    @app.route('/example/google-play-store-report')
+    def googlePlayStoreReport():
+        return render_template('GooglePlayStoreReport.html')
 
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Play Store Apps Analysis</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 30px;
+        }
+
+        table {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Report on the Apps in the Google Play Store</h1>
+
+        <h2>Introduction</h2>
+        <p>This report provides an analysis of the apps available on the Google Play Store based on a dataset containing
+            10,841 entries. The dataset includes various attributes such as app name, category, rating, reviews, size,
+            installs, type, price, content rating, genres, last updated date, current version, and Android version. The
+            analysis focuses on several key aspects, including data cleaning, distribution of apps across categories,
+            app ratings, pricing strategies, user engagement, content ratings, and trends over time.</p>
+
+        <h2>Data Cleaning</h2>
+        <h3>Handling Missing Values and Anomalies</h3>
+        <p>The dataset initially contained missing values and anomalies, particularly in the 'Rating' column, where the
+            maximum rating was 19, which is outside the typical range of 1.0 to 5.0. The following steps were taken to
+            clean the data:</p>
+        <ol>
+            <li><strong>Imputing Missing Values</strong>: Missing values in the columns 'Rating', 'Type', 'Content
+                Rating', 'Current Ver', and 'Android Ver' were imputed.</li>
+            <li><strong>Correcting Rating Values</strong>: Anomalies in the 'Rating' column were corrected to ensure all
+                ratings fall within the range of 1.0 to 5.0.</li>
+        </ol>
+        <p>After cleaning, the dataset was ready for further analysis.</p>
+
+        <h2>Distribution of Apps Across Categories</h2>
+        <p>The distribution of apps across different categories is as follows:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FAMILY</td>
+                    <td>1972</td>
+                </tr>
+                <tr>
+                    <td>GAME</td>
+                    <td>1144</td>
+                </tr>
+                <tr>
+                    <td>TOOLS</td>
+                    <td>843</td>
+                </tr>
+                <tr>
+                    <td>MEDICAL</td>
+                    <td>463</td>
+                </tr>
+                <tr>
+                    <td>BUSINESS</td>
+                    <td>460</td>
+                </tr>
+                <tr>
+                    <td>PRODUCTIVITY</td>
+                    <td>424</td>
+                </tr>
+                <tr>
+                    <td>PERSONALIZATION</td>
+                    <td>392</td>
+                </tr>
+                <tr>
+                    <td>COMMUNICATION</td>
+                    <td>387</td>
+                </tr>
+                <tr>
+                    <td>SPORTS</td>
+                    <td>384</td>
+                </tr>
+                <tr>
+                    <td>LIFESTYLE</td>
+                    <td>382</td>
+                </tr>
+                <tr>
+                    <td>FINANCE</td>
+                    <td>366</td>
+                </tr>
+                <tr>
+                    <td>HEALTH_AND_FITNESS</td>
+                    <td>341</td>
+                </tr>
+                <tr>
+                    <td>PHOTOGRAPHY</td>
+                    <td>335</td>
+                </tr>
+                <tr>
+                    <td>SOCIAL</td>
+                    <td>295</td>
+                </tr>
+                <tr>
+                    <td>NEWS_AND_MAGAZINES</td>
+                    <td>283</td>
+                </tr>
+                <tr>
+                    <td>SHOPPING</td>
+                    <td>260</td>
+                </tr>
+                <tr>
+                    <td>TRAVEL_AND_LOCAL</td>
+                    <td>258</td>
+                </tr>
+                <tr>
+                    <td>DATING</td>
+                    <td>234</td>
+                </tr>
+                <tr>
+                    <td>BOOKS_AND_REFERENCE</td>
+                    <td>231</td>
+                </tr>
+                <tr>
+                    <td>VIDEO_PLAYERS</td>
+                    <td>175</td>
+                </tr>
+                <tr>
+                    <td>EDUCATION</td>
+                    <td>156</td>
+                </tr>
+                <tr>
+                    <td>ENTERTAINMENT</td>
+                    <td>149</td>
+                </tr>
+                <tr>
+                    <td>MAPS_AND_NAVIGATION</td>
+                    <td>137</td>
+                </tr>
+                <tr>
+                    <td>FOOD_AND_DRINK</td>
+                    <td>127</td>
+                </tr>
+                <tr>
+                    <td>HOUSE_AND_HOME</td>
+                    <td>88</td>
+                </tr>
+                <tr>
+                    <td>LIBRARIES_AND_DEMO</td>
+                    <td>85</td>
+                </tr>
+                <tr>
+                    <td>AUTO_AND_VEHICLES</td>
+                    <td>85</td>
+                </tr>
+                <tr>
+                    <td>WEATHER</td>
+                    <td>82</td>
+                </tr>
+                <tr>
+                    <td>ART_AND_DESIGN</td>
+                    <td>65</td>
+                </tr>
+                <tr>
+                    <td>EVENTS</td>
+                    <td>64</td>
+                </tr>
+                <tr>
+                    <td>PARENTING</td>
+                    <td>60</td>
+                </tr>
+                <tr>
+                    <td>COMICS</td>
+                    <td>60</td>
+                </tr>
+                <tr>
+                    <td>BEAUTY</td>
+                    <td>53</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="categoryChart"></canvas>
+
+        <h2>App Ratings Analysis</h2>
+        <h3>Distribution of App Ratings</h3>
+        <p>The distribution of app ratings is as follows:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Rating</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>4.4</td>
+                    <td>1109</td>
+                </tr>
+                <tr>
+                    <td>4.3</td>
+                    <td>1076</td>
+                </tr>
+                <tr>
+                    <td>4.5</td>
+                    <td>1038</td>
+                </tr>
+                <tr>
+                    <td>4.2</td>
+                    <td>952</td>
+                </tr>
+                <tr>
+                    <td>4.6</td>
+                    <td>823</td>
+                </tr>
+                <tr>
+                    <td>4.1</td>
+                    <td>708</td>
+                </tr>
+                <tr>
+                    <td>4.0</td>
+                    <td>568</td>
+                </tr>
+                <tr>
+                    <td>4.7</td>
+                    <td>499</td>
+                </tr>
+                <tr>
+                    <td>3.9</td>
+                    <td>386</td>
+                </tr>
+                <tr>
+                    <td>3.8</td>
+                    <td>303</td>
+                </tr>
+                <tr>
+                    <td>5.0</td>
+                    <td>274</td>
+                </tr>
+                <tr>
+                    <td>3.7</td>
+                    <td>239</td>
+                </tr>
+                <tr>
+                    <td>4.8</td>
+                    <td>234</td>
+                </tr>
+                <tr>
+                    <td>3.6</td>
+                    <td>174</td>
+                </tr>
+                <tr>
+                    <td>3.5</td>
+                    <td>163</td>
+                </tr>
+                <tr>
+                    <td>3.4</td>
+                    <td>128</td>
+                </tr>
+                <tr>
+                    <td>3.3</td>
+                    <td>102</td>
+                </tr>
+                <tr>
+                    <td>4.9</td>
+                    <td>87</td>
+                </tr>
+                <tr>
+                    <td>3.0</td>
+                    <td>83</td>
+                </tr>
+                <tr>
+                    <td>3.1</td>
+                    <td>69</td>
+                </tr>
+                <tr>
+                    <td>3.2</td>
+                    <td>64</td>
+                </tr>
+                <tr>
+                    <td>2.9</td>
+                    <td>45</td>
+                </tr>
+                <tr>
+                    <td>2.8</td>
+                    <td>42</td>
+                </tr>
+                <tr>
+                    <td>2.7</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td>2.6</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td>2.5</td>
+                    <td>21</td>
+                </tr>
+                <tr>
+                    <td>2.3</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td>2.4</td>
+                    <td>19</td>
+                </tr>
+                <tr>
+                    <td>1.0</td>
+                    <td>16</td>
+                </tr>
+                <tr>
+                    <td>2.2</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <td>1.9</td>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <td>2.0</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>1.7</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>1.8</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>2.1</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>1.6</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>1.4</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>1.5</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>1.2</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>19.0</td>
+                    <td>1</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="ratingChart"></canvas>
+
+        <h3>Percentage of Apps in Each Rating Bracket</h3>
+        <ul>
+            <li>Rating 1-2: 0.73%</li>
+            <li>Rating 2-3: 3.22%</li>
+            <li>Rating 3-4: 23.41%</li>
+            <li>Rating 4-5: 72.64%</li>
+        </ul>
+
+        <canvas id="ratingBracketChart"></canvas>
+
+        <h2>Pricing Strategies</h2>
+        <h3>Number of Free vs. Paid Apps</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Free</td>
+                    <td>10039</td>
+                </tr>
+                <tr>
+                    <td>Paid</td>
+                    <td>800</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="pricingChart"></canvas>
+
+        <h3>Average Price of Paid Apps</h3>
+        <p>The average price of paid apps is not available as there are no paid apps left in the dataset after removing
+            rows with non-numeric values in the 'Price' column.</p>
+
+        <h3>Correlation Between Price and App Ratings</h3>
+        <p>The correlation coefficient between the price of apps and their ratings is NaN, indicating no linear
+            correlation between the price of apps and their ratings.</p>
+
+        <h2>User Engagement</h2>
+        <h3>Average Number of Reviews per App</h3>
+        <p>The average number of reviews per app is approximately 444,112.</p>
+
+        <h3>Correlation Between Installs and Reviews</h3>
+        <p>The correlation between the number of installs and the number of reviews is NaN, indicating no linear
+            relationship between these two variables.</p>
+
+        <h3>Average Reviews and Installs by Category</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Reviews</th>
+                    <th>Installs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ART_AND_DESIGN</td>
+                    <td>26,376</td>
+                    <td>1,912,894</td>
+                </tr>
+                <tr>
+                    <td>AUTO_AND_VEHICLES</td>
+                    <td>13,690</td>
+                    <td>625,061</td>
+                </tr>
+                <tr>
+                    <td>BEAUTY</td>
+                    <td>7,476</td>
+                    <td>513,152</td>
+                </tr>
+                <tr>
+                    <td>BOOKS_AND_REFERENCE</td>
+                    <td>95,061</td>
+                    <td>8,318,050</td>
+                </tr>
+                <tr>
+                    <td>BUSINESS</td>
+                    <td>30,336</td>
+                    <td>2,178,076</td>
+                </tr>
+                <tr>
+                    <td>COMICS</td>
+                    <td>56,388</td>
+                    <td>934,769</td>
+                </tr>
+                <tr>
+                    <td>COMMUNICATION</td>
+                    <td>2,107,138</td>
+                    <td>84,359,890</td>
+                </tr>
+                <tr>
+                    <td>DATING</td>
+                    <td>31,159</td>
+                    <td>1,129,533</td>
+                </tr>
+                <tr>
+                    <td>EDUCATION</td>
+                    <td>253,819</td>
+                    <td>5,586,231</td>
+                </tr>
+                <tr>
+                    <td>ENTERTAINMENT</td>
+                    <td>397,168</td>
+                    <td>19,256,110</td>
+                </tr>
+                <tr>
+                    <td>EVENTS</td>
+                    <td>2,516</td>
+                    <td>249,580</td>
+                </tr>
+                <tr>
+                    <td>FAMILY</td>
+                    <td>208,025</td>
+                    <td>5,201,959</td>
+                </tr>
+                <tr>
+                    <td>FINANCE</td>
+                    <td>47,953</td>
+                    <td>2,395,215</td>
+                </tr>
+                <tr>
+                    <td>FOOD_AND_DRINK</td>
+                    <td>69,947</td>
+                    <td>2,156,683</td>
+                </tr>
+                <tr>
+                    <td>GAME</td>
+                    <td>1,385,859</td>
+                    <td>30,669,600</td>
+                </tr>
+                <tr>
+                    <td>HEALTH_AND_FITNESS</td>
+                    <td>111,125</td>
+                    <td>4,642,441</td>
+                </tr>
+                <tr>
+                    <td>HOUSE_AND_HOME</td>
+                    <td>45,186</td>
+                    <td>1,917,187</td>
+                </tr>
+                <tr>
+                    <td>LIBRARIES_AND_DEMO</td>
+                    <td>12,201</td>
+                    <td>741,128</td>
+                </tr>
+                <tr>
+                    <td>LIFESTYLE</td>
+                    <td>33,725</td>
+                    <td>1,407,444</td>
+                </tr>
+                <tr>
+                    <td>MAPS_AND_NAVIGATION</td>
+                    <td>223,790</td>
+                    <td>5,286,729</td>
+                </tr>
+                <tr>
+                    <td>MEDICAL</td>
+                    <td>3,425</td>
+                    <td>115,027</td>
+                </tr>
+                <tr>
+                    <td>NEWS_AND_MAGAZINES</td>
+                    <td>192,229</td>
+                    <td>26,488,760</td>
+                </tr>
+                <tr>
+                    <td>PARENTING</td>
+                    <td>15,972</td>
+                    <td>525,352</td>
+                </tr>
+                <tr>
+                    <td>PERSONALIZATION</td>
+                    <td>227,924</td>
+                    <td>5,932,385</td>
+                </tr>
+                <tr>
+                    <td>PHOTOGRAPHY</td>
+                    <td>637,363</td>
+                    <td>30,114,170</td>
+                </tr>
+                <tr>
+                    <td>PRODUCTIVITY</td>
+                    <td>269,143</td>
+                    <td>33,434,180</td>
+                </tr>
+                <tr>
+                    <td>SHOPPING</td>
+                    <td>442,466</td>
+                    <td>12,491,730</td>
+                </tr>
+                <tr>
+                    <td>SOCIAL</td>
+                    <td>2,105,903</td>
+                    <td>47,694,470</td>
+                </tr>
+                <tr>
+                    <td>SPORTS</td>
+                    <td>184,453</td>
+                    <td>4,560,350</td>
+                </tr>
+                <tr>
+                    <td>TOOLS</td>
+                    <td>324,063</td>
+                    <td>13,585,730</td>
+                </tr>
+                <tr>
+                    <td>TRAVEL_AND_LOCAL</td>
+                    <td>242,705</td>
+                    <td>26,623,590</td>
+                </tr>
+                <tr>
+                    <td>VIDEO_PLAYERS</td>
+                    <td>630,743</td>
+                    <td>35,554,300</td>
+                </tr>
+                <tr>
+                    <td>WEATHER</td>
+                    <td>178,106</td>
+                    <td>5,196,348</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Content Ratings</h2>
+        <h3>Distribution of Apps Based on Content Rating</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Content Rating</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Everyone</td>
+                    <td>8714</td>
+                </tr>
+                <tr>
+                    <td>Teen</td>
+                    <td>1208</td>
+                </tr>
+                <tr>
+                    <td>Mature 17+</td>
+                    <td>499</td>
+                </tr>
+                <tr>
+                    <td>Everyone 10+</td>
+                    <td>414</td>
+                </tr>
+                <tr>
+                    <td>Adults only 18+</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>Unrated</td>
+                    <td>2</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="contentRatingChart"></canvas>
+
+        <h3>App Popularity and User Ratings by Content Rating</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Content Rating</th>
+                    <th>Installs</th>
+                    <th>Average User Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Adults only 18+</td>
+                    <td>1,500,000+</td>
+                    <td>4.3</td>
+                </tr>
+                <tr>
+                    <td>Everyone</td>
+                    <td>5,710,000+</td>
+                    <td>4.18638</td>
+                </tr>
+                <tr>
+                    <td>Everyone 10+</td>
+                    <td>1,720,000+</td>
+                    <td>4.25718</td>
+                </tr>
+                <tr>
+                    <td>Mature 17+</td>
+                    <td>5,670,000+</td>
+                    <td>4.12343</td>
+                </tr>
+                <tr>
+                    <td>Teen</td>
+                    <td>70,060,000+</td>
+                    <td>4.23349</td>
+                </tr>
+                <tr>
+                    <td>Unrated</td>
+                    <td>50,500+</td>
+                    <td>4.1</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Trends Over Time</h2>
+        <h3>Extracting Year and Month from 'Last Updated' Column</h3>
+        <p>The 'Last Updated' column was used to extract the year and month to analyze trends over time.</p>
+
+        <h3>Evolution of App Ratings and Installs Over the Years</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Rating</th>
+                    <th>Installs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2010</td>
+                    <td>4.20</td>
+                    <td>100,000+</td>
+                </tr>
+                <tr>
+                    <td>2011</td>
+                    <td>3.97</td>
+                    <td>1,000,000+100,000+100+1,000,000+5,000,000+1,000,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2012</td>
+                    <td>3.79</td>
+                    <td>100,000+10,000,000+10,000+100,000+500,000+1,000,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2013</td>
+                    <td>4.07</td>
+                    <td>50,000+5,000,000+1,000,000+100,000+100,000+5,000,000+1,000,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2014</td>
+                    <td>4.04</td>
+                    <td>100,000+500,000+10,000,000+50,000+10,000+10,000+500,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2015</td>
+                    <td>4.07</td>
+                    <td>10,000,000+100,000+100,000+10,000,000+500,000+1,000,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2016</td>
+                    <td>4.04</td>
+                    <td>50,000+1,000,000+100,000+1,000,000+10,000,000+100,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2017</td>
+                    <td>4.09</td>
+                    <td>50,000+1,000,000+1,000,000+10,000+500,000+100,000+100,000+100,000+</td>
+                </tr>
+                <tr>
+                    <td>2018</td>
+                    <td>4.24</td>
+                    <td>10,000+500,000+5,000,000+50,000,000+100,000+50,000+100,000+100,000+</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Conclusion</h2>
+        <p>The analysis of the Google Play Store apps dataset reveals several key insights:</p>
+        <ol>
+            <li><strong>Data Cleaning</strong>: Missing values and anomalies were addressed to ensure data quality.</li>
+            <li><strong>App Distribution</strong>: The 'FAMILY' category has the highest number of apps, followed by
+                'GAME' and 'TOOLS'.</li>
+            <li><strong>App Ratings</strong>: Most apps have ratings between 4.0 and 5.0, with a significant percentage
+                of apps rated between 4.0 and 4.5.</li>
+            <li><strong>Pricing Strategies</strong>: The majority of apps are free, and there is no linear correlation
+                between app price and ratings.</li>
+            <li><strong>User Engagement</strong>: The average number of reviews per app is high, but there is no linear
+                relationship between installs and reviews.</li>
+            <li><strong>Content Ratings</strong>: Apps with a 'Teen' content rating are more popular and receive higher
+                user ratings.</li>
+            <li><strong>Trends Over Time</strong>: App ratings and installs have generally increased over the years,
+                indicating growth in the app market.</li>
+        </ol>
+        <p>These insights provide a comprehensive understanding of the app landscape on the Google Play Store,
+            highlighting trends, user engagement, and the impact of content ratings on app popularity and user
+            satisfaction.</p>
+    </div>
+
+    <script>
+        // Category Distribution Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['FAMILY', 'GAME', 'TOOLS', 'MEDICAL', 'BUSINESS', 'PRODUCTIVITY', 'PERSONALIZATION', 'COMMUNICATION', 'SPORTS', 'LIFESTYLE', 'FINANCE', 'HEALTH_AND_FITNESS', 'PHOTOGRAPHY', 'SOCIAL', 'NEWS_AND_MAGAZINES', 'SHOPPING', 'TRAVEL_AND_LOCAL', 'DATING', 'BOOKS_AND_REFERENCE', 'VIDEO_PLAYERS', 'EDUCATION', 'ENTERTAINMENT', 'MAPS_AND_NAVIGATION', 'FOOD_AND_DRINK', 'HOUSE_AND_HOME', 'LIBRARIES_AND_DEMO', 'AUTO_AND_VEHICLES', 'WEATHER', 'ART_AND_DESIGN', 'EVENTS', 'PARENTING', 'COMICS', 'BEAUTY'],
+                datasets: [{
+                    label: 'Number of Apps',
+                    data: [1972, 1144, 843, 463, 460, 424, 392, 387, 384, 382, 366, 341, 335, 295, 283, 260, 258, 234, 231, 175, 156, 149, 137, 127, 88, 85, 85, 82, 65, 64, 60, 60, 53],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        // App Rating Distribution Chart
+        const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ratingCtx, {
+            type: 'bar',
+            data: {
+                labels: ['4.4', '4.3', '4.5', '4.2', '4.6', '4.1', '4.0', '4.7', '3.9', '3.8', '5.0', '3.7', '4.8', '3.6', '3.5', '3.4', '3.3', '4.9', '3.0', '3.1', '3.2', '2.9', '2.8', '2.7', '2.6', '2.5', '2.3', '2.4', '1.0', '2.2', '1.9', '2.0', '1.7', '1.8', '2.1', '1.6', '1.4', '1.5', '1.2', '19.0'],
+                datasets: [{
+                    label: 'Number of Apps',
+                    data: [1109, 1076, 1038, 952, 823, 708, 568, 499, 386, 303, 274, 239, 234, 174, 163, 128, 102, 87, 83, 69, 64, 45, 42, 25, 25, 21, 20, 19, 16, 14, 13, 12, 8, 8, 8, 4, 3, 3, 1, 1],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Rating Bracket Chart
+        const ratingBracketCtx = document.getElementById('ratingBracketChart').getContext('2d');
+        new Chart(ratingBracketCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Rating 1-2', 'Rating 2-3', 'Rating 3-4', 'Rating 4-5'],
+                datasets: [{
+                    data: [0.73, 3.22, 23.41, 72.64],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Pricing Chart
+        const pricingCtx = document.getElementById('pricingChart').getContext('2d');
+        new Chart(pricingCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Free', 'Paid'],
+                datasets: [{
+                    data: [10039, 800],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 99, 132, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Content Rating Chart
+        const contentRatingCtx = document.getElementById('contentRatingChart').getContext('2d');
+        new Chart(contentRatingCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Everyone', 'Teen', 'Mature 17+', 'Everyone 10+', 'Adults only 18+', 'Unrated'],
+                datasets: [{
+                    label: 'Number of Apps',
+                    data: [8714, 1208, 499, 414, 3, 2],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

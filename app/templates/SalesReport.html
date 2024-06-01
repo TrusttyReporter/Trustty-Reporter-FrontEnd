@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Sales Report</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        table {
+            margin-bottom: 30px;
+        }
+        canvas {
+            max-width: 100%;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comprehensive Sales Report</h1>
+
+        <h2>Introduction</h2>
+        <p>This report provides a comprehensive analysis of the sales dataset, focusing on key findings such as top-performing product lines, key customer insights, geographic sales distribution, common deal sizes, and notable trends in sales over time. The analysis is based on the dataset provided, which includes various columns such as ORDERNUMBER, SALES, ORDERDATE, PRODUCTLINE, CUSTOMERNAME, COUNTRY, STATE, and DEALSIZE.</p>
+
+        <h2>Top-Performing Product Lines</h2>
+        <p>To identify the top-performing product lines, we calculated the total sales for each product line. The table below summarizes the total sales for each product line:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product Line</th>
+                    <th>Total Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Classic Cars</td>
+                    <td>$3,919,615.66</td>
+                </tr>
+                <tr>
+                    <td>Vintage Cars</td>
+                    <td>$1,903,150.84</td>
+                </tr>
+                <tr>
+                    <td>Motorcycles</td>
+                    <td>$1,166,388.34</td>
+                </tr>
+                <tr>
+                    <td>Trucks and Buses</td>
+                    <td>$1,127,789.84</td>
+                </tr>
+                <tr>
+                    <td>Planes</td>
+                    <td>$975,003.57</td>
+                </tr>
+                <tr>
+                    <td>Ships</td>
+                    <td>$714,437.13</td>
+                </tr>
+                <tr>
+                    <td>Trains</td>
+                    <td>$226,243.47</td>
+                </tr>
+            </tbody>
+        </table>
+        <canvas id="productLineChart"></canvas>
+
+        <h2>Key Customer Insights</h2>
+        <p>To gain key customer insights, we analyzed the customer names, territories, and deal sizes. The table below provides a snapshot of some key customers:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Territory</th>
+                    <th>Deal Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Land of Toys Inc.</td>
+                    <td>USA</td>
+                    <td>Small</td>
+                </tr>
+                <tr>
+                    <td>Reims Collectables</td>
+                    <td>EMEA</td>
+                    <td>Small</td>
+                </tr>
+                <tr>
+                    <td>Lyon Souveniers</td>
+                    <td>EMEA</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>Toys4GrownUps.com</td>
+                    <td>USA</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>Corporate Gift Ideas Co.</td>
+                    <td>USA</td>
+                    <td>Medium</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Geographic Sales Distribution</h2>
+        <p>To analyze the geographic sales distribution, we looked at the countries and states where sales were made. The table below summarizes the total sales for each country and state:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>Total Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>USA</td>
+                    <td>CA</td>
+                    <td>$1,505,542.23</td>
+                </tr>
+                <tr>
+                    <td>USA</td>
+                    <td>MA</td>
+                    <td>$666,443.72</td>
+                </tr>
+                <tr>
+                    <td>USA</td>
+                    <td>NY</td>
+                    <td>$646,343.76</td>
+                </tr>
+                <tr>
+                    <td>Australia</td>
+                    <td>NSW</td>
+                    <td>$305,567.11</td>
+                </tr>
+                <tr>
+                    <td>Australia</td>
+                    <td>Victoria</td>
+                    <td>$265,586.87</td>
+                </tr>
+                <tr>
+                    <td>Canada</td>
+                    <td>BC</td>
+                    <td>$149,873.77</td>
+                </tr>
+                <tr>
+                    <td>Japan</td>
+                    <td>Tokyo</td>
+                    <td>$120,562.74</td>
+                </tr>
+                <tr>
+                    <td>UK</td>
+                    <td>Isle of Wight</td>
+                    <td>$78,240.84</td>
+                </tr>
+            </tbody>
+        </table>
+        <canvas id="geographicSalesChart"></canvas>
+
+        <h2>Common Deal Sizes</h2>
+        <p>To identify common deal sizes, we analyzed the frequency of each deal size. The table below categorizes the number of orders by deal size:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Deal Size</th>
+                    <th>Number of Orders</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Medium</td>
+                    <td>1,384</td>
+                </tr>
+                <tr>
+                    <td>Small</td>
+                    <td>1,282</td>
+                </tr>
+                <tr>
+                    <td>Large</td>
+                    <td>157</td>
+                </tr>
+            </tbody>
+        </table>
+        <canvas id="dealSizeChart"></canvas>
+
+        <h2>Notable Trends in Sales Over Time</h2>
+        <p>To analyze notable trends in sales over time, we looked at the sales trends across different years and months. The table below shows the monthly sales data over the available years:</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Month</th>
+                    <th>Total Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2003</td>
+                    <td>1</td>
+                    <td>$99,323.96</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>2</td>
+                    <td>$81,965.08</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>3</td>
+                    <td>$91,861.06</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>4</td>
+                    <td>$136,903.47</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>5</td>
+                    <td>$121,219.31</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>6</td>
+                    <td>$49,796.04</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>7</td>
+                    <td>$70,429.09</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>8</td>
+                    <td>$57,413.32</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>9</td>
+                    <td>$140,089.05</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>10</td>
+                    <td>$328,024.99</td>
+                </tr>
+                <tr>
+                    <td>2003</td>
+                    <td>11</td>
+                    <td>$544,069.31</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>1</td>
+                    <td>$187,660.59</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>2</td>
+                    <td>$226,537.57</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>3</td>
+                    <td>$88,225.99</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>4</td>
+                    <td>$93,611.08</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>5</td>
+                    <td>$55,918.28</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>6</td>
+                    <td>$226,099.62</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>7</td>
+                    <td>$235,135.44</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>8</td>
+                    <td>$349,427.91</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>9</td>
+                    <td>$102,017.92</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>10</td>
+                    <td>$490,628.47</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>11</td>
+                    <td>$607,927.53</td>
+                </tr>
+                <tr>
+                    <td>2004</td>
+                    <td>12</td>
+                    <td>$68,119.57</td>
+                </tr>
+                <tr>
+                    <td>2005</td>
+                    <td>1</td>
+                    <td>$200,400.10</td>
+                </tr>
+                <tr>
+                    <td>2005</td>
+                    <td>2</td>
+                    <td>$194,653.26</td>
+                </tr>
+                <tr>
+                    <td>2005</td>
+                    <td>3</td>
+                    <td>$142,038.37</td>
+                </tr>
+                <tr>
+                    <td>2005</td>
+                    <td>4</td>
+                    <td>$122,717.84</td>
+                </tr>
+                <tr>
+                    <td>2005</td>
+                    <td>5</td>
+                    <td>$236,026.96</td>
+                </tr>
+            </tbody>
+        </table>
+        <canvas id="salesTrendChart"></canvas>
+
+        <h2>Conclusion</h2>
+        <p>This comprehensive analysis of the sales dataset provides valuable insights into the performance of product lines, customer preferences, geographic sales distribution, common deal sizes, and trends in sales over time. These insights can help in making strategic business decisions and identifying areas for improvement.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Product Line Chart
+        const productLineCtx = document.getElementById('productLineChart').getContext('2d');
+        new Chart(productLineCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Classic Cars', 'Vintage Cars', 'Motorcycles', 'Trucks and Buses', 'Planes', 'Ships', 'Trains'],
+                datasets: [{
+                    label: 'Total Sales',
+                    data: [3919615.66, 1903150.84, 1166388.34, 1127789.84, 975003.57, 714437.13, 226243.47],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Geographic Sales Chart
+        const geographicSalesCtx = document.getElementById('geographicSalesChart').getContext('2d');
+        new Chart(geographicSalesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['USA', 'Australia', 'Canada', 'Japan', 'UK'],
+                datasets: [{
+                    data: [2818329.71, 571153.98, 149873.77, 120562.74, 78240.84],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+      // Deal Size Chart
+      const dealSizeCtx = document.getElementById('dealSizeChart').getContext('2d');
+      new Chart(dealSizeCtx, {
+          type: 'doughnut',
+          data: {
+              labels: ['Medium', 'Small', 'Large'],
+              datasets: [{
+                  data: [1384, 1282, 157],
+                  backgroundColor: [
+                      'rgba(255, 99, 132, 0.6)',
+                      'rgba(54, 162, 235, 0.6)',
+                      'rgba(255, 206, 86, 0.6)'
+                  ],
+                  borderColor: [
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          }
+      });
+
+        // Sales Trend Chart
+        const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
+        new Chart(salesTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan 2003', 'Feb 2003', 'Mar 2003', 'Apr 2003', 'May 2003', 'Jun 2003', 'Jul 2003', 'Aug 2003', 'Sep 2003', 'Oct 2003', 'Nov 2003', 'Jan 2004', 'Feb 2004', 'Mar 2004', 'Apr 2004', 'May 2004', 'Jun 2004', 'Jul 2004', 'Aug 2004', 'Sep 2004', 'Oct 2004', 'Nov 2004', 'Dec 2004', 'Jan 2005', 'Feb 2005', 'Mar 2005', 'Apr 2005', 'May 2005'],
+                datasets: [{
+                    label: 'Total Sales',
+                    data: [99323.96, 81965.08, 91861.06, 136903.47, 121219.31, 49796.04, 70429.09, 57413.32, 140089.05, 328024.99, 544069.31, 187660.59, 226537.57, 88225.99, 93611.08, 55918.28, 226099.62, 235135.44, 349427.91, 102017.92, 490628.47, 607927.53, 68119.57, 200400.10, 194653.26, 142038.37, 122717.84, 236026.96],
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }]
+            }
+        });
+    </script>
+</body>
+</html>
