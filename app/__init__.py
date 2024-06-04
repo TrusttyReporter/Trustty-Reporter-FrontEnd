@@ -65,7 +65,14 @@ def create_app():
     @app.route('/example/google-play-store-report')
     def googlePlayStoreReport():
         return render_template('GooglePlayStoreReport.html')
-
+    
+    @app.errorhandler(Exception)
+    def handle_error(error):
+        if hasattr(error, 'code'):
+            error_code = error.code
+        else:
+            error_code = 500
+        return render_template('error.html', error_code=error_code), error_code
 
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp

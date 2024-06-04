@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="icon" type="image/png" href="{{url_for('static',filename='images/favicon-196x196.png')}}" sizes="32x32" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/error.css') }}">
+</head>
+<body>
+    <div class="container">
+      <h1>{{ error_code }}</h1>
+      <p>Oops! Something is wrong.</p>
+      <a class="button" href="{{url_for('home')}}"><i class="icon-home"></i> Go back to the initial page, it's better.</a>
+    </div>
+  </body>
+  </html>
