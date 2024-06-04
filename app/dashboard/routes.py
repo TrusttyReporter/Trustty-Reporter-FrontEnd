@@ -5,6 +5,8 @@ import chardet
 import json
 import asyncio
 import time
+import openpyxl
+import csv
 from flask import render_template, redirect, url_for, request, session, jsonify, Response
 from flask_login import current_user, login_required
 from flask import stream_with_context, current_app
@@ -25,6 +27,9 @@ def index():
     # Handle form submission
     if request.method == 'POST':
         description = request.form['description']
+        if not description:
+            error_message = "Description is required."
+            return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
         resources = request.files.getlist('resources')
         print(f"Resource: {resources}")
         session['description'] = description
@@ -44,6 +49,25 @@ def index():
                     else:
                         error_message = "No file selected for upload. Please upload a file and try again."
                         return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
+                    
+                for file_path in file_paths:
+                    _, file_extension = os.path.splitext(file_path)
+                    if file_extension.lower() in ['.xls', '.xlsx']:
+                        try:
+                            # Load the Excel file
+                            workbook = openpyxl.load_workbook(file_path)
+                            sheet = workbook.active
+                            # Convert the Excel sheet to CSV
+                            csv_file_path = os.path.splitext(file_path)[0] + '.csv'
+                            with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+                                writer = csv.writer(csv_file)
+                                for row in sheet.iter_rows(values_only=True):
+                                    writer.writerow(row)
+                            file_paths.append(csv_file_path)
+                        except Exception as e:
+                            print(e)
+                            error_message = "An error occurred while converting Excel file to CSV. Unable to process the file."
+                            return render_template('report-inputs.html', username=current_user.first_name, error_message=error_message)
 
                 # Check the encoding of CSV files and convert to UTF-8 if necessary
                 for file_path in file_paths:

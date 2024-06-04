@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_session import Session
+from flask_mail import Mail, Message
 from authlib.integrations.flask_client import OAuth
 from api_analytics.flask import add_middleware
 from app.config import appConf
@@ -13,6 +14,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 oauth = OAuth()
 session = Session()
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -25,6 +27,15 @@ def create_app():
     login_manager.login_view = 'auth.signin'
     oauth.init_app(app)
     session.init_app(app)
+
+    app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
+    app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')
+    app.config['MAIL_USE_TLS'] = appConf.get('MAIL_USE_TLS')
+    app.config['MAIL_USERNAME'] = appConf.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = appConf.get('MAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = appConf.get('MAIL_DEFAULT_SENDER')
+
+    mail.init_app(app)
 
     oauth.register(
         "myApp",
@@ -55,10 +66,13 @@ def create_app():
     def googlePlayStoreReport():
         return render_template('GooglePlayStoreReport.html')
 
+
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp
+    from app.reportChat import reportChat_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    app.register_blueprint(reportChat_bp, url_prefix='/chat')
 
     return app

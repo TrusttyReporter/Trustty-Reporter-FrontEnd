@@ -1,8 +1,10 @@
-from flask import render_template, request, redirect, url_for, session, abort
+from flask import render_template, request, redirect, url_for, session, abort, flash
+from flask_mail import Message
 from app.auth import auth_bp
 from app.models import Local_users
-from app import db, oauth, login_manager
+from app import db, oauth, login_manager, mail
 from flask_login import login_user, logout_user, login_required, current_user
+from .utils import send_email
 import requests
 import os
 
@@ -83,9 +85,46 @@ def signup():
 
     return render_template("signup.html")
 
-@auth_bp.route('/resetpassword')
-def restpassword():
-    return render_template("resetpassword.html")
+@auth_bp.route('/resetpassword', methods=['GET', 'POST'])
+def restPasswordRequest():
+    session.pop('_flashes', None)
+    if request.method == 'POST':
+        user_email = request.form['email']
+        user = Local_users.query.filter_by(user_email=user_email, auth_provider='local').first()
+        if user:
+            token = user.generate_reset_token()
+            send_email('Reset Your Password', user_email, 'reset_password', user=user, token=token)
+            flash('An email has been sent with instructions to reset your password.')
+        else:
+            flash('Email not found. Please enter a valid email address.')    
+    return render_template("resetPasswordRequest.html")
+
+@auth_bp.route('/reset_password/<email>/<token>', methods=['GET', 'POST'])
+def reset_password(email,token):
+    session.pop('_flashes', None)
+    user = Local_users.verify_reset_token(email,token)
+    if not user:
+        error = 'Invalid or expired token.'
+        return render_template("signin.html", error=error)
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            flash('Passwords do not match.')
+            return render_template('reset_password.html', email=email, token=token)
+
+        user = Local_users.verify_reset_token(email,token)
+        if user:
+            user.set_password(password)
+            db.session.commit()
+            # Expire the token after successful password reset
+            #Local_users.expire_reset_token(token)
+            error = 'Your password has been reset.'
+            return render_template("signin.html", error=error)
+        else:
+            error = 'Invalid or expired token.'
+            return render_template("signin.html", error=error)
+    return render_template('reset_password.html', email=email, token=token)
 
 @auth_bp.route("/google-login")
 def googleLogin():
