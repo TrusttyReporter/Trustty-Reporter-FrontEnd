@@ -114,6 +114,12 @@
                                 result += '</div>';
                                 source.close();
                                 break;
+                            case !!data.chunk.error:
+                                result += '<div class="alert alert-info" role="alert">';
+                                result += data.chunk.error;
+                                result += '</div>';
+                                source.close();
+                                break;
                             default:
                                 result = '<pre>' + JSON.stringify(data.chunk, null, 2) + '</pre>';
                         }
