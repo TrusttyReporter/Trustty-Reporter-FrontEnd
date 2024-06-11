@@ -30,31 +30,38 @@
     <div class="spacer d-md-none" style="height: 60px;"></div>
     </header>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="py-5 py-lg-7 py-xl-10">
         <div class="container overflow-hidden">
             <div class="row gy-5 gy-lg-0 align-items-lg-center justify-content-lg-between">
+                <!-- Text Content -->
                 <div class="col-12 col-lg-6 order-1 order-lg-0">
                     <h2 class="display-2 fw-bold mb-3">Generate Stunning Reports with AI</h2>
                     <p class="fs-2 mb-5">
                         Transform your <span id="data-type" class="text-center"><span class="data-text">PDF</span></span> data into professional reports at the click of a button
-                      </p>
-                    
+                    </p>
                     <div class="d-grid gap-2 d-sm-flex">
                         <a href="{{url_for('auth.signin')}}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Get Started</a>
-                        <!--<button type="button" class="btn btn-outline-primary bsb-btn-2xl rounded-pill">Free
-                            Trial</button>-->
+                        <!-- Optional button for Free Trial (commented out) -->
+                        <!--<button type="button" class="btn btn-outline-primary bsb-btn-2xl rounded-pill">Free Trial</button>-->
                     </div>
                 </div>
+                <!-- Video and Fallback Image -->
                 <div class="col-12 col-lg-6 text-center">
-                    <div class="position-relative">
-                        <img class="img-fluid position-relative z-2" loading="lazy" src="./static/images/hero-img-3.png"
-                            alt="An AI tool to automate reporting">
+                    <div class="position-relative video-container" style="width: 100%; max-width: 800px; margin: 0 auto;">
+                        <video class="img-fluid position-relative z-2 lazy-load w-100" autoplay loop muted playsinline>
+                            <source data-src="{{url_for('static',filename='videos/TR-Hero480p.mp4')}}" type="video/mp4" data-quality="low">
+                            <source data-src="{{url_for('static',filename='videos/TR-Hero720p.mp4')}}" type="video/mp4" data-quality="medium">
+                            <source data-src="{{url_for('static',filename='videos/TR-Hero1080p.mp4')}}" type="video/mp4" data-quality="high">
+                            Your browser does not support the video tag.
+                        </video>
+                        <img class="img-fluid position-relative z-2 fallback-image w-100" src="{{url_for('static',filename='images/hero-img-3.png')}}" alt="Fallback Image">                        
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 
