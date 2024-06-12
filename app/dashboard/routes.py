@@ -120,7 +120,8 @@ def index():
 @dashboard_bp.route('/result')
 @login_required
 def result():
-    return render_template('report-results.html',username = current_user.first_name)
+    description = session['description']
+    return render_template('report-results.html',username = current_user.first_name, description = description)
 
 @dashboard_bp.route('/api/result')
 @login_required
