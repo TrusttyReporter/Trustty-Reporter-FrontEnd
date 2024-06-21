@@ -223,6 +223,7 @@ def report_input():
 @login_required
 def report_edit():
     final_report = session.get('final_report', '')
+    #print(final_report)
     return render_template('report-edits.html', username = current_user.first_name, report = final_report)
 
 @dashboard_bp.route('/report/generate_report', methods=['GET', 'POST'])

@@ -23,3 +23,4 @@ SQLALCHEMY_DATABASE_URI = "postgresql://postgres.qswtiyzhtnalwqxmpbgz:6EryE4*(5y
 SECRET_KEY = appConf.get("FLASK_SECRET")
 SESSION_TYPE = appConf.get("SESSION_TYPE")
 SESSION_REDIS = appConf.get("SESSION_REDIS")
+SQLALCHEMY_POOL_SIZE = 5
