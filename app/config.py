@@ -1,8 +1,10 @@
 import redis
 
 appConf = {
-    "OAUTH2_CLIENT_ID": "559238676752-o7b2ernstpjk9gml4sn0thki1bvc3rjs.apps.googleusercontent.com",
-    "OAUTH2_CLIENT_SECRET": "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",
+    #"OAUTH2_CLIENT_ID": "559238676752-o7b2ernstpjk9gml4sn0thki1bvc3rjs.apps.googleusercontent.com",
+    #"OAUTH2_CLIENT_SECRET": "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",
+    "OAUTH2_CLIENT_ID": "656189776856-qi05dt7hv8f1mv08e7jn7cvd6mtqeca7.apps.googleusercontent.com",
+    "OAUTH2_CLIENT_SECRET": "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",
     "OAUTH2_META_URL": "https://accounts.google.com/.well-known/openid-configuration",
     "FLASK_SECRET": "bd40525b-319d-4f34-a046-705ad18d5009",
     "FLASK_PORT": 5000,

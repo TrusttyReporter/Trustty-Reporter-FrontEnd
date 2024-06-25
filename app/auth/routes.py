@@ -134,11 +134,15 @@ def googleLogin():
 def googleCallback():
     try:
         token = oauth.myApp.authorize_access_token()
-        personDataUrl = "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays"
-        personData = requests.get(personDataUrl, headers={"Authorization": f"Bearer {token['access_token']}"}).json()
-        token["personData"] = personData
-        user_name = token["userinfo"]["name"]
-        user_email = token["userinfo"]["email"]
+        #personDataUrl = "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays"
+        #personData = requests.get(personDataUrl, headers={"Authorization": f"Bearer {token['access_token']}"}).json()
+        #token["personData"] = personData
+        #user_name = token["userinfo"]["name"]
+        #user_email = token["userinfo"]["email"]
+        # Extract user information from the token
+        user_info = token.get('userinfo', {})
+        user_name = user_info.get('name')
+        user_email = user_info.get('email')
         user = Local_users.query.filter_by(user_email=user_email).first()
         if not user:
             new_user = Local_users(first_name=user_name.split()[0], last_name=' '.join(user_name.split()[1:]), user_email=user_email, auth_provider='google')
