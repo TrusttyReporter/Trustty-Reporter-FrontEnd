@@ -321,11 +321,10 @@
 
     <!-- Footer 1 - Bootstrap Brain Component -->
     <footer class="footer">
-
         <!-- Copyright -->
         <div class="bg-light py-5 py-xl-8 py-xxl-9 border-top border-light">
             <div class="container overflow-hidden">
-                <div class="row gy-5 gy-md-0 align-items-md-center">
+                <div class="row gy-5 gy-md-0 align-items-start">
                     <div class="col-xs-12 col-md-7 order-1 order-md-0">
                         <div class="copyright text-center text-md-start">
                             &copy; 2024. All Rights Reserved.
@@ -333,14 +332,18 @@
                     </div>
     
                     <div class="col-xs-12 col-md-5 order-0 order-md-1">
-                        <div class="contact-wrapper text-center text-md-end">
-                            Contact us: <a href="mailto:support@trusttyreporter.com">support@trusttyreporter.com</a>
+                        <div class="contact-wrapper text-center text-md-end mb-3">
+                            Contact us: <a href="mailto:support@trustyreporter.com" class="text-muted">support@trustyreporter.com</a>
+                        </div>
+                        <div class="policy-wrapper text-center text-md-end">
+                            <div class="mb-1"><a href="{{ url_for('terms_and_conditions') }}" class="text-muted text-decoration-none">Terms & Conditions</a></div>
+                            <div class="mb-1"><a href="{{ url_for('privacy_policy') }}" class="text-muted text-decoration-none">Privacy Policy</a></div>
+                            <div class="mb-1"><a href="{{ url_for('cookie_policy') }}" class="text-muted text-decoration-none">Cookie Policy</a></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </footer>
 
 </body>

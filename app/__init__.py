@@ -66,6 +66,18 @@ def create_app():
     def googlePlayStoreReport():
         return render_template('GooglePlayStoreReport.html')
     
+    @app.route('/terms-and-conditions')
+    def terms_and_conditions():
+        return render_template('terms_and_conditions.html')
+    
+    @app.route('/privacy-policy')
+    def privacy_policy():
+        return render_template('privacy_policy.html')
+    
+    @app.route('/cookie-policy')
+    def cookie_policy():
+        return render_template('cookie_policy.html')
+    
     @app.errorhandler(Exception)
     def handle_error(error):
         if hasattr(error, 'code'):
