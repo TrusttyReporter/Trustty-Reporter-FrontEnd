@@ -7,7 +7,8 @@ import asyncio
 import time
 import openpyxl
 import csv
-from flask import render_template, redirect, url_for, request, session, jsonify, Response
+import html
+from flask import render_template, redirect, url_for, request, session, jsonify, Response, render_template_string
 from flask_login import current_user, login_required
 from flask import stream_with_context, current_app
 #from flaskext.markdown import Markdown
@@ -205,7 +206,12 @@ def stream():
 def report():
     #print(session['html_report'])
     html_report = session['html_report']
-    return html_report
+    jinja_content = """{% from "download_buttons.jinja" import download_buttons %}
+    {{ download_buttons() }}"""
+    head_close_pos = html_report.find("</head>")
+    if head_close_pos != -1:
+        html_report = html_report[:head_close_pos] + jinja_content + html_report[head_close_pos:]
+    return render_template_string(html_report)
 
 @dashboard_bp.route('/report-input', methods=['GET', 'POST'])
 @login_required
@@ -249,4 +255,9 @@ def report_new():
 @login_required
 def new_report():
     new_html_report = session['new_html_report']
-    return new_html_report
+    jinja_content = """{% from "download_buttons.jinja" import download_buttons %}
+    {{ download_buttons() }}"""
+    head_close_pos = new_html_report.find("</head>")
+    if head_close_pos != -1:
+        new_html_report = new_html_report[:head_close_pos] + jinja_content + new_html_report[head_close_pos:]
+    return render_template_string(new_html_report)
