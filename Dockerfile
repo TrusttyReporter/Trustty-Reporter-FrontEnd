@@ -27,4 +27,4 @@ EXPOSE 5000
 RUN pip install --no-cache-dir gunicorn gevent
 
 # Start the application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "1", "--worker-class", "gevent", "--threads", "2", "--timeout", "240"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--workers", "2", "--worker-class", "gevent", "--threads", "4", "--timeout", "300"]
