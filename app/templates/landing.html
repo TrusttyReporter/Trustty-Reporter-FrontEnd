@@ -141,89 +141,98 @@
 
 
     <!-- Featured -->
-    <section class="py-3 py-md-5 py-xl-8">
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                    <h2 class="mb-4 display-6 text-center">Explore Our AI-Generated Reports</h2>
-                    <p class="text-secondary mb-5 text-center lead fs-4">Discover the power of our AI tool by browsing through our sample reports, automatically generated from PDFs and CSVs.</p>
-                    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
-                </div>
+<section class="py-3 py-md-5 py-xl-8">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+                <h2 class="mb-4 display-6 text-center">Explore Our AI-Generated Reports</h2>
+                <p class="text-secondary mb-5 text-center lead fs-4">Discover the power of our AI tool by browsing through our sample reports, automatically generated from PDFs and CSVs.</p>
+                <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
             </div>
         </div>
+    </div>
 
-        <div class="container overflow-hidden">
-            <div class="row gy-3 gy-lg-0 gx-xxl-5">
-                <div class="col-12 col-lg-4">
-                    <article>
-                        <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
-                            <a href="{{url_for('salesReport')}}">
-                                <div class="ratio ratio-16x9">
-                                <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
-                                     src="{{url_for('static',filename='images/dummy-img.png')}}" alt="Sales Report"
-                                     style="object-fit: cover;">
-                                </div>
-                            </a>
-                        </figure>
-                        <div class="entry-header mb-3">
-                            <ul class="entry-meta list-unstyled d-flex mb-2">
-                                <li>
-                                    <a class="link-primary text-decoration-none" href="{{url_for('salesReport')}}">Sales/Marketing</a>
-                                </li>
-                            </ul>
-                            <h2 class="entry-title h4 mb-0">
-                                <a class="link-dark text-decoration-none" href="{{url_for('salesReport')}}">Revolutionize your sales strategy with our AI-powered sales report. Gain comprehensive insights, predict trends, and make data-driven decisions to maximize your business's potential.</a>
-                            </h2>
-                        </div>
-                    </article>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <article>
-                        <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
-                            <a href="{{url_for('freedomIndexReport')}}">
-                                <div class="ratio ratio-16x9">
-                                <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
-                                    src="{{url_for('static',filename='images/freedom-index-france-report-img.png')}}" alt="Economics/Finance" style="object-fit: cover;">
-                                </div>
-                            </a>
-                        </figure>
-                        <div class="entry-header mb-3">
-                            <ul class="entry-meta list-unstyled d-flex mb-2">
-                                <li>
-                                    <a class="link-primary text-decoration-none" href="{{url_for('freedomIndexReport')}}">Economics/Finance</a>
-                                </li>
-                            </ul>
-                            <h2 class="entry-title h4 mb-0">
-                                <a class="link-dark text-decoration-none" href="{{url_for('freedomIndexReport')}}">Explore France's economic freedom with our AI-generated report. Analyze key indicators, identify trends, and gain insights into the nation's economic landscape.</a>
-                            </h2>
-                        </div>
-                    </article>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <article>
-                        <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
-                            <a href="{{url_for('googlePlayStoreReport')}}">
-                                <div class="ratio ratio-16x9">
-                                <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
-                                    src="{{url_for('static',filename='images/google-play-store-report-img.jpeg')}}" alt="Product/Technology" style="object-fit: cover;">
-                                </div>
-                            </a>
-                        </figure>
-                        <div class="entry-header mb-3">
-                            <ul class="entry-meta list-unstyled d-flex mb-2">
-                                <li>
-                                    <a class="link-primary text-decoration-none" href="{{url_for('googlePlayStoreReport')}}">Product/Technology</a>
-                                </li>
-                            </ul>
-                            <h2 class="entry-title h4 mb-0">
-                                <a class="link-dark text-decoration-none" href="{{url_for('googlePlayStoreReport')}}">Discover trends and insights in the Google Play Store with our AI-driven app analysis. Make informed decisions to optimize your app's performance.</a>
-                            </h2>
-                        </div>
-                    </article>
-                </div>
+    <div class="container overflow-hidden">
+        <div class="row gy-3 gy-lg-0 gx-xxl-5">
+            <div class="col-12 col-lg-4">
+                <article class="h-100 d-flex flex-column">
+                    <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
+                        <a href="{{url_for('salesReport')}}">
+                            <div class="ratio ratio-16x9">
+                            <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
+                                 src="{{url_for('static',filename='images/dummy-img.png')}}" alt="Sales Report"
+                                 style="object-fit: cover;">
+                            </div>
+                        </a>
+                    </figure>
+                    <div class="entry-header mb-3">
+                        <ul class="entry-meta list-unstyled d-flex mb-2">
+                            <li>
+                                <a class="link-primary text-decoration-none" href="{{url_for('salesReport')}}">Sales/Marketing</a>
+                            </li>
+                        </ul>
+                        <h2 class="entry-title h4 mb-0">
+                            <a class="link-dark text-decoration-none" href="{{url_for('salesReport')}}">Revolutionize your sales strategy with our AI-powered sales report. Gain comprehensive insights, predict trends, and make data-driven decisions to maximize your business's potential.</a>
+                        </h2>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{url_for('salesReport')}}" class="link-primary">View Report &rarr;</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-12 col-lg-4">
+                <article class="h-100 d-flex flex-column">
+                    <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
+                        <a href="{{url_for('freedomIndexReport')}}">
+                            <div class="ratio ratio-16x9">
+                            <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
+                                src="{{url_for('static',filename='images/freedom-index-france-report-img.png')}}" alt="Economics/Finance" style="object-fit: cover;">
+                            </div>
+                        </a>
+                    </figure>
+                    <div class="entry-header mb-3">
+                        <ul class="entry-meta list-unstyled d-flex mb-2">
+                            <li>
+                                <a class="link-primary text-decoration-none" href="{{url_for('freedomIndexReport')}}">Economics/Finance</a>
+                            </li>
+                        </ul>
+                        <h2 class="entry-title h4 mb-0">
+                            <a class="link-dark text-decoration-none" href="{{url_for('freedomIndexReport')}}">Explore France's economic freedom with our AI-generated report. Analyze key indicators, identify trends, and gain insights into the nation's economic landscape.</a>
+                        </h2>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{url_for('freedomIndexReport')}}" class="link-primary">View Report &rarr;</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-12 col-lg-4">
+                <article class="h-100 d-flex flex-column">
+                    <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
+                        <a href="{{url_for('googlePlayStoreReport')}}">
+                            <div class="ratio ratio-16x9">
+                            <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy"
+                                src="{{url_for('static',filename='images/google-play-store-report-img.jpeg')}}" alt="Product/Technology" style="object-fit: cover;">
+                            </div>
+                        </a>
+                    </figure>
+                    <div class="entry-header mb-3">
+                        <ul class="entry-meta list-unstyled d-flex mb-2">
+                            <li>
+                                <a class="link-primary text-decoration-none" href="{{url_for('googlePlayStoreReport')}}">Product/Technology</a>
+                            </li>
+                        </ul>
+                        <h2 class="entry-title h4 mb-0">
+                            <a class="link-dark text-decoration-none" href="{{url_for('googlePlayStoreReport')}}">Discover trends and insights in the Google Play Store with our AI-driven app analysis. Make informed decisions to optimize your app's performance.</a>
+                        </h2>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{url_for('googlePlayStoreReport')}}" class="link-primary">View Report &rarr;</a>
+                    </div>
+                </article>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     
     <!-- Testimonial 3 - Bootstrap Brain Component -->
