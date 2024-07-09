@@ -36,27 +36,30 @@
         {% endblock %}
     </main>
 
-    <footer class="footer">
-        <!-- Copyright -->
-        <div class="bg-light py-5 py-xl-8 py-xxl-9 border-top border-light">
-            <div class="container overflow-hidden">
-                <div class="row gy-5 gy-md-0 align-items-start">
-                    <div class="col-xs-12 col-md-7 order-1 order-md-0">
-                        <div class="copyright text-center text-md-start">
-                            &copy; MindTrust AI Solutions LLP 2024. All Rights Reserved.
-                        </div>
+    <footer class="footer bg-light py-5 border-top">
+        <div class="container">
+            <div class="row gy-4 justify-content-between">
+                <!-- Copyright -->
+                <div class="col-md-3">
+                    <div class="copyright">
+                        &copy; MindTrust AI Solutions LLP 2024. All Rights Reserved.
                     </div>
+                </div>
     
-                    <div class="col-xs-12 col-md-5 order-0 order-md-1">
-                        <div class="contact-wrapper text-center text-md-end mb-3">
-                            Contact us: <a href="mailto:support@trusttyreporter.com" class="text-muted">support@trusttyreporter.com</a>
-                        </div>
-                        <div class="policy-wrapper text-center text-md-end">
-                            <div class="mb-1"><a href="{{ url_for('terms_and_conditions') }}" class="text-muted text-decoration-none">Terms & Conditions</a></div>
-                            <div class="mb-1"><a href="{{ url_for('privacy_policy') }}" class="text-muted text-decoration-none">Privacy Policy</a></div>
-                            <div class="mb-1"><a href="{{ url_for('cookie_policy') }}" class="text-muted text-decoration-none">Cookie Policy</a></div>
-                        </div>
-                    </div>
+                <!-- Legal -->
+                <div class="col-md-3">
+                    <h5 class="mb-3">Legal</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('terms_and_conditions') }}" class="text-muted text-decoration-none">Terms & Conditions</a></li>
+                        <li class="mb-2"><a href="{{ url_for('privacy_policy') }}" class="text-muted text-decoration-none">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="{{ url_for('cookie_policy') }}" class="text-muted text-decoration-none">Cookie Policy</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Contact Us -->
+                <div class="col-md-3">
+                    <h5 class="mb-3">Contact Us</h5>
+                    <p class="mb-0">Email: <a href="mailto:support@trusttyreporter.com" class="text-muted">support@trusttyreporter.com</a></p>
                 </div>
             </div>
         </div>
