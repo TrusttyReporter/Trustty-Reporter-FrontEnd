@@ -16,6 +16,8 @@ from werkzeug.utils import secure_filename
 from langserve import RemoteRunnable
 from app.dashboard import dashboard_bp
 from .utils import convert_csv_to_utf8
+from requests.exceptions import RequestException
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 main_url="https://reporting-tool-api.onrender.com"
 api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
@@ -126,6 +128,11 @@ def result():
 
 @dashboard_bp.route('/api/result')
 @login_required
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type(RequestException)
+)
 def api_result():
     # Retrieve the API response from the session
     api_response = session.get('api_response')
