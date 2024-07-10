@@ -169,7 +169,7 @@ def api_result():
         else:
             return jsonify("No API response found.")
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"})
+        return jsonify(f"An unexpected error occurred: {str(e)}")
 
 
 @dashboard_bp.route('/stream')
