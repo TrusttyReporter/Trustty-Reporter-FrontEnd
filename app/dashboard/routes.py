@@ -128,11 +128,6 @@ def result():
 
 @dashboard_bp.route('/api/result')
 @login_required
-@retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
-    retry=retry_if_exception_type(RequestException)
-)
 def api_result():
     # Retrieve the API response from the session
     api_response = session.get('api_response')
@@ -147,23 +142,34 @@ def api_result():
         'accept': 'application/json',
         "X-API-KEY": api_key
     }
-    response = requests.request("POST", url, headers=headers, json=payload, timeout=5*60)
 
-    response_json = json.loads(response.text)
-    if response.status_code == 200:
-        doc_chunks = response_json['doc_chunks']
-        session['csv_summary'] = response_json['csv_summary']
-        session['doc_summaries'] = [] if response_json['doc_chunks'] == "" else [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
-        session['event_stream_status'] = True
-        # Create a dictionary with the extracted values
-        result_data = {
-            'doc_summaries': session['doc_summaries'],
-            'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary']['summary']
-        }
-        #print(result_data)
-        return jsonify(result_data)
-    else:
-        return jsonify("No API response found.")
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10), retry=retry_if_exception_type(RequestException))
+    def make_api_request():
+        return requests.request("POST", url, headers=headers, json=payload, timeout=5*60)
+
+    #response = requests.request("POST", url, headers=headers, json=payload, timeout=5*60)
+
+    #response_json = json.loads(response.text)
+    try:
+        response = make_api_request()
+        response_json = response.json()
+    
+        if response.status_code == 200:
+            doc_chunks = response_json['doc_chunks']
+            session['csv_summary'] = response_json['csv_summary']
+            session['doc_summaries'] = [] if response_json['doc_chunks'] == "" else [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
+            session['event_stream_status'] = True
+            # Create a dictionary with the extracted values
+            result_data = {
+                'doc_summaries': session['doc_summaries'],
+                'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary']['summary']
+            }
+            #print(result_data)
+            return jsonify(result_data)
+        else:
+            return jsonify("No API response found.")
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"})
 
 
 @dashboard_bp.route('/stream')
