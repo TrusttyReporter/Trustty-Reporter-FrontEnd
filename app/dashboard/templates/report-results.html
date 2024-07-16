@@ -21,7 +21,7 @@
                 url: "{{url_for('dashboard.api_result')}}",
                 type: 'GET',
                 dataType: 'json',
-                timeout: 30*10000, // Set timeout to 5 minutes (300000 milliseconds)
+                timeout: 60*10000, // Set timeout to 10 minutes (600000 milliseconds)
                 success: function(response) {
                     var resultHtml = '';
 
