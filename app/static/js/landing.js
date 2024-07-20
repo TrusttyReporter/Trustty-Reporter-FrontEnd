@@ -1,7 +1,7 @@
 // Select the element that displays the data type
 const dataText = document.querySelector(".data-text");
 // Array of data types to toggle between
-const dataTypes = ["PDF", "CSV"];
+const dataTypes = ["PDF", "CSV","Excel"];
 let currentIndex = 0;
 
 // Function to toggle the displayed data type
