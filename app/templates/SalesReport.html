@@ -5,204 +5,230 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report for the Restaurant</title>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
             padding: 20px;
         }
         h1, h2 {
-            margin-bottom: 20px;
+            color: #2c3e50;
         }
-        table {
+        .chart-container {
             margin-bottom: 30px;
         }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
+
+    
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .download-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 1000;
+        padding: 5px 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
+    .download-buttons {
+        display: flex;
+        gap: 20px;
+    }
+    .download-btn {
+        display: flex;
+        align-items: center;
+        padding: 5px 10px;
+        border: none;
+        background: none;
+        color: #6c757d;
+        font-size: 0.9em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .download-btn:hover {
+        color: #343a40;
+    }
+    .download-btn i {
+        margin-right: 5px;
+    }
+    /* Add padding to the body to account for the fixed bar */
+    body {
+        padding-top: 50px;
+    }
+    /* Style for the error toast */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+</style>
+
 </head>
 <body>
     <div class="container">
-        <h1>Sales Report for the Restaurant</h1>
+        <h1 class="mt-4 mb-4">Sales Report for the Restaurant</h1>
         <img src="https://www.fluentu.com/blog/english/wp-content/uploads/sites/4/2018/02/talking-about-food-in-english.jpg" class="img-fluid mx-auto d-block my-4" alt="Sales Report">
 
-        <h2>Introduction</h2>
-        <p>This report provides a comprehensive analysis of the restaurant's sales data. The analysis covers various aspects, including total sales per item type, monthly sales trends, peak sales times, and the impact of transaction types on sales. The insights derived from this analysis will help in understanding customer preferences and optimizing operational efficiency.</p>
+        <h2>Overview</h2>
+        <p>This report provides an analysis of the restaurant's sales trends on a month-to-month basis and offers recommendations to improve sales. The data covers the period from April 2022 to March 2023. The analysis includes total sales figures, identification of peak and trough months, and insights into popular items and transaction types.</p>
 
-        <h2>Total Sales Per Item Type</h2>
-        <p>The dataset includes transaction information categorized by item types such as Fastfood and Beverages. The total sales for each item type were calculated by summing up the transaction amounts.</p>
-        <table class="table table-bordered">
+        <h2>Month-on-Month Sales Trends</h2>
+        <div class="chart-container">
+            <canvas id="salesChart" width="2592" height="1296" style="display: block; box-sizing: border-box; height: 648px; width: 1296px;"></canvas>
+        </div>
+
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Item Type</th>
-                    <th>Total Sales ($)</th>
+                    <th>Year-Month</th>
+                    <th>Transaction Amount</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Beverages</td>
-                    <td>86,390</td>
-                </tr>
-                <tr>
-                    <td>Fastfood</td>
-                    <td>188,840</td>
-                </tr>
+                <tr><td>2022-04</td><td>8,610</td></tr>
+                <tr><td>2022-05</td><td>11,215</td></tr>
+                <tr><td>2022-06</td><td>4,745</td></tr>
+                <tr><td>2022-07</td><td>8,770</td></tr>
+                <tr><td>2022-08</td><td>7,715</td></tr>
+                <tr><td>2022-09</td><td>6,735</td></tr>
+                <tr><td>2022-10</td><td>13,065</td></tr>
+                <tr><td>2022-11</td><td>8,670</td></tr>
+                <tr><td>2022-12</td><td>8,740</td></tr>
+                <tr><td>2023-01</td><td>12,955</td></tr>
+                <tr><td>2023-02</td><td>10,910</td></tr>
+                <tr><td>2023-03</td><td>9,585</td></tr>
             </tbody>
         </table>
-        <p><strong>Key Insight:</strong> Fastfood items contribute more to the overall sales with a total of $188,840 compared to Beverages, which total $86,390.</p>
-        <canvas id="itemTypeChart" width="2592" height="1296" style="display: block; box-sizing: border-box; height: 648px; width: 1296px;"></canvas>
 
-        <h2>Monthly Sales Trends</h2>
-        <p>The dataset also includes transaction amounts grouped by month. The total transaction amounts for each month were calculated to observe any seasonal variations or trends in the restaurant's sales over time.</p>
-        <table class="table table-bordered">
+        <h3>Key Insights</h3>
+        <ul>
+            <li><strong>Peak Sales Month</strong>: October 2022 recorded the highest sales at 13,065.</li>
+            <li><strong>Lowest Sales Month</strong>: June 2022 had the lowest sales at 4,745.</li>
+            <li><strong>General Trend</strong>: There is an upward trend in sales from late 2022 into early 2023, with a slight decline in March 2023 compared to January and February.</li>
+        </ul>
+
+        <h2>Popular Items</h2>
+        <div class="chart-container">
+            <canvas id="itemsChart" width="2592" height="1296" style="display: block; box-sizing: border-box; height: 648px; width: 1296px;"></canvas>
+        </div>
+
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Month</th>
-                    <th>Total Sales ($)</th>
+                    <th>Item Name</th>
+                    <th>Transaction Amount</th>
+                    <th>Quantity</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>March 2022</td>
-                    <td>260</td>
-                </tr>
-                <tr>
-                    <td>August 2022</td>
-                    <td>320</td>
-                </tr>
-                <tr>
-                    <td>November 2022</td>
-                    <td>20</td>
-                </tr>
-                <tr>
-                    <td>February 2023</td>
-                    <td>150</td>
-                </tr>
-                <tr>
-                    <td>October 2022</td>
-                    <td>200</td>
-                </tr>
+                <tr><td>Sandwich</td><td>65,820</td><td>1,097</td></tr>
+                <tr><td>Frankie</td><td>57,500</td><td>1,150</td></tr>
+                <tr><td>Cold Coffee</td><td>54,440</td><td>1,361</td></tr>
+                <tr><td>Sugarcane Juice</td><td>31,950</td><td>1,278</td></tr>
+                <tr><td>Panipuri</td><td>24,520</td><td>1,226</td></tr>
             </tbody>
         </table>
-        <p><strong>Key Insight:</strong> The monthly sales data shows that August 2022 had the highest sales with $320, while November 2022 had the lowest with $20. This indicates some variability in sales across different months.</p>
-        <canvas id="monthlySalesChart" width="2592" height="1296" style="display: block; box-sizing: border-box; height: 648px; width: 1296px;"></canvas>
 
-        <h2>Peak Sales Times</h2>
-        <p>The 'time_of_sale' column in the dataset was analyzed to determine which times of day have the highest sales volumes. The unique values in this column include Night, Afternoon, Evening, Midnight, and Morning.</p>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Time of Sale</th>
-                    <th>Sales Volume</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Night</td>
-                    <td>205</td>
-                </tr>
-                <tr>
-                    <td>Afternoon</td>
-                    <td>205</td>
-                </tr>
-                <tr>
-                    <td>Evening</td>
-                    <td>201</td>
-                </tr>
-                <tr>
-                    <td>Midnight</td>
-                    <td>199</td>
-                </tr>
-                <tr>
-                    <td>Morning</td>
-                    <td>190</td>
-                </tr>
-            </tbody>
-        </table>
-        <p><strong>Key Insight:</strong> 'Night' and 'Afternoon' are the peak sales times with 205 sales each, followed closely by 'Evening' with 201 sales. 'Midnight' and 'Morning' have slightly lower sales volumes with 199 and 190 sales respectively. This breakdown provides insights into customer preferences and can help optimize operational efficiency during these peak sales times.</p>
-        <canvas id="peakSalesChart" width="2592" height="2592" style="display: block; box-sizing: border-box; height: 1296px; width: 1296px;"></canvas>
+        <h3>Key Insights</h3>
+        <ul>
+            <li><strong>Top-Selling Items</strong>: Sandwiches, Frankies, and Cold Coffee are the top-selling items.</li>
+            <li><strong>High Quantity Sales</strong>: Cold Coffee and Sugarcane Juice have high quantities sold, indicating their popularity.</li>
+        </ul>
 
-        <h2>Impact of Transaction Types on Sales</h2>
-        <p>The dataset also includes information on different transaction types such as Cash and Online. The total sales for each transaction type were calculated to understand how payment methods influence sales figures.</p>
-        <table class="table table-bordered">
+        <h2>Transaction Types</h2>
+        <div class="chart-container">
+            <canvas id="transactionChart" width="2592" height="2592" style="display: block; box-sizing: border-box; height: 1296px; width: 1296px;"></canvas>
+        </div>
+
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Transaction Type</th>
-                    <th>Total Sales ($)</th>
-                    <th>Total Quantity Sold</th>
+                    <th>Total Sales</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Cash</td>
-                    <td>132,840</td>
-                    <td>3,943</td>
-                </tr>
-                <tr>
-                    <td>Online</td>
-                    <td>110,595</td>
-                    <td>3,291</td>
-                </tr>
+                <tr><td>Cash</td><td>132,840</td></tr>
+                <tr><td>Online</td><td>110,595</td></tr>
             </tbody>
         </table>
-        <p><strong>Key Insight:</strong> Cash transactions generated higher total sales with $132,840 compared to Online transactions which totaled $110,595. Additionally, Cash transactions had a higher total quantity sold of 3,943 compared to Online transactions which had a total quantity sold of 3,291. This indicates that Cash transactions had a more significant impact on sales in terms of both sales amount and quantity sold compared to Online transactions.</p>
-        <div class="row">
-            <div class="col-md-6">
-                <canvas id="transactionSalesChart" width="1272" height="1272" style="display: block; box-sizing: border-box; height: 636px; width: 636px;"></canvas>
-            </div>
-            <div class="col-md-6">
-                <canvas id="transactionQuantityChart" width="1272" height="1272" style="display: block; box-sizing: border-box; height: 636px; width: 636px;"></canvas>
-            </div>
-        </div>
+
+        <h3>Key Insights</h3>
+        <ul>
+            <li><strong>Cash Transactions</strong>: Cash transactions account for a higher total sales figure compared to online transactions.</li>
+            <li><strong>Online Transactions</strong>: While lower than cash, online transactions still represent a significant portion of sales.</li>
+        </ul>
+
+        <h2>Recommendations to Improve Sales</h2>
+        <ol>
+            <li><strong>Promotions During Low Sales Months</strong>:
+                <ul>
+                    <li><strong>June 2022</strong> had the lowest sales. Implementing targeted promotions or discounts during this month could help boost sales. For example, offering a "Summer Special" discount on popular items like Cold Coffee and Sugarcane Juice could attract more customers.</li>
+                </ul>
+            </li>
+            <li><strong>Focus on Popular Items</strong>:
+                <ul>
+                    <li>The top-selling items include Sandwiches, Frankies, and Cold Coffee. Focusing marketing efforts on these popular items, perhaps through special deals or highlighting them in advertising, could drive more sales. For instance, a "Combo Deal" featuring a Sandwich and Cold Coffee at a discounted price could be appealing.</li>
+                </ul>
+            </li>
+            <li><strong>Increase Availability During Peak Times</strong>:
+                <ul>
+                    <li>October 2022 saw peak sales. Ensuring that popular items are well-stocked during this peak period can help meet customer demand and maximize sales. Additionally, consider extending operating hours or adding more staff during peak times to handle the increased customer flow efficiently.</li>
+                </ul>
+            </li>
+            <li><strong>Leverage Cash Transactions</strong>:
+                <ul>
+                    <li>Cash transactions accounted for a higher total sales figure compared to online transactions. Consider offering incentives for cash payments, such as discounts or loyalty points, to encourage more customers to choose this payment method. This could also help reduce transaction fees associated with online payments.</li>
+                </ul>
+            </li>
+            <li><strong>Enhance Online Presence</strong>:
+                <ul>
+                    <li>Although cash transactions are higher, online transactions still represent a significant portion of sales. Enhancing the restaurant's online presence through social media marketing, online ordering systems, and delivery partnerships could attract more online customers. Offering exclusive online deals or discounts could also boost online sales.</li>
+                </ul>
+            </li>
+        </ol>
 
         <h2>Conclusion</h2>
-        <p>The analysis of the restaurant's sales data provides several key insights:</p>
-        <ol>
-            <li><strong>Item Type Contribution:</strong> Fastfood items contribute significantly more to overall sales compared to Beverages.</li>
-            <li><strong>Monthly Sales Trends:</strong> There is variability in sales across different months, with August 2022 having the highest sales and November 2022 the lowest.</li>
-            <li><strong>Peak Sales Times:</strong> Night and Afternoon are the peak sales times, indicating higher customer activity during these periods.</li>
-            <li><strong>Transaction Types Impact:</strong> Cash transactions have a higher impact on sales both in terms of total sales amount and quantity sold compared to Online transactions.</li>
-        </ol>
-        <p>These insights can help the restaurant in making informed decisions to enhance customer satisfaction and improve operational efficiency.</p>
+        <p>By implementing these strategies, the restaurant can potentially enhance sales performance and better align with customer preferences. Monitoring sales trends and continuously adapting marketing and operational strategies will be key to sustaining growth and maximizing revenue.</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script async="" src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js" crossorigin="anonymous"></script>
     <script>
-        // Item Type Chart
-        var itemTypeCtx = document.getElementById('itemTypeChart').getContext('2d');
-        var itemTypeChart = new Chart(itemTypeCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Beverages', 'Fastfood'],
-                datasets: [{
-                    label: 'Total Sales ($)',
-                    data: [86390, 188840],
-                    backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Monthly Sales Chart
-        var monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
-        var monthlySalesChart = new Chart(monthlySalesCtx, {
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
             type: 'line',
             data: {
-                labels: ['March 2022', 'August 2022', 'November 2022', 'February 2023', 'October 2022'],
+                labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
                 datasets: [{
-                    label: 'Total Sales ($)',
-                    data: [260, 320, 20, 150, 200],
-                    fill: false,
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    label: 'Monthly Sales',
+                    data: [8610, 11215, 4745, 8770, 7715, 6735, 13065, 8670, 8740, 12955, 10910, 9585],
+                    borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -211,60 +237,45 @@
             }
         });
 
-        // Peak Sales Chart
-        var peakSalesCtx = document.getElementById('peakSalesChart').getContext('2d');
-        var peakSalesChart = new Chart(peakSalesCtx, {
-            type: 'pie',
+        // Popular Items Chart
+        const itemsCtx = document.getElementById('itemsChart').getContext('2d');
+        new Chart(itemsCtx, {
+            type: 'bar',
             data: {
-                labels: ['Night', 'Afternoon', 'Evening', 'Midnight', 'Morning'],
+                labels: ['Sandwich', 'Frankie', 'Cold Coffee', 'Sugarcane Juice', 'Panipuri'],
                 datasets: [{
-                    data: [205, 205, 201, 199, 190],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)'
-                    ],
-                    borderWidth: 1
+                    label: 'Transaction Amount',
+                    data: [65820, 57500, 54440, 31950, 24520],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                }, {
+                    label: 'Quantity',
+                    data: [1097, 1150, 1361, 1278, 1226],
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)'
                 }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
 
-        // Transaction Sales Chart
-        var transactionSalesCtx = document.getElementById('transactionSalesChart').getContext('2d');
-        var transactionSalesChart = new Chart(transactionSalesCtx, {
-            type: 'doughnut',
+        // Transaction Types Chart
+        const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+        new Chart(transactionCtx, {
+            type: 'pie',
             data: {
                 labels: ['Cash', 'Online'],
                 datasets: [{
                     data: [132840, 110595],
-                    backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
-                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-                    borderWidth: 1
+                    backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)']
                 }]
-            }
-        });
-
-        // Transaction Quantity Chart
-        var transactionQuantityCtx = document.getElementById('transactionQuantityChart').getContext('2d');
-        var transactionQuantityChart = new Chart(transactionQuantityCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Cash', 'Online'],
-                datasets: [{
-                    data: [3943, 3291],
-                    backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
-                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-                    borderWidth: 1
-                }]
+            },
+            options: {
+                responsive: true
             }
         });
     </script>
