@@ -20,12 +20,12 @@ from requests.exceptions import RequestException
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 #Main API:
-#main_url="https://reporting-tool-api.onrender.com"
-#api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
+main_url="https://reporting-tool-api.onrender.com"
+api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
 
 #Testing API:
-main_url="https://reporting-tool-api-test.onrender.com"
-api_key='24d7f9b5-8325-47cd-9800-5cae89248e8b'
+#main_url="https://reporting-tool-api-test.onrender.com"
+#api_key='24d7f9b5-8325-47cd-9800-5cae89248e8b'
 
 @dashboard_bp.route('/', methods=['GET', 'POST'])
 @login_required
@@ -168,7 +168,7 @@ def api_result():
         #print("/n/n-----/n/n")
         #print("/n/n-----/n/n")
         #session['csv_summary'] = response_json['csv_summary'] #Old code when only single csv was allowed
-        session['csv_summary'] = [f"###Data Name: {csv[0:-4]}\n\n{csv_summary[csv]['summary']}" for csv in csv_summary]
+        session['csv_summary'] = [f"### Data Name: {csv[0:-4]}\n\n{csv_summary[csv]['summary']}" for csv in csv_summary]
         #print(session['csv_summary'])
         session['doc_summaries'] = [] if response_json['doc_chunks'] == "" else [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
         session['event_stream_status'] = True
