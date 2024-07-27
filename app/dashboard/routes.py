@@ -19,8 +19,13 @@ from .utils import convert_csv_to_utf8
 from requests.exceptions import RequestException
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-main_url="https://reporting-tool-api.onrender.com"
-api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
+#Main API:
+#main_url="https://reporting-tool-api.onrender.com"
+#api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
+
+#Testing API:
+main_url="https://reporting-tool-api-test.onrender.com"
+api_key='24d7f9b5-8325-47cd-9800-5cae89248e8b'
 
 @dashboard_bp.route('/', methods=['GET', 'POST'])
 @login_required
@@ -158,13 +163,20 @@ def api_result():
     
         #if response.status_code == 200:
         doc_chunks = response_json['doc_chunks']
-        session['csv_summary'] = response_json['csv_summary']
+        csv_summary = response_json['csv_summary'] #For multi csv implementation
+        #print(csv_summary)
+        #print("/n/n-----/n/n")
+        #print("/n/n-----/n/n")
+        #session['csv_summary'] = response_json['csv_summary'] #Old code when only single csv was allowed
+        session['csv_summary'] = [f"###Data Name: {csv[0:-4]}\n\n{csv_summary[csv]['summary']}" for csv in csv_summary]
+        #print(session['csv_summary'])
         session['doc_summaries'] = [] if response_json['doc_chunks'] == "" else [f"### Document Name: {source}\n\n{doc_chunks[source]['doc_summary']}" for source in doc_chunks]
         session['event_stream_status'] = True
         # Create a dictionary with the extracted values
         result_data = {
             'doc_summaries': session['doc_summaries'],
-            'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary']['summary']
+            #'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary']['summary']
+            'csv_summary': "" if session['csv_summary'] == "" else session['csv_summary'] #Need to display the CSV summaries on frontend
         }
         #print(result_data)
         return jsonify(result_data)
@@ -181,18 +193,27 @@ def stream():
     event_stream_status = session.get('event_stream_status')
     if event_stream_status == True:
         api_response = session.get('api_response')
+        csv_file = api_response['csv_file']
+        #print(csv_file)
         doc_summaries = session.get('doc_summaries')
+        #print(doc_summaries)
         csv_summary = session.get('csv_summary')
+        #print(csv_summary)
         description = session.get('description')
+        #print(description)
         inputs = {
             "query": description,
             "tmp_dir": api_response['temp_dir_name'],
-            "csv_file": "" if csv_summary == "" else api_response['csv_file'],
+            #"csv_file": "" if csv_summary == "" else api_response['csv_file'], #Old code for single CSV implementation
+            "csv_file": [] if csv_summary == "" else csv_file, #New code for multi CSV implementation
             "summary_list": doc_summaries,
-            "csv_summary": "" if csv_summary == "" else csv_summary['summary'],
+            #"csv_summary": "" if csv_summary == "" else csv_summary['summary'], #Old code for single CSV implementation
+            "csv_summary": "" if csv_summary == "" else csv_summary, #New code for multi CSV implementation
             "doc_num": 0 if doc_summaries == [] else len(doc_summaries),
-            "data_num": 0 if csv_summary == "" else 1
+            #"data_num": 0 if csv_summary == "" else 1 #Old code for single CSV implementation
+            "data_num": 0 if csv_summary == "" else len(csv_file) #New code for multi CSV implementation
         }
+        print(inputs)
         url = f"{main_url}/api/v1/report/"
         headers = {"X-API-KEY": api_key}
         remote_runnable = RemoteRunnable(url,headers=headers)        

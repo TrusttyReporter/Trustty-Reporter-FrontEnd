@@ -35,9 +35,12 @@
                     }
 
                     // Display csv_summary
-                    if (response.csv_summary?.trim()) {
+                    if (response.csv_summary?.length) {
                         resultHtml += '<h2>CSV Summary:</h2>';
-                        resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+                        //resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(response.csv_summary) + '</div>';
+                        response.csv_summary.forEach(function(summary, index) {
+                            resultHtml += '<div class="alert alert-light" role="alert">' + marked.parse(summary) + '</div>';
+                        });
                     }
 
                     //Alert for Generating Plan
