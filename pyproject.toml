@@ -31,10 +31,10 @@ langchain-community = "0.2.10"  # Missing from initial list, added here
 langchain-core = "0.2.23"  # Missing from initial list, added here
 langchain-text-splitters = "0.2.2"  # Missing from initial list, added here
 api-analytics = {extras = ["fastapi"], version = "*"}
-httpx = "^*"
-aiofiles = "^*"
-flask-moment = "^*"
-celery = "^*"
+httpx = "*"
+aiofiles = "*"
+flask-moment = "*"
+celery = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
