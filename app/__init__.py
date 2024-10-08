@@ -7,7 +7,7 @@ from flask_mail import Mail, Message
 from flask_moment import Moment
 from celery import Celery
 from authlib.integrations.flask_client import OAuth
-from api_analytics.flask import add_middleware
+#from api_analytics.flask import add_middleware
 from app.config import config
 from dotenv import load_dotenv
 import ssl
@@ -29,7 +29,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
+    #add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
 
     db.init_app(app)
     login_manager.init_app(app)
