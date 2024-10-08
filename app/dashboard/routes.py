@@ -8,9 +8,10 @@ import time
 import openpyxl
 import csv
 import html
-from flask import render_template, redirect, url_for, request, session, jsonify, Response, render_template_string
+from flask import current_app, render_template, redirect, url_for, request, session, jsonify, Response, render_template_string
 from flask_login import current_user, login_required
 from flask import stream_with_context, current_app
+from app.config import config
 #from flaskext.markdown import Markdown
 from werkzeug.utils import secure_filename
 from langserve import RemoteRunnable
@@ -19,13 +20,8 @@ from .utils import convert_csv_to_utf8
 from requests.exceptions import RequestException
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-#Main API:
-main_url="https://reporting-tool-api.onrender.com"
-api_key = 'ca3a94dc-dafd-4878-99a0-a86ebc386c50'  # Replace with your actual API key
-
-#Testing API:
-#main_url="https://reporting-tool-api-test.onrender.com"
-#api_key='24d7f9b5-8325-47cd-9800-5cae89248e8b'
+main_url = os.environ.get('TRUSTTY_REPORTER_API_END_POINT') or "https://reporting-tool-api-test.onrender.com"
+api_key= os.environ.get('TRUSTTY_REPORTER_API_KEY') or "24d7f9b5-8325-47cd-9800-5cae89248e8b"
 
 @dashboard_bp.route('/', methods=['GET', 'POST'])
 @login_required

@@ -1,12 +1,16 @@
+import os
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_session import Session
 from flask_mail import Mail, Message
+from flask_moment import Moment
+from celery import Celery
 from authlib.integrations.flask_client import OAuth
 from api_analytics.flask import add_middleware
-from app.config import appConf
+from app.config import config
 from dotenv import load_dotenv
+import ssl
 
 load_dotenv()
 
@@ -15,44 +19,66 @@ login_manager = LoginManager()
 oauth = OAuth()
 session = Session()
 mail = Mail()
+moment = Moment()
 
-def create_app():
+# Initialize Celery
+celery = Celery(__name__)
+
+def create_app(config_name):
     app = Flask(__name__)
-    app.config.from_object('app.config')
+    app.config.from_object(config[config_name])
+    config[config_name].init_app(app)
 
-    add_middleware(app, '319ce073-e486-45de-91cc-c42ac0a0ba4d')  # Add middleware
+    add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
 
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.signin'
     oauth.init_app(app)
     session.init_app(app)
+    moment.init_app(app)
+    
+    # Configure Celery
+    celery.conf.update(
+        broker=app.config['CELERY_BROKER'],
+        backend=app.config['CELERY_BACKEND'],
+    )
 
-    app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
-    app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')
-    app.config['MAIL_USE_TLS'] = appConf.get('MAIL_USE_TLS')
-    app.config['MAIL_USERNAME'] = appConf.get('MAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = appConf.get('MAIL_PASSWORD')
-    app.config['MAIL_DEFAULT_SENDER'] = appConf.get('MAIL_DEFAULT_SENDER')
+    # app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
+    # app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')
+    # app.config['MAIL_USE_TLS'] = appConf.get('MAIL_USE_TLS')
+    # app.config['MAIL_USERNAME'] = appConf.get('MAIL_USERNAME')
+    # app.config['MAIL_PASSWORD'] = appConf.get('MAIL_PASSWORD')
+    # app.config['MAIL_DEFAULT_SENDER'] = appConf.get('MAIL_DEFAULT_SENDER')
 
     mail.init_app(app)
 
+    # oauth.register(
+    #     "myApp",
+    #     client_id=appConf.get("OAUTH2_CLIENT_ID"),
+    #     client_secret=appConf.get("OAUTH2_CLIENT_SECRET"),
+    #     client_kwargs={
+    #         "scope": "openid profile email",
+    #         #https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read",
+    #         # 'code_challenge_method': 'S256'  # enable PKCE
+    #     },
+    #     server_metadata_url=f'{appConf.get("OAUTH2_META_URL")}',
+    # )
+    
     oauth.register(
         "myApp",
-        client_id=appConf.get("OAUTH2_CLIENT_ID"),
-        client_secret=appConf.get("OAUTH2_CLIENT_SECRET"),
+        client_id=app.config["OAUTH2_CLIENT_ID"],
+        client_secret=app.config["OAUTH2_CLIENT_SECRET"],
         client_kwargs={
             "scope": "openid profile email",
-            #https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read",
-            # 'code_challenge_method': 'S256'  # enable PKCE
         },
-        server_metadata_url=f'{appConf.get("OAUTH2_META_URL")}',
+        server_metadata_url=f'{app.config["OAUTH2_META_URL"]}',
     )
 
     @app.route('/')
     def home():
         if current_user.is_authenticated:
-            return redirect(url_for("dashboard.index"))
+            return redirect(url_for("dashboard_v2.index"))
         return render_template('landing.html')
     
     @app.route('/example/sales-report')
@@ -79,20 +105,22 @@ def create_app():
     def cookie_policy():
         return render_template('cookie_policy.html')
     
-    @app.errorhandler(Exception)
-    def handle_error(error):
-        if hasattr(error, 'code'):
-            error_code = error.code
-        else:
-            error_code = 500
-        return render_template('error.html', error_code=error_code), error_code
+    # @app.errorhandler(Exception)
+    # def handle_error(error):
+    #     if hasattr(error, 'code'):
+    #         error_code = error.code
+    #     else:
+    #         error_code = 500
+    #     return render_template('error.html', error_code=error_code), error_code
 
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp
+    from app.dashboard_v2 import dashboard_v2_bp
     from app.reportChat import reportChat_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    app.register_blueprint(dashboard_v2_bp, url_prefix='/dashboardv2')
     app.register_blueprint(reportChat_bp, url_prefix='/chat')
 
     return app

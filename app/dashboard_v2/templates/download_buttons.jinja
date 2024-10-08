@@ -1,0 +1,165 @@
+{% macro download_buttons() %}
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .download-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 1000;
+        padding: 5px 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
+    .download-buttons {
+        display: flex;
+        gap: 20px;
+    }
+    .download-btn {
+        display: flex;
+        align-items: center;
+        padding: 5px 10px;
+        border: none;
+        background: none;
+        color: #6c757d;
+        font-size: 0.9em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .download-btn:hover {
+        color: #343a40;
+    }
+    .download-btn i {
+        margin-right: 5px;
+    }
+    /* Add padding to the body to account for the fixed bar */
+    body {
+        padding-top: 50px;
+    }
+    /* Style for the error toast */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+</style>
+
+<div class="download-bar">
+    <div class="download-buttons">
+        <button class="download-btn" onclick="downloadTableData()">
+            <i class="fas fa-file-excel"></i> Table Data
+        </button>
+        <button class="download-btn" onclick="downloadChartData()">
+            <i class="fas fa-chart-bar"></i> Chart Data
+        </button>
+        <button class="download-btn" onclick="downloadAsPDF()">
+            <i class="fas fa-file-pdf"></i> Full Report
+        </button>
+    </div>
+</div>
+
+<!-- Error Toast -->
+<div class="toast-container">
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="errorToastBody">
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    window.downloadTableData = function() {
+        const tables = document.querySelectorAll('table');
+        const wb = XLSX.utils.book_new();
+        
+        tables.forEach((table, index) => {
+            const ws = XLSX.utils.table_to_sheet(table);
+            XLSX.utils.book_append_sheet(wb, ws, `Table Data ${index + 1}`);
+        });
+        
+        XLSX.writeFile(wb, "report_table_data.xlsx");
+    }
+
+    window.downloadChartData = function() {
+        const charts = Chart.getChart ? Object.values(Chart.instances) : [];
+        const wb = XLSX.utils.book_new();
+        
+        charts.forEach((chart, index) => {
+            const data = chart.data.datasets[0].data;
+            const labels = chart.data.labels;
+            const ws = XLSX.utils.aoa_to_sheet([
+                ['Label', 'Value'],
+                ...labels.map((label, i) => [label, data[i]])
+            ]);
+            XLSX.utils.book_append_sheet(wb, ws, `Chart Data ${index + 1}`);
+        });
+        
+        XLSX.writeFile(wb, "report_chart_data.xlsx");
+    }
+
+    window.downloadAsPDF = async function() {
+        try {
+            const element = document.body;
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            // If the content is longer than one page, add more pages
+            let heightLeft = pdfHeight;
+            let position = 0;
+            while (heightLeft >= pdf.internal.pageSize.getHeight()) {
+                position = -pdf.internal.pageSize.getHeight() * (pdf.internal.pages.length - 1);
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pdf.internal.pageSize.getHeight();
+            }
+
+            pdf.save('report.pdf');
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showErrorToast('An error occurred while generating the PDF. Please try again.');
+        }
+    }
+
+    // Function to show error toast
+    window.showErrorToast = function(message) {
+        const toastEl = document.getElementById('errorToast');
+        const toastBody = document.getElementById('errorToastBody');
+        toastBody.textContent = message;
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+});
+</script>
+{% endmacro %}

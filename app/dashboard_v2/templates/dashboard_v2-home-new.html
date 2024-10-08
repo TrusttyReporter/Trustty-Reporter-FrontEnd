@@ -1,0 +1,11 @@
+{% extends "dashboard_v2-layout.html" %}
+{% block title %}Generate AI-Powered Reports{% endblock %}
+{% block main %}
+<div class="main-section d-flex flex-column justify-content-center align-items-center" style="width: 80vw; height: calc(100vh - 56px);">
+    <h1 class="mb-4">Welcome, {{username}}</h1>
+    <p class="text-muted">Click the "Generate Report" button to generate your first report and get started.</p>
+    <a href="{{url_for('dashboard_v2.submit_report')}}">
+        <button class="btn btn-primary btn-lg">Generate Report</button>
+    </a>
+</div>
+{% endblock %}

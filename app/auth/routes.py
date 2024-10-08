@@ -24,7 +24,7 @@ def loader_user(user_id):
 @auth_bp.route('/')
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard.index"))
+        return redirect(url_for("dashboard_v2.index"))
     else:
         return redirect(url_for("auth.signin"))
 
@@ -47,7 +47,7 @@ def signin():
         if user:
             if user.check_password(password):
                 login_user(user)
-                return redirect(url_for("dashboard.index"))
+                return redirect(url_for("dashboard_v2.index"))
             else:
                 error = "Invalid password. Please try again."
                 return render_template("signin.html", error=error)

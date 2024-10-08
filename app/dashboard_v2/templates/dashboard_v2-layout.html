@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate comprehensive AI-powered reports effortlessly. Simply upload resources and provide a description, and our advanced AI technology will create insightful, tailored reports to meet your specific needs. Save time and gain valuable insights with our user-friendly report generation tool.">
+    <title>{% block title %}{% endblock %}| trusttyreporter.com</title>
+    <link rel="icon" type="image/png" href="{{url_for('static',filename='images/favicon-32x32.png')}}" sizes="32x32" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('dashboard_v2.static', filename='css/report-inputs.css') }}" rel="stylesheet">
+    <!--JS-->
+    {% block js %}{% endblock js %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="position-relative" style="z-index: 1030;">
+        <nav class="navbar sticky-top navbar-expand-sm bg-body-tertiary bsb-navbar-1 shadow-sm" >
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="navbar-brand" href="{{url_for('home')}}">
+                            <img src="{{ url_for('dashboard_v2.static', filename='images/logo.png')}}" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
+                        </a>
+                    </li>
+                </ul>             
+                <div class="collapse navbar-collapse" id="bsbNavbar">
+                    <ul class="navbar-nav bsb-dropdown-menu-responsive ms-auto align-items-center">
+                        <!-- Credits Dropdown -->
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-coin fs-5"></i>
+                                <span class="ms-1">5 credits</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end bsb-dropdown-animation bsb-fadeIn">
+                                <li><a class="dropdown-item" href="#">Buy Credits</a></li>
+                                <li><a class="dropdown-item" href="#">Credit History</a></li>
+                            </ul>
+                        </li>
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="position-relative pt-1">
+                                    <i class="bi bi-person-fill fs-4"></i>
+                                        <span class="visually-hidden">User</span>
+                                    </span>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-md-end bsb-dropdown-animation bsb-fadeIn">
+                                <li>
+                                    <h6 class="dropdown-header fs-7 text-center">Welcome, {{username}}</h6>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-center" href="{{url_for('auth.signout')}}">
+                                        <span>
+                                            <span class="fs-7">Log Out</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="position-relative">
+        <div class="row" >
+            <!-- Sidebar -->
+            <div class="d-flex flex-column flex-shrink-0 px-3 bg-light" style="width: 20vw;">
+                
+                <hr class="sidebar-divider mb-3">
+                <ul class="nav nav-pills flex-column mb-auto ps-3">
+                    <a class= "nav-link p-1 link-dark" role="button" href="{{url_for('dashboard_v2.index')}}">
+                        <li class="nav-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-magic" viewBox="0 0 20 20">
+                                <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"/>
+                            </svg>
+                            <span class="text-tertiary ms-1">AI Generated Report</span>
+                        </li>
+                    </a>
+                    <hr class="sidebar-divider mt-3 mb-3">
+                    <a class= "nav-link p-1 link-dark" role="button" href="{{url_for('reportChat.index')}}">
+                        <li class="nav-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-right-dots-fill" viewBox="0 0 20 20">
+                                <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                            </svg>
+                            <span class="text-tertiary ms-1">Chat Report</span>
+                        </li>
+                    </a>
+                </ul>
+            </div>
+            <!--Main-->
+            {% block main %}{% endblock %}
+        </div>
+    </main>
+    <script src="https://unpkg.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    {% block custom_javascript %}{% endblock %}
+</body>
+</html>
