@@ -189,6 +189,7 @@ def call_celery_task(query_text: str, query_id: str, temp_dir_name, pdf_files, c
         return task
     except kombu.exceptions.OperationalError as e:
         print(f"Celery task creation failed: {e}")
+        raise
 
 def get_task_status(task_id):
     result = celery.AsyncResult(task_id)
