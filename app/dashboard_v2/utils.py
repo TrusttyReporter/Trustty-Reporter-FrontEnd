@@ -183,8 +183,8 @@ def add_record_to_db(user_id, thread_id, query_text):
 def call_celery_task(query_text: str, query_id: str, temp_dir_name, pdf_files, csv_file):
     try:
         task = celery.send_task('generate_report', 
-                            args=[query_text, query_id, temp_dir_name, pdf_files, csv_file],
-                            queue='high_priority')
+                            args=[query_text, query_id, temp_dir_name, pdf_files, csv_file],)
+                            #queue='high_priority')
         print(task.id)
         return task
     except kombu.exceptions.OperationalError as e:
