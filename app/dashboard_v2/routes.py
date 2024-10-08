@@ -59,7 +59,7 @@ def get_user_reports():
     reports_data = []
     for report in reports:
         reports_data.append({
-            'id': report.id,
+            'id': report.thread_id,
             #'created_at': report.created_at.isoformat(),
             #'thread_id': report.thread_id,
             'name': report.query_text,
