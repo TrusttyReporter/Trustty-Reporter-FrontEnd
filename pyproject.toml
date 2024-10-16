@@ -35,6 +35,7 @@ httpx = "*"
 aiofiles = "*"
 flask-moment = "*"
 celery = "*"
+flask-sse = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

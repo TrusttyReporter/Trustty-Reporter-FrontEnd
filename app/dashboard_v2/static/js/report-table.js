@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const table = document.getElementById('reportTable');
+    let reportRows = new Map(); // To store references to report rows
 
     function createTable(data) {
         const tableBody = table.querySelector('tbody');
@@ -8,16 +9,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         data.forEach(report => {
             const row = document.createElement('tr');
+            // Add both IDs to the row
+            row.id = `report-row-${report.id}`;
+            row.dataset.taskId = report.task_id;
+
+            // Store reference to the row using both IDs
+            reportRows.set(report.id, row);
+            reportRows.set(report.task_id, row);
 
             // S.No.
-            number++; // Increment for each row
+            number++;
             const serialNumber = document.createElement('td');
             serialNumber.textContent = number;
             row.appendChild(serialNumber);
             
-            // Date
+            // Date (using Moment.js)
             const dateCell = document.createElement('td');
-            dateCell.textContent = report.date || new Date().toLocaleDateString();
+            const dateSpan = document.createElement('span');
+            dateSpan.textContent = moment(report.date).format('DD-MM-YYYY HH:mm')
+            dateCell.appendChild(dateSpan);
             row.appendChild(dateCell);
             
             // Report Name
@@ -25,21 +35,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const nameSpan = document.createElement('span');
             nameSpan.className = 'report-name';
             nameSpan.textContent = report.name;
-            nameSpan.title = report.name; // Add full name as title for default tooltip
-            nameSpan.style.display = 'block';
-            nameSpan.style.overflow = 'hidden';
-            nameSpan.style.textOverflow = 'ellipsis';
-            nameSpan.style.whiteSpace = 'nowrap';
-            nameSpan.style.maxWidth = '200px'; // Adjust this value as needed
+            nameSpan.title = report.name;
+            nameSpan.style.cssText = 'display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px;';
             nameCell.appendChild(nameSpan);
             row.appendChild(nameCell);
             
             // Status
             const statusCell = document.createElement('td');
-            const statusBadge = document.createElement('span');
-            statusBadge.className = `badge bg-${getStatusColor(report.status)}`;
-            statusBadge.textContent = report.status;
-            statusCell.appendChild(statusBadge);
+            statusCell.className = 'status-cell';
+            updateStatusCell(statusCell, report.status);
             row.appendChild(statusCell);
             
             // Actions
@@ -60,7 +64,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
             actions.forEach(action => {
                 const link = document.createElement('a');
-                link.href = `/dashboard-v2/${action.route}/${report.id}`; // Assuming your routes are in the format /<action>/<report_id>
+                let url;
+                switch (action.route) {
+                    case 'view_report':
+                        url = VIEW_REPORT_URL;
+                        if (statusCell.textContent.trim().toUpperCase() !== 'SUCCESS') {
+                            link.setAttribute('data-bs-toggle', 'modal');
+                            link.setAttribute('data-bs-target', '#processingModal');
+                            link.href = '#';
+                        } else {
+                            link.href = url.replace('_REPORT_ID_', report.id);
+                        }
+                        break;
+                    case 'view_logs':
+                        url = VIEW_LOGS_URL;
+                        link.href = url.replace('_REPORT_ID_', report.id);
+                        break;
+                    case 'edit_report':
+                        url = EDIT_REPORT_URL;
+                        link.href = url.replace('_REPORT_ID_', report.id);
+                        if (statusCell.textContent.trim().toUpperCase() !== 'SUCCESS') {
+                            link.setAttribute('data-bs-toggle', 'modal');
+                            link.setAttribute('data-bs-target', '#processingModal');
+                            link.href = '#';
+                        } else {
+                            link.href = url.replace('_REPORT_ID_', report.id);
+                        }
+                        break;
+                    default:
+                        console.warn(`Undefined route: ${action.route}`);
+                        link.href = '#';
+                        break;
+                }
                 link.className = 'btn btn-outline-secondary btn-sm';
                 link.textContent = action.text;
                 actionButtonsGroup.appendChild(link);
@@ -68,22 +103,19 @@ document.addEventListener('DOMContentLoaded', function() {
             
             buttonGroup.appendChild(actionButtonsGroup);
 
-            // Info icon (remains the same)
+            // Info icon
             const infoIcon = document.createElement('i');
             infoIcon.className = 'bi bi-info-circle-fill ms-2';
-            infoIcon.style.fontSize = '1em';
-            infoIcon.style.cursor = 'pointer';
+            infoIcon.style.cssText = 'font-size: 1em; cursor: pointer;';
             infoIcon.setAttribute('data-bs-toggle', 'tooltip');
             infoIcon.setAttribute('data-bs-placement', 'top');
             infoIcon.setAttribute('title', `Report ID: ${report.id}`);
             buttonGroup.appendChild(infoIcon);
 
-            // Delete (bin) icon
+            // Delete icon
             const deleteIcon = document.createElement('i');
             deleteIcon.className = 'bi bi-trash ms-2';
-            deleteIcon.style.fontSize = '1em';
-            deleteIcon.style.cursor = 'pointer';
-            //deleteIcon.style.color = 'red';
+            deleteIcon.style.cssText = 'font-size: 1em; cursor: pointer;';
             deleteIcon.setAttribute('data-bs-toggle', 'tooltip');
             deleteIcon.setAttribute('data-bs-placement', 'top');
             deleteIcon.setAttribute('title', 'Delete Report');
@@ -103,9 +135,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function updateStatusCell(cell, status) {
+        const statusInfo = getStatusInfo(status);
+        cell.innerHTML = ''; // Clear existing content
+        const statusBadge = document.createElement('span');
+        statusBadge.className = `badge bg-${statusInfo.color}`;
+        statusBadge.textContent = statusInfo.text;
+        cell.appendChild(statusBadge);
+    }
+
     function deleteReport(reportId, rowElement) {
         if (confirm('Are you sure you want to delete this report?')) {
-            fetch(`/dashboard-v2/delete_report/${reportId}`, {
+            fetch(`/dashboardv2/delete_report/${reportId}`, {
                 method: 'DELETE',
             })
             .then(response => {
@@ -123,12 +164,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function getStatusColor(status) {
-        switch (status.toLowerCase()) {
-            case 'success': return 'success';
-            case 'processing': return 'warning text-dark';
-            case 'failed': return 'danger';
-            default: return 'secondary';
+    function getStatusInfo(status) {
+        switch (status.toUpperCase()) {
+            case 'STARTED':
+                return { color: 'warning text-dark', text: 'Processing' };
+            case 'SUCCESS':
+                return { color: 'success', text: 'Success' };
+            case 'FAILURE':
+                return { color: 'danger', text: 'Failed' };
+            default:
+                return { color: 'secondary', text: 'Submitted' };
         }
     }
 
@@ -140,5 +185,77 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error fetching report data:', error));
     } else {
         console.error('REPORTS_URL is not defined');
+    }
+    
+    function updateActionButtons(row, status) {
+        const viewReportLink = row.querySelector('a[data-bs-target="#processingModal"]');
+        const editReportLink = row.querySelectorAll('a[data-bs-target="#processingModal"]')[1];
+        
+        if (status.toUpperCase() === 'SUCCESS') {
+            if (viewReportLink) {
+                viewReportLink.removeAttribute('data-bs-toggle');
+                viewReportLink.removeAttribute('data-bs-target');
+                viewReportLink.href = VIEW_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
+            }
+            if (editReportLink) {
+                editReportLink.removeAttribute('data-bs-toggle');
+                editReportLink.removeAttribute('data-bs-target');
+                editReportLink.href = EDIT_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
+            }
+        } else {
+            if (viewReportLink) {
+                viewReportLink.setAttribute('data-bs-toggle', 'modal');
+                viewReportLink.setAttribute('data-bs-target', '#processingModal');
+                viewReportLink.href = '#';
+            }
+            if (editReportLink) {
+                editReportLink.setAttribute('data-bs-toggle', 'modal');
+                editReportLink.setAttribute('data-bs-target', '#processingModal');
+                editReportLink.href = '#';
+            }
+        }
+    }
+
+
+    // SSE implementation with user-specific channel
+    if (typeof CHANNEL_ID !== 'undefined') {
+        // Create an EventSource for the user-specific channel
+        //var source = new EventSource(`/stream?channel=${encodeURIComponent(CHANNEL_ID)}`);
+        var source = new EventSource(`${SSE_URL}?channel=${encodeURIComponent(CHANNEL_ID)}`);
+
+        console.log('EventSource created:', source);
+        
+        source.onopen = function(event) {
+            console.log('EventSource connection opened:', event);
+        };
+        
+        source.addEventListener('status_update', function(event) {
+            console.log('Status update event received:', event);
+            var data = JSON.parse(event.data);
+            console.log('SSE update received:', data);
+            
+            // Find the row using task_id
+            const row = reportRows.get(data.task_id);
+
+            if (row) {
+                const statusCell = row.querySelector('.status-cell');
+                if (statusCell) {
+                    updateStatusCell(statusCell, data.status);
+                    updateActionButtons(row, data.status);
+                }
+            } else {
+                console.warn(`No row found for report with task_id: ${data.task_id}`);
+            }
+        }, false);
+
+        source.onerror = function(e) {
+            console.error('SSE error:', e);
+            source.close();
+            setTimeout(function() {
+                source = new EventSource(`${SSE_URL}?channel=${encodeURIComponent(CHANNEL_ID)}`);
+            }, 5000);  // Try to reconnect after 5 seconds
+        };
+    } else {
+        console.error('Channel is not defined');
     }
 });

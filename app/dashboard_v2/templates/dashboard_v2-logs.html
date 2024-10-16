@@ -1,0 +1,131 @@
+{% extends "dashboard_v2-layout.html" %}
+{% block title %}Generate AI-Powered Reports{% endblock %}
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.umd.min.js"></script>
+{% endblock js %}
+{% block main %}
+<div class="main-section" style="width: 80vw;">
+    <!--Section where the results are dispalyed-->
+    <div class="container col-md-10">
+        <section id="result-section" class="my-2 my-md-4 px-1">
+            <h1>Generating your report. Sit back and relax...</h1><br>
+            {% if report_description %}
+            <div class="alert alert-dark" role="alert">
+                <h2>Report Description:</h2>
+                {{ report_description }}
+            </div>
+            <div class="alert alert-success" role="alert">
+                Processing documents and generating summaries...
+            </div>
+            {% endif %}
+            {% if document_summaries %}
+            <h2>Document Summaries:</h2>
+                {% for summary in document_summaries %}
+                    <div class="alert alert-light" role="alert">
+                        <div class="markdown-content">{{ summary }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if csv_summaries %}
+            <h2>CSV Summaries:</h2>           
+                {% for summary in csv_summaries %}
+                    <div class="alert alert-light" role="alert">
+                        <div class="markdown-content">{{ summary }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if generating_plan == True %}
+            <div class="alert alert-success" role="alert"> Generating Plan...</div>
+            {% endif %}
+            {% if plan %}
+            <div class="alert alert-info" role="alert">
+                <h2>Analysis Plan:</h2><br>
+                <ol>
+                    {% for p in plan %}
+                        <li> {{p}} </li> <br>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="alert alert-success" role="alert"> Executing plan...</div>
+            {% endif %}
+            {% if past_steps %}
+                {% for step in past_steps %}
+                <div class="alert alert-info" role="alert">
+                    Working on... <br>
+                    {{ step }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% if preliminary_report %}
+            <h2>Preliminary Report:</h2>
+            <div class="alert alert-light" role="alert">
+                <div class="markdown-content">{{ preliminary_report }}</div>
+            </div>
+            <div class="alert alert-success" role="alert"> Generating final report... </div>
+            {% endif %}
+            {% if html_report_status == False %}
+            <div id="result-content">
+                <p class="placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder w-75"></span>
+                    <span class="placeholder" style="width: 25%;"></span>
+                </p>
+            </div>
+            {% endif %}
+            {% if html_report_status == True %}
+            <div class="alert alert-success" role="alert"> Final Report Generated </div>
+            <div class="text-end width-90">
+                <button class="btn btn-primary button me-3" onclick="editReport()"> Edit Report </button>
+                <button class="btn btn-primary button" onclick="openReport()"> Final Report </button>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
+{% block custom_javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var markdownElements = document.querySelectorAll('.markdown-content');
+        markdownElements.forEach(function(element) {
+            element.innerHTML = marked.parse(element.textContent);
+        });
+
+        // Scroll to the bottom of the page after loading
+        const resultSection = document.getElementById('result-content');
+        if (resultSection) {
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function checkStatus() {
+            var htmlReportStatus = "{{ html_report_status }}";
+
+            // Convert string "False" or "false" to boolean false
+            if (htmlReportStatus === "False" || htmlReportStatus === "false") {
+                htmlReportStatus = false;
+            }
+
+            console.log("htmlReportStatus:", htmlReportStatus);
+
+            if (!htmlReportStatus || htmlReportStatus === false) {
+                console.log("Page will refresh. htmlReportStatus:", htmlReportStatus);
+
+                // Reload the page
+                location.reload();
+            }
+        }
+
+        // Run checkStatus every 10 seconds
+        setInterval(checkStatus, 10000);
+    });
+
+    function openReport() {
+        window.open("{{ url_for('dashboard_v2.view_report', report_id=report_id) }}", "_blank");
+    }
+
+    function editReport() {
+        window.open("{{ url_for('dashboard_v2.edit_report', report_id=report_id) }}", "_blank");
+    }
+</script>
+{% endblock %}

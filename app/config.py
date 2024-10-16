@@ -28,19 +28,13 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SESSION_REDIS = redis.from_url('redis://localhost:6379')
+    CHANNEL_HASH_SECRET_KEY = "secret"
     SQLALCHEMY_DATABASE_URI = "postgresql://postgres.fnyajpzupimwtjxvuein:H3EsGihRliLpuyRF@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
-    CELERY_BROKER = "rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379"#?ssl_cert_reqs=CERT_NONE"
-    CELERY_BACKEND = "rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379"#?ssl_cert_reqs=CERT_NONE"
-    CELERY_BROKER_USE_SSL = {
-        'ssl_cert_reqs': ssl.CERT_NONE,
-        'ssl_ca_certs': None,
-    }
 
 class ProductionConfig(Config):
     SESSION_REDIS = redis.from_url(os.environ.get('SESSION_REDIS'))
+    CHANNEL_HASH_SECRET_KEY = os.environ.get('CHANNEL_HASH_SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
-    CELERY_BROKER = os.environ.get('CELERY_BROKER')
-    CELERY_BACKEND = os.environ.get('CELERY_BACKEND')
 
 config ={
     'development': DevelopmentConfig,

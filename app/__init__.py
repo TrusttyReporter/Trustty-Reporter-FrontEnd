@@ -11,6 +11,7 @@ from authlib.integrations.flask_client import OAuth
 from app.config import config
 from dotenv import load_dotenv
 import ssl
+from flask_sse import sse
 
 load_dotenv()
 
@@ -22,7 +23,10 @@ mail = Mail()
 moment = Moment()
 
 # Initialize Celery
-celery = Celery(__name__)
+celery = Celery(__name__, 
+                broker= os.environ.get('CELERY_BROKER') or 'rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
+                backend=os.environ.get('CELERY_BACKEND') or 'rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
+                )
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -37,12 +41,22 @@ def create_app(config_name):
     oauth.init_app(app)
     session.init_app(app)
     moment.init_app(app)
+
+    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379'
     
-    # Configure Celery
-    celery.conf.update(
-        broker=app.config['CELERY_BROKER'],
-        backend=app.config['CELERY_BACKEND'],
-    )
+    # Configure SSE with Redis
+    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cruis6rqf0us73epeu10:TocPDg7slIXSAp82yFDiY4eHZYdP0T82@ohio-redis.render.com:6379'
+    app.config["SSE_REDIS_KWARGS"] = {
+        "ssl": True,
+        "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+    }
+    app.register_blueprint(sse, url_prefix='/stream')
+    
+    # # Configure Celery
+    # celery.conf.update(
+    #     broker=app.config['CELERY_BROKER'],
+    #     backend=app.config['CELERY_BACKEND'],
+    # )
 
     # app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
     # app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')

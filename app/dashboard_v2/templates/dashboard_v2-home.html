@@ -6,7 +6,7 @@
     <section class="d-flex flex-column my-1 my-md-4 px-2">
     <div class="sticky-top bg-white p-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Reports</h1>
+            <h1>Intelligence Reports</h1>
             <a href="{{url_for('dashboard_v2.submit_report')}}">
                 <button class="btn btn-primary">+ New Report</button>
             </a>
@@ -18,10 +18,10 @@
                 <thead class="table-light">
                     <tr>
                         <th class="col-0">S.No.</th>
-                        <th class="col-1">Date</th>
-                        <th class="col-6">Report Name</th>
+                        <th class="col-2">Date Time</th>
+                        <th class="col-4">Report Name</th>
                         <th class="col-1">Status</th>
-                        <th class="col-4">Actions</th>
+                        <th class="col-5">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,11 +33,32 @@
     </section>
     </div>
 </div>
+<div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="processingModalLabel">Report Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Report is still processing. Please try again later.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 {% block custom_javascript %}
-<script src="{{ url_for('dashboard_v2.static', filename='js/report-inputs.js') }}"></script>
 <script>
     var REPORTS_URL = "{{ url_for('dashboard_v2.get_reports') }}";
+    var VIEW_REPORT_URL = "{{ url_for('dashboard_v2.view_report',report_id='_REPORT_ID_') }}";
+    var VIEW_LOGS_URL = "{{ url_for('dashboard_v2.view_logs',report_id='_REPORT_ID_') }}"
+    var EDIT_REPORT_URL = "#"
+    var SSE_URL = "{{ url_for('sse.stream', _external=True) }}";
+    var CHANNEL_ID = "{{ current_user_channel }}";
+    console.log('CHANNEL_ID before creating EventSource:', CHANNEL_ID);
 </script>
 <script src="{{ url_for('dashboard_v2.static', filename='js/report-table.js') }}"></script>
 {% endblock %}

@@ -21,6 +21,7 @@ class Local_users(UserMixin, db.Model):
 
     # Relationship with User_reports
     reports = db.relationship('User_reports', backref='user', lazy='dynamic')
+    #credits = db.relationship('User_credits', backref='user', lazy='dynamic')
 
     def __init__(self, first_name, last_name, user_email, password=None, auth_provider='local'):
         self.first_name = first_name
@@ -126,3 +127,32 @@ class User_reports(db.Model):
             print(f"Error adding report: {str(e)}")
             return None
         
+    @staticmethod
+    def update_task_id(thread_id, new_task_id):
+        try:
+            report = User_reports.query.filter_by(thread_id=thread_id).first()
+            if report:
+                report.task_id = new_task_id
+                db.session.commit()
+                return report
+            else:
+                print(f"No report found with thread_id {thread_id}")
+                return None
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            print(f"Error updating task_id: {str(e)}")
+            return None
+        
+
+# class credit_orders(db.Model):
+#     _tablename__ = 'Orders'
+#     id = db.Column('id')
+
+# class User_credits(db.Model):
+#     __tablename__ = 'Credits'
+#     id = db.Column('id', db.Integer, primary_key=True)
+#     user_id = db.Column('user_id',db.Integer,db.ForeignKey('Users.id'), nullable = False)
+#     credits_remaining = db.Column('credits_remaining',db.Integer,nullable = False)
+#     subscription_status = db.Column('status',db.Text,nullable=False)
+#     subscription_start_date = db.Column('start_date',db.DateTime(timezone=True), nullable=False)
+#     subscription_end_date = db.Column('end_date',db.DateTime(timezone=True), nullable=False)
