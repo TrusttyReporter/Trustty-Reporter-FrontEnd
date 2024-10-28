@@ -23,14 +23,11 @@ session = Session()
 mail = Mail()
 moment = Moment()
 
-REDIS_URL = os.environ.get('REDIS_URL')
 
 # Initialize Celery
 celery = Celery(__name__,
-                broker = REDIS_URL,
-                backend = REDIS_URL
-                #broker= f"redis://{os.environ.get('CELERY_BROKER')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
-                #backend=f"redis://{os.environ.get('CELERY_BACKEND')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
+                broker= 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
+                backend='rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
                 )
 
 def create_app(config_name):
