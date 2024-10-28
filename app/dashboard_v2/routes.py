@@ -425,9 +425,9 @@ async def handle_webhook():
             # Handle new subscription
             subscription_data = event_data.get('data', {}).get('attributes', {})
             print(f"New subscription created: {subscription_data.get('id')}")
-            subscription_id = subscription_data.get('data', {}).get('id')
-            customer_portal_url = subscription_data.get('data', {}).get('attributes', {}).get('urls', {}).get('customer_portal')
-            created_at_str = subscription_data.get('data', {}).get('attributes', {}).get('created_at')
+            subscription_id = subscription_data.get('id')
+            customer_portal_url = subscription_data.get('attributes', {}).get('urls', {}).get('customer_portal')
+            created_at_str = subscription_data.get('attributes', {}).get('created_at')
             User_credits.add_subscription(user_id=int(user_id),
                                           subscription_id=subscription_id,
                                           customer_portal_url=customer_portal_url, 
