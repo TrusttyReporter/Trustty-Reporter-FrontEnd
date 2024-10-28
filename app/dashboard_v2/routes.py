@@ -88,6 +88,47 @@ def get_or_create_channel_id() -> str:
         session['channel_id'] = hash_channel_id(current_user.user_email)
     return session['channel_id']
 
+def update_session_credits(user_id):
+    """
+    Update credits in the user's session stored in Redis
+    """
+    try:
+        # Get user's session from Redis
+        session_interface = current_app.session_interface
+        user = Local_users.query.get(user_id)
+        
+        if user:
+            # Get all session keys from Redis that belong to this user
+            prefix = f"session:"
+            all_sessions = session_interface.redis.keys(f"{prefix}*")
+            
+            # Find user's active sessions
+            for session_key in all_sessions:
+                session_data = session_interface.redis.get(session_key)
+                if session_data:
+                    session_dict = session_interface.serializer.loads(session_data)
+                    
+                    # Check if this session belongs to our user
+                    if session_dict.get('_user_id') == str(user_id):
+                        # Update credits in session
+                        available_credits = user.get_available_credits()
+                        session_dict['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
+                        
+                        if session_dict['credits_available'] == "Unlimited":
+                            session_dict['customer_portal_url'] = user.get_customer_portal_url
+                        else:
+                            session_dict['customer_portal_url'] = None
+                            
+                        # Save updated session back to Redis
+                        session_interface.redis.setex(
+                            session_key,
+                            current_app.permanent_session_lifetime.total_seconds(),
+                            session_interface.serializer.dumps(session_dict)
+                        )
+    except Exception as e:
+        print(f"Error updating session credits: {str(e)}")
+
+
 @dashboard_v2_bp.route('/', methods=['GET', 'POST'])
 @dashboard_v2_bp.route('/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -353,6 +394,7 @@ async def handle_webhook():
                     user_id=int(user_id),
                     credit_amount=credit_amount
                 )
+            update_session_credits(user_id)  # Update session
         
         elif event_name == 'order_refunded':
             order_data = event_data.get('data', {}).get('attributes', {})
@@ -365,6 +407,7 @@ async def handle_webhook():
                     user_id=int(user_id),
                     credit_amount=credit_amount
                 )
+            update_session_credits(user_id)  # Update session
 
         elif event_name == 'subscription_created':
             # Handle new subscription
@@ -378,7 +421,7 @@ async def handle_webhook():
                                           customer_portal_url=customer_portal_url, 
                                           start_date=datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
                                           )
-            # Add your custom logic here
+            update_session_credits(user_id)  # Update session
 
         elif event_name == 'subscription_cancelled':
             print(event_name)
@@ -389,6 +432,8 @@ async def handle_webhook():
         elif event_name == 'subscription_payment_success':
             print(event_name)
             User_credits.handle_subscription_renewal(user_id=int(user_id), current_date=datetime.utcnow())
+            update_session_credits(user_id)  # Update session
+        
         # Add more event handlers as needed
         
         return jsonify({"status": "success"}), 200

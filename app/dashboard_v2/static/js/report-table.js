@@ -188,19 +188,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateActionButtons(row, status) {
-        const viewReportLink = row.querySelector('a[data-bs-target="#processingModal"]');
-        const chatReportLink = row.querySelectorAll('a[data-bs-target="#processingModal"]')[1];
+        const reportId = row.id.replace('report-row-', ''); // Get the report ID from the row ID
+        const actionButtons = row.querySelectorAll('.btn-group a');
+        const viewReportLink = actionButtons[1];  // Second button is View Report
+        const chatReportLink = actionButtons[2];  // Third button is Chat
         
         if (status.toUpperCase() === 'SUCCESS') {
             if (viewReportLink) {
                 viewReportLink.removeAttribute('data-bs-toggle');
                 viewReportLink.removeAttribute('data-bs-target');
-                viewReportLink.href = VIEW_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
+                viewReportLink.href = VIEW_REPORT_URL.replace('_REPORT_ID_', reportId);
             }
             if (chatReportLink) {
                 chatReportLink.removeAttribute('data-bs-toggle');
                 chatReportLink.removeAttribute('data-bs-target');
-                chatReportLink.href = CHAT_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
+                chatReportLink.href = CHAT_REPORT_URL.replace('_REPORT_ID_', reportId);
             }
         } else {
             if (viewReportLink) {
