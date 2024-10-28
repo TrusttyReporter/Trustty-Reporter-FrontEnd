@@ -69,10 +69,10 @@ def create_app(config_name):
     
     # Configure SSE with Redis
     app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND')
-    # app.config["SSE_REDIS_KWARGS"] = {
-    #     "ssl": True,
-    #     "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
-    # }
+    app.config["SSE_REDIS_KWARGS"] = {
+        "ssl": True,
+        #"ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+    }
     
     app.register_blueprint(sse, url_prefix='/stream')
 
