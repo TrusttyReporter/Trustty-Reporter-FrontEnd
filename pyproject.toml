@@ -36,6 +36,7 @@ aiofiles = "*"
 flask-moment = "*"
 celery = "*"
 flask-sse = "*"
+beautifulsoup4 = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
