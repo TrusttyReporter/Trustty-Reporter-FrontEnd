@@ -29,12 +29,15 @@ class SimpleLemonSqueezy:
             response.raise_for_status()
             return response.json()['data']
 
-    async def create_checkout(self, user_id, store_id, variant_id: int, custom_price: int = None) -> Dict[str, Any]:
+    async def create_checkout(self, user_email,user_id, store_id, variant_id: int, custom_price: int = None) -> Dict[str, Any]:
         """Create a checkout session for a variant."""
         payload = {
             "data": {
               "type": "checkouts",
               "attributes": {
+                  "checkout_data": {
+                  "email": str(user_email),
+                },
                 "checkout_data": {
                   "custom": {
                     "user_id": str(user_id)
