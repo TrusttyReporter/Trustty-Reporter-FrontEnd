@@ -9,7 +9,7 @@ from typing import List
 from app.config import config
 import bcrypt
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 class Local_users(UserMixin, db.Model):
     __tablename__ = 'Users'
@@ -215,7 +215,7 @@ class User_credits(db.Model):
     @property
     def has_credits(self):
         """Check if user has available credits or active subscription."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         if self.credit_type == CreditType.SUBSCRIPTION:
             return (self.is_active and 
