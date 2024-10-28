@@ -7,11 +7,12 @@ from flask_mail import Mail, Message
 from flask_moment import Moment
 from celery import Celery
 from authlib.integrations.flask_client import OAuth
-#from api_analytics.flask import add_middleware
+from api_analytics.flask import add_middleware
 from app.config import config
 from dotenv import load_dotenv
 import ssl
 from flask_sse import sse
+from flask_talisman import Talisman
 
 load_dotenv()
 
@@ -33,7 +34,29 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    #add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
+    add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
+
+    # Configure security headers
+    csp = {
+        'default-src': "'self'",
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src': ["'self'", "'unsafe-inline'"],
+        'img-src': ["'self'", 'data:', 'https:'],
+        'font-src': ["'self'", 'data:'],
+        'connect-src': ["'self'", 'https:'],
+        'frame-ancestors': "'none'"
+    }
+
+    # Initialize Talisman
+    Talisman(app,
+        force_https=True,
+        strict_transport_security=True,
+        session_cookie_secure=True,
+        session_cookie_http_only=True,
+        frame_options='DENY',
+        content_security_policy=csp,
+        content_security_policy_nonce_in=['script-src']
+    )
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -48,7 +71,7 @@ def create_app(config_name):
     app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
     app.config["SSE_REDIS_KWARGS"] = {
         "ssl": True,
-        "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+        #"ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
     }
     app.register_blueprint(sse, url_prefix='/stream')
     
@@ -119,13 +142,13 @@ def create_app(config_name):
     def cookie_policy():
         return render_template('cookie_policy.html')
     
-    # @app.errorhandler(Exception)
-    # def handle_error(error):
-    #     if hasattr(error, 'code'):
-    #         error_code = error.code
-    #     else:
-    #         error_code = 500
-    #     return render_template('error.html', error_code=error_code), error_code
+    @app.errorhandler(Exception)
+    def handle_error(error):
+        if hasattr(error, 'code'):
+            error_code = error.code
+        else:
+            error_code = 500
+        return render_template('error.html', error_code=error_code), error_code
 
     from app.auth import auth_bp
     from app.dashboard import dashboard_bp
