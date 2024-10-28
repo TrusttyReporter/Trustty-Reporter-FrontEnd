@@ -12,7 +12,7 @@ from app.config import config
 from dotenv import load_dotenv
 import ssl
 from flask_sse import sse
-from flask_talisman import Talisman
+import redis
 
 load_dotenv()
 
@@ -25,8 +25,8 @@ moment = Moment()
 
 # Initialize Celery
 celery = Celery(__name__, 
-                broker= os.environ.get('CELERY_BROKER'), 
-                backend=os.environ.get('CELERY_BACKEND')
+                broker= os.environ.get('CELERY_BROKER') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
+                backend=os.environ.get('CELERY_BACKEND', 'redis://') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
                 )
 
 def create_app(config_name):
@@ -36,28 +36,6 @@ def create_app(config_name):
 
     add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
 
-    # # Configure security headers
-    # csp = {
-    #     'default-src': "'self'",
-    #     'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-    #     'style-src': ["'self'", "'unsafe-inline'"],
-    #     'img-src': ["'self'", 'data:', 'https:'],
-    #     'font-src': ["'self'", 'data:'],
-    #     'connect-src': ["'self'", 'https:'],
-    #     'frame-ancestors': "'none'"
-    # }
-
-    # # Initialize Talisman
-    # Talisman(app,
-    #     force_https=True,
-    #     strict_transport_security=True,
-    #     session_cookie_secure=True,
-    #     session_cookie_http_only=True,
-    #     frame_options='DENY',
-    #     content_security_policy=csp,
-    #     content_security_policy_nonce_in=['script-src']
-    # )
-
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.signin'
@@ -65,16 +43,23 @@ def create_app(config_name):
     session.init_app(app)
     moment.init_app(app)
 
-    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND')
+    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
+    # Initialize Redis connection
+    redis_client = redis.Redis.from_url(os.environ.get('CELERY_BACKEND', 'redis://'))
     
     # Configure SSE with Redis
-    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND')
-    app.config["SSE_REDIS_KWARGS"] = {
-        "ssl": True,
-        #"ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
-    }
-    
+    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
+    # app.config["SSE_REDIS_KWARGS"] = {
+    #     "ssl": True,
+    #     "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+    # }
     app.register_blueprint(sse, url_prefix='/stream')
+    
+    # # Configure Celery
+    # celery.conf.update(
+    #     broker=app.config['CELERY_BROKER'],
+    #     backend=app.config['CELERY_BACKEND'],
+    # )
 
     # app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
     # app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')
