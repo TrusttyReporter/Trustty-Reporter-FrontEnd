@@ -31,11 +31,19 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SESSION_REDIS = redis.from_url('redis://localhost:6379')
+    REDIS_URL = redis.from_url('rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379')
+    SSE_REDIS_URL = 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
     CHANNEL_HASH_SECRET_KEY = "secret"
     SQLALCHEMY_DATABASE_URI = "postgresql://postgres.fnyajpzupimwtjxvuein:H3EsGihRliLpuyRF@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+    SSE_REDIS_KWARGS = {
+        "ssl": True,
+        "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+    }
 
 class ProductionConfig(Config):
     SESSION_REDIS = redis.from_url(os.environ.get('SESSION_REDIS'))
+    #REDIS_URL = redis.from_url(os.environ.get('CELERY_BACKEND_SSE'))
+    #SSE_REDIS_URL = os.environ.get('CELERY_BACKEND_SSE')
     CHANNEL_HASH_SECRET_KEY = os.environ.get('CHANNEL_HASH_SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
