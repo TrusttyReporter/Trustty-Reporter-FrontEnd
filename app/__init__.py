@@ -25,8 +25,8 @@ moment = Moment()
 
 # Initialize Celery
 celery = Celery(__name__, 
-                broker= redis.from_url(os.environ.get('CELERY_BROKER')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
-                backend=redis.from_url(os.environ.get('CELERY_BACKEND')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
+                broker= os.environ.get('CELERY_BROKER') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
+                backend=os.environ.get('CELERY_BACKEND', 'redis://') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
                 )
 
 def create_app(config_name):
@@ -43,12 +43,12 @@ def create_app(config_name):
     session.init_app(app)
     moment.init_app(app)
 
-    app.config["REDIS_URL"] = redis.from_url(os.environ.get('CELERY_BACKEND')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
+    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND', 'redis://') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
     # Initialize Redis connection
     #redis_client = redis.Redis.from_url(os.environ.get('CELERY_BACKEND', 'redis://'))
     
     # Configure SSE with Redis
-    app.config["SSE_REDIS_URL"] = redis.from_url(os.environ.get('CELERY_BACKEND')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
+    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND', 'redis://') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
     # app.config["SSE_REDIS_KWARGS"] = {
     #     "ssl": True,
     #     "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
