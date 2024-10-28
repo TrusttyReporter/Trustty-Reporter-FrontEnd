@@ -36,27 +36,27 @@ def create_app(config_name):
 
     add_middleware(app, os.environ.get('ANALYTICS_API_KEY'))  # Add middleware
 
-    # Configure security headers
-    csp = {
-        'default-src': "'self'",
-        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        'style-src': ["'self'", "'unsafe-inline'"],
-        'img-src': ["'self'", 'data:', 'https:'],
-        'font-src': ["'self'", 'data:'],
-        'connect-src': ["'self'", 'https:'],
-        'frame-ancestors': "'none'"
-    }
+    # # Configure security headers
+    # csp = {
+    #     'default-src': "'self'",
+    #     'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    #     'style-src': ["'self'", "'unsafe-inline'"],
+    #     'img-src': ["'self'", 'data:', 'https:'],
+    #     'font-src': ["'self'", 'data:'],
+    #     'connect-src': ["'self'", 'https:'],
+    #     'frame-ancestors': "'none'"
+    # }
 
-    # Initialize Talisman
-    Talisman(app,
-        force_https=True,
-        strict_transport_security=True,
-        session_cookie_secure=True,
-        session_cookie_http_only=True,
-        frame_options='DENY',
-        content_security_policy=csp,
-        content_security_policy_nonce_in=['script-src']
-    )
+    # # Initialize Talisman
+    # Talisman(app,
+    #     force_https=True,
+    #     strict_transport_security=True,
+    #     session_cookie_secure=True,
+    #     session_cookie_http_only=True,
+    #     frame_options='DENY',
+    #     content_security_policy=csp,
+    #     content_security_policy_nonce_in=['script-src']
+    # )
 
     db.init_app(app)
     login_manager.init_app(app)
