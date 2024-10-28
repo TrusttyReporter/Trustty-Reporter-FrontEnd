@@ -364,7 +364,7 @@ async def ls_checkout():
         variant_id = variants[0]['id']
         print(variant_id)
         checkout = await lemon_squeezy.create_checkout(
-            user_email = current_user.email,
+            user_email = current_user.user_email,
             user_id = current_user.id,
             store_id=store_id,
             variant_id=variant_id,
