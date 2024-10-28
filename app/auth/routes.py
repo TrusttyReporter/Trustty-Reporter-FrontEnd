@@ -135,16 +135,10 @@ def signup():
             # Create a new user
             new_user = Local_users(first_name=first_name, last_name=last_name, user_email=email, password=password, auth_provider='local')
             db.session.add(new_user)
-            db.session.flush()  # This gets us the user.id without committing
-            # Add free trial credits
-            free_trial = User_credits.add_free_trial(new_user.id)
-            if not free_trial:
-                # Roll back if we couldn't add free trial credits
-                db.session.rollback()
-                error = "Error creating account. Please try again."
-                return render_template("signup.html", error=error)
-            
+            #db.session.flush()  # This gets us the user.id without committing
             db.session.commit()
+            #Add free trial credits
+            free_trial = User_credits.add_free_trial(new_user.id)
 
             return redirect(url_for("auth.signin"))
         except Exception as e:
@@ -217,15 +211,16 @@ def googleCallback():
         if not user:
             new_user = Local_users(first_name=user_name.split()[0], last_name=' '.join(user_name.split()[1:]), user_email=user_email, auth_provider='google')
             db.session.add(new_user)
-            db.session.flush()  # This gets us the user.id without committing
+            db.session.commit()
+            #db.session.flush()  # This gets us the user.id without committing
             # Add free trial credits
             free_trial = User_credits.add_free_trial(new_user.id)
-            if not free_trial:
-                # Roll back if we couldn't add free trial credits
-                db.session.rollback()
-                error = "Error creating account. Please try again."
-                return render_template("signup.html", error=error)
-            db.session.commit()
+            # if not free_trial:
+            #     # Roll back if we couldn't add free trial credits
+            #     db.session.rollback()
+            #     error = "Error creating account. Please try again."
+            #     return render_template("signup.html", error=error)
+            
             login_user(new_user)
         else:
             login_user(user)

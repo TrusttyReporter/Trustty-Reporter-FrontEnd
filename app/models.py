@@ -251,7 +251,7 @@ class User_credits(db.Model):
     def add_free_trial(cls, user_id):
         """Add free trial credits for new user. Only if user has no active credits."""
         try:
-            # Check if user already has any credits
+            #Check if user already has any credits
             current_credits = cls.get_active_credits(user_id)
             if current_credits:
                 print(f"User {user_id} already has active credits")
@@ -265,6 +265,7 @@ class User_credits(db.Model):
                 is_active=True
             )
             db.session.add(new_credits)
+            #db.session.flush()
             db.session.commit()
             return new_credits
             
