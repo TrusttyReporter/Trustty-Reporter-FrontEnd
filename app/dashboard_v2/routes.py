@@ -427,11 +427,11 @@ async def handle_webhook():
             print(f"New subscription created: {subscription_data.get('id')}")
             subscription_id = subscription_data.get('id')
             customer_portal_url = subscription_data.get('attributes', {}).get('urls', {}).get('customer_portal')
-            created_at_str = subscription_data.get('attributes', {}).get('created_at')
+            created_at_str = subscription_data.get('attributes', {}).get('created_at').replace('Z', '+00:00')
             User_credits.add_subscription(user_id=int(user_id),
                                           subscription_id=subscription_id,
                                           customer_portal_url=customer_portal_url, 
-                                          start_date=datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                                          start_date=datetime.fromisoformat(created_at_str)
                                           )
             update_session_credits_webhook(user_id)  # Update session
 
