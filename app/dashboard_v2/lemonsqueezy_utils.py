@@ -29,16 +29,23 @@ class SimpleLemonSqueezy:
             response.raise_for_status()
             return response.json()['data']
 
-    async def create_checkout(self, variant_id: int, custom_price: int = None) -> Dict[str, Any]:
+    async def create_checkout(self, user_id, store_id, variant_id: int, custom_price: int = None) -> Dict[str, Any]:
         """Create a checkout session for a variant."""
         payload = {
             "data": {
               "type": "checkouts",
+              "attributes": {
+                "checkout_data": {
+                  "custom": {
+                    "user_id": str(user_id)
+                  }
+                }
+              },
               "relationships": {
                 "store": {
                   "data": {
                     "type": "stores",
-                    "id": "119711"
+                    "id": str(store_id)
                   }
                 },
                 "variant": {
@@ -52,6 +59,8 @@ class SimpleLemonSqueezy:
         }
         if custom_price is not None:
             payload["data"]["attributes"]["custom_price"] = custom_price
+
+        print(payload)
 
         async with httpx.AsyncClient() as client:
             response = await client.post(f"{self.base_url}/checkouts", json=payload, headers=self.headers)

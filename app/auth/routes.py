@@ -1,12 +1,42 @@
-from flask import render_template, request, redirect, url_for, session, abort, flash
+from flask import render_template, request, redirect, url_for, session, abort, flash, current_app
 from flask_mail import Message
 from app.auth import auth_bp
-from app.models import Local_users
+from app.models import Local_users, User_credits
 from app import db, oauth, login_manager, mail
 from flask_login import login_user, logout_user, login_required, current_user
 from .utils import send_email
 import requests
 import os
+
+
+def verify_recaptcha(response):
+    """Verify reCAPTCHA response with detailed error handling"""
+    if not current_app.config['RECAPTCHA_SECRET_KEY']:
+        print("reCAPTCHA secret key not configured!")
+        return False
+        
+    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {
+        'secret': current_app.config['RECAPTCHA_SECRET_KEY'],
+        'response': response,
+        'remoteip': request.remote_addr  # Optional - for better security
+    }
+    
+    try:
+        r = requests.post(verify_url, data=payload, timeout=5)
+        result = r.json()
+        
+        if not result['success']:
+            # Log specific error codes for debugging
+            if 'error-codes' in result:
+                print(f"reCAPTCHA verification failed: {result['error-codes']}")
+            return False
+            
+        return True
+        
+    except requests.RequestException as e:
+        print(f"reCAPTCHA verification request failed: {e}")
+        return False
 
 @login_manager.user_loader
 def loader_user(user_id):
@@ -31,16 +61,29 @@ def index():
 @auth_bp.route('/signin', methods=["GET", "POST"])
 def signin():
     if request.method == 'POST':
+        recaptcha_response = request.form.get('g-recaptcha-response')
+
+        if not recaptcha_response:
+            error = 'Please complete the reCAPTCHA.'
+            return render_template('signin.html', error=error,
+                                recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
+
+        if not verify_recaptcha(recaptcha_response):
+            error = 'reCAPTCHA verification failed. Please try again.'
+            return render_template('signin.html', error=error,
+                                recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
+
+
         email = request.form['email']
         password = request.form['password']
         
         if not email:
             error = "Please enter your email address."
-            return render_template("signin.html", error=error)
+            return render_template("signin.html", error=error, recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
         
         if not password:
             error = "Please enter your password."
-            return render_template("signin.html", error=error)
+            return render_template("signin.html", error=error, recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
         
         user = Local_users.query.filter_by(user_email=email).first()
         
@@ -50,16 +93,28 @@ def signin():
                 return redirect(url_for("dashboard_v2.index"))
             else:
                 error = "Invalid password. Please try again."
-                return render_template("signin.html", error=error)
+                return render_template("signin.html", error=error,recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
         else:
             error = "No account found with the provided email address."
-            return render_template("signin.html", error=error)
+            return render_template("signin.html", error=error,recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
     
-    return render_template("signin.html")
+    return render_template("signin.html",recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
 
 @auth_bp.route('/signup', methods=["GET", "POST"])
 def signup():
     if request.method == 'POST':
+        recaptcha_response = request.form.get('g-recaptcha-response')
+
+        if not recaptcha_response:
+            error = 'Please complete the reCAPTCHA.'
+            return render_template('signup.html', error=error,
+                                recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
+
+        if not verify_recaptcha(recaptcha_response):
+            error = 'reCAPTCHA verification failed. Please try again.'
+            return render_template('signup.html', error=error,
+                                recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
+        
         first_name = request.form['firstName']
         last_name = request.form['lastName']
         email = request.form['email']
@@ -76,14 +131,29 @@ def signup():
             error = "Please fill in all the required fields."
             return render_template("signup.html", error=error)
 
-        # Create a new user
-        new_user = Local_users(first_name=first_name, last_name=last_name, user_email=email, password=password, auth_provider='local')
-        db.session.add(new_user)
-        db.session.commit()
+        try:
+            # Create a new user
+            new_user = Local_users(first_name=first_name, last_name=last_name, user_email=email, password=password, auth_provider='local')
+            db.session.add(new_user)
+            db.session.flush()  # This gets us the user.id without committing
+            # Add free trial credits
+            free_trial = User_credits.add_free_trial(new_user.id)
+            if not free_trial:
+                # Roll back if we couldn't add free trial credits
+                db.session.rollback()
+                error = "Error creating account. Please try again."
+                return render_template("signup.html", error=error)
+            
+            db.session.commit()
 
-        return redirect(url_for("auth.signin"))
+            return redirect(url_for("auth.signin"))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error during signup: {str(e)}")
+            error = "Error creating account. Please try again."
+            return render_template("signup.html", error=error)
 
-    return render_template("signup.html")
+    return render_template("signup.html",recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
 
 @auth_bp.route('/resetpassword', methods=['GET', 'POST'])
 def restPasswordRequest():
@@ -147,6 +217,14 @@ def googleCallback():
         if not user:
             new_user = Local_users(first_name=user_name.split()[0], last_name=' '.join(user_name.split()[1:]), user_email=user_email, auth_provider='google')
             db.session.add(new_user)
+            db.session.flush()  # This gets us the user.id without committing
+            # Add free trial credits
+            free_trial = User_credits.add_free_trial(new_user.id)
+            if not free_trial:
+                # Roll back if we couldn't add free trial credits
+                db.session.rollback()
+                error = "Error creating account. Please try again."
+                return render_template("signup.html", error=error)
             db.session.commit()
             login_user(new_user)
         else:

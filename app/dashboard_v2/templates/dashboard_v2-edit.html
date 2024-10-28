@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat and Report Display</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('dashboard_v2.static', filename='css/report-inputs.css') }}" rel="stylesheet">
+    <style>
+        #chat-messages {
+            height: 600px;
+            overflow-y: auto;
+            border: none;
+            padding: 10px;
+            margin-bottom: 0;
+        }
+        #output {
+            height: 600px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+        #webpage-display {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #context-menu {
+            position: absolute;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 5px 0;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #context-menu button {
+            display: block;
+            width: 100%;
+            padding: 5px 10px;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        #context-menu button:hover {
+            background-color: #e9ecef;
+        }
+        .user-message { background-color: #f0f0f0; }
+        .ai-message { background-color: #e9ecef; }
+        .message {
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+        .message .fw-bold {
+            margin-bottom: 0.5rem;
+        }
+        .message .text-muted {
+            margin-top: 0.5rem;
+            font-size: 0.875em;
+        }
+        .typing-indicator span {
+            height: 0.5rem;
+            width: 0.5rem;
+            background-color: #6c757d;
+            display: inline-block;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="position-relative" style="z-index: 1030;">
+        <nav class="navbar sticky-top navbar-expand-sm bg-body-tertiary bsb-navbar-1 shadow-sm" >
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="navbar-brand" href="{{url_for('home')}}">
+                            <img src="{{ url_for('dashboard_v2.static', filename='images/logo.png')}}" class="img-fluid" alt="TrustyReporter Logo" width="135" height="44">
+                        </a>
+                    </li>
+                </ul>             
+                <div class="collapse navbar-collapse" id="bsbNavbar">
+                    <ul class="navbar-nav bsb-dropdown-menu-responsive ms-auto align-items-center">
+                        <!-- Credits Dropdown -->
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-coin fs-5"></i>
+                                <span class="ms-1">{{ credits_available }} credits</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end bsb-dropdown-animation bsb-fadeIn">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#buyCreditsModal">Buy Credits</a></li>
+                                <!-- <li><a class="dropdown-item" href="#">Credit History</a></li> -->
+                            </ul>
+                        </li>
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="position-relative pt-1">
+                                    <i class="bi bi-person-fill fs-4"></i>
+                                        <span class="visually-hidden">User</span>
+                                    </span>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-md-end bsb-dropdown-animation bsb-fadeIn">
+                                <li>
+                                    <h6 class="dropdown-header fs-7 text-center">Welcome, {{username}}</h6>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-center" href="{{url_for('auth.signout')}}">
+                                        <span>
+                                            <span class="fs-7">Log Out</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <!-- Left side: Chat window -->
+            <div class="col-md-6">
+                <div class="card rounded-3 overflow-hidden">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3 px-4">
+                        <h2 class="mb-0 fs-4"><i class="bi bi-chat-dots me-2"></i>Chat</h2>
+                        <span class="badge bg-light text-primary rounded-pill px-3 py-2">Online</span>
+                    </div>
+                    <input type="hidden" id="report-id" value="{{ report_id }}">
+                    <div id="chat-messages"></div>
+                    <div class="input-area">
+                        <div class="input-group">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Send a message...">
+                            <button id="send-btn" class="btn btn-primary">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right side: Webpage output -->
+            <div class="col-md-6">
+                <div class="card rounded-3 overflow-hidden">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center py-3 px-4">
+                        <h2 class="mb-0 fs-4"><i class="bi bi-file-text-fill me-2"></i>Report</h2>
+                    </div>
+                    <div id="output">
+                        <iframe id="webpage-display" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                </div>
+                <div id="context-menu">
+                    <button id="add-to-chat-btn">Explain</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Buy Credits Modal -->
+    <div class="modal fade" id="buyCreditsModal" tabindex="-1" aria-labelledby="buyCreditsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="buyCreditsModalLabel">Add to Credit Balance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loadingSpinner" class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading...</p>
+                    </div>
+                    <div id="productCards" class="d-none row row-cols-1">
+                        <!-- Products will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Custom JavaScript -->
+    <script src="https://unpkg.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        marked.setOptions({
+            sanitize: true
+        });
+    </script>
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const output = document.getElementById('output');
+        const webpageDisplay = document.getElementById('webpage-display');
+        const contextMenu = document.getElementById('context-menu');
+        const addToChatBtn = document.getElementById('add-to-chat-btn');
+        const queryId = 'dummy-query-id'; // You may want to generate this dynamically
+        let lastAiMessageIndex = -1;
+    
+        let selectedText = '';
+    
+        // Variable to store the webpage content (shortened for brevity)
+        let webpageContent = `{{ report | safe }}`;
+        
+        // Function to display the webpage content
+        function displayWebpage() {
+            const blob = new Blob([webpageContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            webpageDisplay.src = url;
+        }
+    
+        // Initial display of the webpage
+        displayWebpage();
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('typing-indicator', 'p-3', 'rounded', 'mb-3', 'ai-message', 'd-inline-block');
+            typingDiv.innerHTML = '<span class="me-1"></span><span class="me-1"></span><span></span>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = chatMessages.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Modify appendMessage to track AI messages
+        function appendMessage(sender, message, isMarkdown = false, isSelectedText = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'p-3', 'rounded', 'mb-3', 
+                sender === 'user' ? 'user-message' : 'ai-message', 
+                sender === 'user' ? 'ms-auto' : 'me-auto');
+            messageDiv.setAttribute('data-sender', sender); // Add this line
+            messageDiv.style.maxWidth = '80%';
+            
+            const messageHeader = document.createElement('div');
+            messageHeader.classList.add('fw-bold', 'mb-2');
+            if (sender === 'user') {
+                messageHeader.innerHTML = isSelectedText ? 
+                    '<i class="bi bi-chat-quote-fill me-2"></i> Selected Text' : 
+                    '<i class="bi bi-person-fill me-2"></i> You';
+            } else {
+                messageHeader.innerHTML = '<i class="bi bi-robot me-2"></i> AI';
+                lastAiMessageIndex = chatMessages.children.length; // Track last AI message
+            }
+            
+            const messageContent = document.createElement('div');
+            if (isMarkdown) {
+                messageContent.innerHTML = marked.parse(message);
+            } else {
+                messageContent.textContent = message;
+            }
+            messageDiv.appendChild(messageHeader);
+            messageDiv.appendChild(messageContent);
+            
+            const timestamp = document.createElement('div');
+            timestamp.classList.add('text-muted', 'mt-2', 'small');
+            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageDiv.appendChild(timestamp);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add function to get all messages after last AI message
+        function getQueryFromMessages() {
+            const messages = chatMessages.children;
+            let query = [];
+            
+            // Start from the message after the last AI message
+            for (let i = lastAiMessageIndex + 1; i < messages.length; i++) {
+                const message = messages[i];
+                // Get the message content div (second child after header)
+                const contentDiv = message.children[1];
+                if (contentDiv) {
+                    // Use textContent to get plain text without HTML
+                    query.push(contentDiv.textContent);
+                }
+            }
+            
+            return query.join('\n');
+        }
+
+        // Update sendMessage function
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            const reportId = document.getElementById('report-id').value;
+            
+            if (message) {
+                // Display user message
+                appendMessage('user', message);
+                chatInput.value = '';
+                showTypingIndicator();
+                
+                try {
+                    // Get concatenated query from all messages after last AI message
+                    const fullQuery = getQueryFromMessages();
+                    
+                    // Make API call to chat response endpoint
+                    const response = await axios.post('{{ url_for("dashboard_v2.chat_response") }}', {
+                        query: fullQuery,
+                        report_id: reportId
+                    });
+                    
+                    // Remove typing indicator and display AI response
+                    removeTypingIndicator();
+                    appendMessage('ai', response.data, true);
+                    
+                } catch (error) {
+                    console.error('Error getting chat response:', error);
+                    removeTypingIndicator();
+                    appendMessage('ai', 'Sorry, there was an error processing your request. Please try again.', true);
+                }
+            }
+        }
+
+        // Update addToChatBtn click handler to use the same message sending logic
+        addToChatBtn.addEventListener('click', () => {
+            if (selectedText) {
+                appendMessage('user', selectedText, false, true);
+                contextMenu.style.display = 'none';
+                
+                // Get concatenated query and send message
+                const reportId = document.getElementById('report-id').value;
+                const fullQuery = getQueryFromMessages();
+                
+                showTypingIndicator();
+                
+                axios.post('{{ url_for("dashboard_v2.chat_response") }}', {
+                    query: fullQuery,
+                    report_id: reportId
+                })
+                .then(response => {
+                    removeTypingIndicator();
+                    appendMessage('ai', response.data, true);
+                })
+                .catch(error => {
+                    console.error('Error getting chat response:', error);
+                    removeTypingIndicator();
+                    appendMessage('ai', 'Sorry, there was an error processing your request. Please try again.', true);
+                });
+                
+                selectedText = '';
+            }
+        });
+        // Handle messages from the iframe
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'textSelected') {
+                selectedText = event.data.text;
+                const rect = event.data.rect;
+                const iframeRect = webpageDisplay.getBoundingClientRect();
+    
+                // Calculate position for context menu
+                const top = rect.top + window.scrollY + iframeRect.top;
+                const left = rect.left + window.scrollX + iframeRect.left;
+    
+                // Adjust menu position to be above the selection
+                contextMenu.style.display = 'block';
+                contextMenu.style.top = `${top - contextMenu.offsetHeight}px`;
+                contextMenu.style.left = `${left}px`;
+    
+                // Ensure the menu doesn't go off-screen
+                const rightEdge = left + contextMenu.offsetWidth;
+                const bottomEdge = top;
+                
+                if (rightEdge > window.innerWidth) {
+                    contextMenu.style.left = `${window.innerWidth - contextMenu.offsetWidth}px`;
+                }
+                if (bottomEdge < 0) {
+                    contextMenu.style.top = `${top + rect.height}px`;
+                }
+            }
+        });
+    
+        document.addEventListener('mousedown', (e) => {
+            if (!contextMenu.contains(e.target) && e.target !== webpageDisplay) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const buyCreditsLink = document.querySelector('a[data-bs-target="#buyCreditsModal"]');
+        buyCreditsLink.addEventListener('click', fetchProducts);
+    });
+
+    async function fetchProducts() {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const productCards = document.getElementById('productCards');
+
+        loadingSpinner.classList.remove('d-none');
+        productCards.classList.add('d-none');
+
+        try {
+            const response = await axios.get("{{ url_for('dashboard_v2.get_ls_products') }}");
+            if (response.data.error) {
+                throw new Error(response.data.error);
+            }
+            const products = response.data.products;
+            displayProductCards(products);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            alert('Failed to load products. Please try again later.');
+        } finally {
+            loadingSpinner.classList.add('d-none');
+            productCards.classList.remove('d-none');
+        }
+    }
+
+    function displayProductCards(products) {
+        const productCards = document.getElementById('productCards');
+        productCards.innerHTML = ''; // Clear previous content
+
+        products.forEach(product => {
+            // Remove HTML tags and extract text content
+            const description = product.attributes.description.replace(/<\/?[^>]+(>|$)/g, "");
+            const card = document.createElement('div');
+            card.className = 'col mb-3'; // Ensure cards stack vertically on mobile
+            card.innerHTML = `
+            <div class="card w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title align-self-start">${product.attributes.name} @ ${product.attributes.price_formatted}</h5>
+                    <p class="card-text align-self-start">${description}</p>
+                    <button class="btn btn-primary align-self-start lemon-checkout" data-url="${product.attributes.buy_now_url}">Buy Now</button>
+                </div>
+            </div>
+            `;
+            productCards.appendChild(card);
+        });
+        
+        // Initialize Lemon Squeezy checkout for all buttons
+        document.querySelectorAll('.lemon-checkout').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const checkoutUrl = this.getAttribute('data-url');
+                LemonSqueezy.Url.Open(checkoutUrl);
+            });
+        });
+        
+        // Initialize Lemon Squeezy
+        if (typeof window.createLemonSqueezy === 'function') {
+            window.createLemonSqueezy();
+        } else {
+            console.error('Lemon Squeezy script not loaded properly');
+        }
+    }
+    </script>
+</body>
+</html>

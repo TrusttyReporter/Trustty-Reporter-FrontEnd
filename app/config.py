@@ -20,6 +20,9 @@ class Config:
     MAIL_DEFAULT_SENDER = "no-reply@trusttyreporter.com"
     SESSION_TYPE = "redis"
     SQLALCHEMY_POOL_SIZE = 5
+    REPORTS_PER_PAGE = 10
+    RECAPTCHA_SITE_KEY = '6LfW9GgqAAAAAFKcZccx6t5V98KeeDQpUn6Yz5Jt'  # Get this from Google reCAPTCHA admin
+    RECAPTCHA_SECRET_KEY = '6LfW9GgqAAAAAGwsfn6EKbg9alSke1wwXQDLjR2g'
 
     @staticmethod
     def init_app(app):

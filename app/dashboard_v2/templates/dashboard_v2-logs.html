@@ -76,7 +76,7 @@
             {% if html_report_status == True %}
             <div class="alert alert-success" role="alert"> Final Report Generated </div>
             <div class="text-end width-90">
-                <button class="btn btn-primary button me-3" onclick="editReport()"> Edit Report </button>
+                <button class="btn btn-primary button me-3" onclick="chatReport()"> Chat with Report </button>
                 <button class="btn btn-primary button" onclick="openReport()"> Final Report </button>
             </div>
             {% endif %}
@@ -124,8 +124,8 @@
         window.open("{{ url_for('dashboard_v2.view_report', report_id=report_id) }}", "_blank");
     }
 
-    function editReport() {
-        window.open("{{ url_for('dashboard_v2.edit_report', report_id=report_id) }}", "_blank");
+    function chatReport() {
+        window.open("{{ url_for('dashboard_v2.chat_report', report_id=report_id) }}", "_blank");
     }
 </script>
 {% endblock %}

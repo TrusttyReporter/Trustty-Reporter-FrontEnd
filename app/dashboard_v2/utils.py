@@ -17,7 +17,7 @@ from flask_login import login_required, current_user
 from celery.result import AsyncResult
 from celery import signature
 from app import celery
-from app.models import Local_users, User_reports
+from app.models import Local_users, User_reports, User_credits
 
 async def convert_csv_to_utf8(file_path, encoding):
     """
@@ -36,11 +36,11 @@ async def convert_csv_to_utf8(file_path, encoding):
 def handle_post_request(main_url, api_key):
     description = request.form['description']
     if not description:
-        return render_error("Description is required.")
+        return handle_error_with_refund("Description is required.")
     
     resources = request.files.getlist('resources')
     if not resources:
-        return render_error("No files were uploaded. Please upload a file and try again.")
+        return handle_error_with_refund("No files were uploaded. Please upload a file and try again.")
 
     session['description'] = description
 
@@ -50,11 +50,11 @@ def handle_post_request(main_url, api_key):
         try:
             file_paths = loop.run_until_complete(process_files(resources, temp_dir))
             if isinstance(file_paths, str):  # Error occurred
-                return render_error(file_paths)
+                return handle_error_with_refund(file_paths)
             
             api_response = loop.run_until_complete(make_api_request(main_url, api_key, file_paths))
             if isinstance(api_response, str):  # Error occurred
-                return render_error(api_response)
+                return handle_error_with_refund(api_response)
             
             print(api_response)
             session['api_response'] = api_response
@@ -69,11 +69,30 @@ def handle_post_request(main_url, api_key):
             task = call_celery_task(query_text, query_id, channel_id, temp_dir_name, pdf_files, csv_file)
             User_reports.update_task_id(query_id, str(task.id))
             return redirect(url_for("dashboard_v2.index"))
+        except Exception as e:
+            return handle_error_with_refund(f"An error occurred: {str(e)}")
         finally:
             loop.close()
 
+def update_credits_session():
+    """Update the session with current credit information."""
+    available_credits = current_user.get_available_credits()
+    session['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
+
+
+def handle_error_with_refund(error_message):
+    """Handle error with credit refund and session update."""
+    if credits := User_credits.get_active_credits(current_user.id):
+        credits.refund_credit()
+        update_credits_session()
+    return render_error(error_message)
+
 def render_error(message):
-    return render_template('dashboard_v2-input.html', username=current_user.first_name, error_message=message)
+    return render_template('dashboard_v2-input.html', 
+                           username=current_user.first_name, 
+                           error_message=message,
+                           credits_available= session['credits_available'],
+                           customer_portal_url= session['customer_portal_url'])
 
 async def process_files(resources, temp_dir):
     file_paths = await save_uploaded_files(resources, temp_dir)
@@ -235,6 +254,7 @@ def get_checkpointer_response_from_api(main_url, api_key,report_id):
     except httpx.HTTPError as e:
         # Log the error here if you have a logging system set up
         print(f"HTTP error occurred: {e}")
+        raise
         abort(500, description="Error fetching data from API")
     except json.JSONDecodeError as e:
         print(f"JSON decode error occurred: {e}")
@@ -242,3 +262,40 @@ def get_checkpointer_response_from_api(main_url, api_key,report_id):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         abort(500, description="An unexpected error occurred")
+
+def generate_chat_id():
+    thread_uuid = uuid.uuid4()
+    return str(thread_uuid)
+
+
+def get_chat_response(main_url, api_key, query, report_id, chat_id):
+    url = f"{main_url}/api/v1/reportchat/invoke/"
+    headers = {
+        'accept': 'application/json',
+        "X-API-KEY": api_key
+    }
+    inputs = {
+        "query": query,
+        "thread_id": chat_id,
+        "report_id": report_id,
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json={"input": inputs})
+        
+        # Check response status
+        response.raise_for_status()
+        
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        # Handle different types of request errors
+        if isinstance(e, requests.exceptions.HTTPError) and e.response.status_code == 429:
+            return "Rate limit exceeded. Please try again later."
+        elif isinstance(e, requests.exceptions.ConnectionError):
+            return "Unable to connect to the server. Please check your connection."
+        else:
+            return "You have exhausted your chat length limit. Please start a new chat."
+            
+    except json.JSONDecodeError:
+        return "Invalid response from server"

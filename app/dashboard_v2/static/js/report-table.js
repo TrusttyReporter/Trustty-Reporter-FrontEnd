@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function createTable(data) {
         const tableBody = table.querySelector('tbody');
         tableBody.innerHTML = ''; // Clear existing table content
-        let number = 0; // Initialize outside the loop
+        let number = (currentPage - 1) * reportsPerPage; // Initialize outside the loop
 
         data.forEach(report => {
             const row = document.createElement('tr');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const actions = [
                 { text: 'View Logs', route: 'view_logs' },
                 { text: 'View Report', route: 'view_report' },
-                { text: 'Edit', route: 'edit_report' }
+                { text: 'Chat', route: 'chat_report' }
             ];
 
             actions.forEach(action => {
@@ -80,8 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         url = VIEW_LOGS_URL;
                         link.href = url.replace('_REPORT_ID_', report.id);
                         break;
-                    case 'edit_report':
-                        url = EDIT_REPORT_URL;
+                    case 'chat_report':
+                        url = CHAT_REPORT_URL;
                         link.href = url.replace('_REPORT_ID_', report.id);
                         if (statusCell.textContent.trim().toUpperCase() !== 'SUCCESS') {
                             link.setAttribute('data-bs-toggle', 'modal');
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fetch data from Flask route and create table
     if (typeof REPORTS_URL !== 'undefined') {
-        fetch(REPORTS_URL)
+        fetch(`${REPORTS_URL}?page=${currentPage}`)
             .then(response => response.json())
             .then(data => createTable(data))
             .catch(error => console.error('Error fetching report data:', error));
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function updateActionButtons(row, status) {
         const viewReportLink = row.querySelector('a[data-bs-target="#processingModal"]');
-        const editReportLink = row.querySelectorAll('a[data-bs-target="#processingModal"]')[1];
+        const chatReportLink = row.querySelectorAll('a[data-bs-target="#processingModal"]')[1];
         
         if (status.toUpperCase() === 'SUCCESS') {
             if (viewReportLink) {
@@ -197,10 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewReportLink.removeAttribute('data-bs-target');
                 viewReportLink.href = VIEW_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
             }
-            if (editReportLink) {
-                editReportLink.removeAttribute('data-bs-toggle');
-                editReportLink.removeAttribute('data-bs-target');
-                editReportLink.href = EDIT_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
+            if (chatReportLink) {
+                chatReportLink.removeAttribute('data-bs-toggle');
+                chatReportLink.removeAttribute('data-bs-target');
+                chatReportLink.href = CHAT_REPORT_URL.replace('_REPORT_ID_', row.id.split('-')[2]);
             }
         } else {
             if (viewReportLink) {
@@ -208,10 +208,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewReportLink.setAttribute('data-bs-target', '#processingModal');
                 viewReportLink.href = '#';
             }
-            if (editReportLink) {
-                editReportLink.setAttribute('data-bs-toggle', 'modal');
-                editReportLink.setAttribute('data-bs-target', '#processingModal');
-                editReportLink.href = '#';
+            if (chatReportLink) {
+                chatReportLink.setAttribute('data-bs-toggle', 'modal');
+                chatReportLink.setAttribute('data-bs-target', '#processingModal');
+                chatReportLink.href = '#';
             }
         }
     }

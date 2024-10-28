@@ -63,6 +63,14 @@
                       </label>
                     </div>
                   </div>
+                  <!-- Add reCAPTCHA with error handling -->
+                  <div class="col-12 mb-3">
+                    <div class="d-flex justify-content-center">
+                      <div class="g-recaptcha" 
+                          data-sitekey="{{ recaptcha_site_key }}"
+                          data-error-callback="onRecaptchaError"></div>
+                    </div>
+                  </div>
                   <div class="col-12">
                     <div class="d-grid">
                       <button class="btn btn-primary btn-lg" type="submit">Sign up</button>

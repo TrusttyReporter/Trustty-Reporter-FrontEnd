@@ -29,6 +29,55 @@
                 </tbody>
             </table>
         </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination pagination-sm justify-content-end">
+            {% if current_page > 1 %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard_v2.index', page=current_page-1) }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only"></span>
+                </a>
+              </li>
+            {% endif %}
+        
+            {% set window_size = 5 %}
+            {% set window_start = [current_page - window_size//2, 1] | max %}
+            {% set window_end = [window_start + window_size - 1, total_pages] | min %}
+        
+            {% if window_start > 1 %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard_v2.index', page=1) }}">1</a>
+              </li>
+              {% if window_start > 2 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              {% endif %}
+            {% endif %}
+        
+            {% for p in range(window_start, window_end + 1) %}
+              <li class="page-item {% if p == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('dashboard_v2.index', page=p) }}">{{ p }}</a>
+              </li>
+            {% endfor %}
+        
+            {% if window_end < total_pages %}
+              {% if window_end < total_pages - 1 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              {% endif %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard_v2.index', page=total_pages) }}">{{ total_pages }}</a>
+              </li>
+            {% endif %}
+        
+            {% if current_page < total_pages %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard_v2.index', page=current_page+1) }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only"></span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
     </div>
     </section>
     </div>
@@ -53,9 +102,11 @@
 {% block custom_javascript %}
 <script>
     var REPORTS_URL = "{{ url_for('dashboard_v2.get_reports') }}";
+    var currentPage = "{{current_page}}"
+    var reportsPerPage = "{{reports_per_page}}"
     var VIEW_REPORT_URL = "{{ url_for('dashboard_v2.view_report',report_id='_REPORT_ID_') }}";
     var VIEW_LOGS_URL = "{{ url_for('dashboard_v2.view_logs',report_id='_REPORT_ID_') }}"
-    var EDIT_REPORT_URL = "#"
+    var CHAT_REPORT_URL = "{{ url_for('dashboard_v2.chat_report',report_id='_REPORT_ID_') }}"
     var SSE_URL = "{{ url_for('sse.stream', _external=True) }}";
     var CHANNEL_ID = "{{ current_user_channel }}";
     console.log('CHANNEL_ID before creating EventSource:', CHANNEL_ID);

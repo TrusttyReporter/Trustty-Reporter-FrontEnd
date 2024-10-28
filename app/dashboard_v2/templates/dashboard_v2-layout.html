@@ -37,11 +37,15 @@
                         <li class="nav-item dropdown me-3">
                             <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-coin fs-5"></i>
-                                <span class="ms-1">5 credits</span>
+                                <span class="ms-1">{{ credits_available }} credits</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end bsb-dropdown-animation bsb-fadeIn">
+                                {% if credits_available == "Unlimited" %}
+                                <li><a class="dropdown-item" href="{{ customer_portal_url }}" target="_blank">Manage Subscription</a></li>
+                                {% else %}
                                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#buyCreditsModal">Buy Credits</a></li>
-                                <li><a class="dropdown-item" href="#">Credit History</a></li>
+                                <!-- <li><a class="dropdown-item" href="#">Credit History</a></li> -->
+                                {% endif %}
                             </ul>
                         </li>
                         <!-- User Dropdown -->
@@ -170,30 +174,65 @@
             card.innerHTML = `
             <div class="card w-100">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title align-self-start">${product.attributes.name} @ ${product.attributes.price_formatted}</h5>
+                    <h5 class="card-title align-self-start">${product.attributes.name} @ <b>${product.attributes.price_formatted}</b></h5>
                     <p class="card-text align-self-start">${description}</p>
-                    <button class="btn btn-primary align-self-start lemon-checkout" data-url="${product.attributes.buy_now_url}">Buy Now</button>
+                    <button class="btn btn-primary align-self-start lemon-checkout" data-product-id="${product.id}" data-store-id="${product.attributes.store_id}">Buy Now</button>
                 </div>
             </div>
             `;
             productCards.appendChild(card);
         });
-        
+
         // Initialize Lemon Squeezy checkout for all buttons
         document.querySelectorAll('.lemon-checkout').forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', async function(e) {
                 e.preventDefault();
-                const checkoutUrl = this.getAttribute('data-url');
-                LemonSqueezy.Url.Open(checkoutUrl);
+                
+                // Disable button and show loading state
+                this.disabled = true;
+                const originalText = this.textContent;
+                this.textContent = 'Processing...';
+
+                try {
+                    const productId = this.getAttribute('data-product-id');
+                    const storeId = this.getAttribute('data-store-id');
+                    // Call the checkout endpoint with POST and product_id in body
+                    const response = await axios.post("{{ url_for('dashboard_v2.ls_checkout') }}", {
+                        product_id: productId,
+                        store_id: storeId
+                    });
+                    if (response.data.checkout_url) {
+                        // Open the checkout URL in a new window
+                        window.open(response.data.checkout_url, '_blank');
+                    } else {
+                        throw new Error('No checkout URL received');
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    alert('Failed to initiate checkout. Please try again.');
+                } finally {
+                    // Reset button state
+                    this.disabled = false;
+                    this.textContent = originalText;
+                }
             });
         });
         
-        // Initialize Lemon Squeezy
-        if (typeof window.createLemonSqueezy === 'function') {
-            window.createLemonSqueezy();
-        } else {
-            console.error('Lemon Squeezy script not loaded properly');
-        }
+        // // Initialize Lemon Squeezy checkout for all buttons
+        // document.querySelectorAll('.lemon-checkout').forEach(button => {
+        //     button.addEventListener('click', function(e) {
+        //         e.preventDefault();
+        //         const checkoutUrl = this.getAttribute('data-url');
+        //         LemonSqueezy.Url.Open(checkoutUrl);
+        //     });
+        // });
+        
+        // // Initialize Lemon Squeezy
+        // if (typeof window.createLemonSqueezy === 'function') {
+        //     window.createLemonSqueezy();
+        // } else {
+        //     console.error('Lemon Squeezy script not loaded properly');
+        // }
     }
     </script>
     {% block custom_javascript %}{% endblock %}
