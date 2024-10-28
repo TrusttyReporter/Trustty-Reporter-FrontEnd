@@ -35,10 +35,8 @@ class SimpleLemonSqueezy:
             "data": {
               "type": "checkouts",
               "attributes": {
-                  "checkout_data": {
-                  "email": str(user_email),
-                },
                 "checkout_data": {
+                  "email": str(user_email),
                   "custom": {
                     "user_id": str(user_id)
                   }
