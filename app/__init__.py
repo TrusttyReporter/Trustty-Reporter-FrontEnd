@@ -25,8 +25,8 @@ moment = Moment()
 
 # Initialize Celery
 celery = Celery(__name__, 
-                broker= redis.Redis.from_url(os.environ.get('CELERY_BROKER')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
-                backend=redis.Redis.from_url(os.environ.get('CELERY_BACKEND')) or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
+                broker= f"redis://{os.environ.get('CELERY_BROKER')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
+                backend=f"redis://{os.environ.get('CELERY_BACKEND')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
                 )
 
 def create_app(config_name):
