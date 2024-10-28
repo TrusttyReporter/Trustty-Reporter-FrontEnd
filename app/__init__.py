@@ -25,8 +25,8 @@ moment = Moment()
 
 # Initialize Celery
 celery = Celery(__name__, 
-                broker= os.environ.get('CELERY_BROKER') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
-                backend=os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
+                broker= os.environ.get('CELERY_BROKER'), 
+                backend=os.environ.get('CELERY_BACKEND')
                 )
 
 def create_app(config_name):
@@ -65,21 +65,16 @@ def create_app(config_name):
     session.init_app(app)
     moment.init_app(app)
 
-    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
+    app.config["REDIS_URL"] = os.environ.get('CELERY_BACKEND')
     
     # Configure SSE with Redis
-    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND') or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
-    app.config["SSE_REDIS_KWARGS"] = {
-        "ssl": True,
-        #"ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
-    }
-    app.register_blueprint(sse, url_prefix='/stream')
+    app.config["SSE_REDIS_URL"] = os.environ.get('CELERY_BACKEND')
+    # app.config["SSE_REDIS_KWARGS"] = {
+    #     "ssl": True,
+    #     "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate
+    # }
     
-    # # Configure Celery
-    # celery.conf.update(
-    #     broker=app.config['CELERY_BROKER'],
-    #     backend=app.config['CELERY_BACKEND'],
-    # )
+    app.register_blueprint(sse, url_prefix='/stream')
 
     # app.config['MAIL_SERVER'] = appConf.get('MAIL_SERVER')
     # app.config['MAIL_PORT'] = appConf.get('MAIL_PORT')
