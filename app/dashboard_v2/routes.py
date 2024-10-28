@@ -431,7 +431,7 @@ async def handle_webhook():
             User_credits.add_subscription(user_id=int(user_id),
                                           subscription_id=subscription_id,
                                           customer_portal_url=customer_portal_url, 
-                                          start_date=datetime.fromisoformat(created_at_str)
+                                          start_date= datetime.now(timezone.utc)
                                           )
             update_session_credits_webhook(user_id)  # Update session
 
