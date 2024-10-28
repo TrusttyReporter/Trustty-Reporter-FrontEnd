@@ -27,7 +27,7 @@ moment = Moment()
 celery = Celery(__name__, 
                 #broker= f"redis://{os.environ.get('CELERY_BROKER')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE', 
                 #backend=f"redis://{os.environ.get('CELERY_BACKEND')}" or 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379?ssl_cert_reqs=CERT_NONE'
-                broker = "redis://red-cs825pq3esus73cp36ag:6379"
+                broker = "redis://red-cs825pq3esus73cp36ag:6379",
                 backend = "redis://red-cs825pq3esus73cp36ag:6379"
                 )
 
