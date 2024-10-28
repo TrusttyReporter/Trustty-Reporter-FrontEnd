@@ -97,6 +97,7 @@ def update_session_credits_webhook(user_id):
         # Get user's session from Redis
         session_interface = current_app.session_interface
         user = Local_users.query.get(user_id)
+        print(user.id)
         
         if user:
             # Get all session keys from Redis that belong to this user
@@ -112,11 +113,12 @@ def update_session_credits_webhook(user_id):
                     if session_dict.get('_user_id') == str(user_id):
                         # Get the channel_id from the session
                         channel_id = session_dict.get('channel_id')
+                        print(channel_id)
                         
                         # Update credits in session
                         available_credits = user.get_available_credits()
                         session_dict['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
-                        
+                        print(session_dict['credits_available'])
                         if session_dict['credits_available'] == "Unlimited":
                             session_dict['customer_portal_url'] = user.get_customer_portal_url
                         else:
