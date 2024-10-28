@@ -96,6 +96,7 @@ def index(page=1):
     # Get credits information using the user method
     available_credits = current_user.get_available_credits()
     session['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
+    session['customer_portal_url'] = None
     if session['credits_available'] == "Unlimited":
         session['customer_portal_url']= current_user.get_customer_portal_url
     report_count = User_reports.get_report_count_by_user_id(user_id)
