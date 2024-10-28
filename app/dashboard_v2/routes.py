@@ -93,6 +93,7 @@ def update_session_credits_webhook(user_id):
     """
     Update credits in the user's session stored in Redis and notify client
     """
+    print("Starting credit update from webhook")
     try:
         # Get user's session from Redis
         session_interface = current_app.session_interface
