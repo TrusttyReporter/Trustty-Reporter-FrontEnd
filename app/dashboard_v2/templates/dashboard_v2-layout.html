@@ -218,6 +218,29 @@
         });
     }
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const CHANNEL_ID = "{{ current_user_channel }}";
+            var source = new EventSource(`{{ url_for('sse.stream', _external=True) }}?channel=${encodeURIComponent(CHANNEL_ID)}`);
+            
+            source.addEventListener('message', function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'reload') {
+                    window.location.reload();
+                }
+            });
+            
+            source.onerror = function(error) {
+                console.error('SSE Error:', error);
+                source.close();
+            };
+        
+            // Clean up when the page is unloaded
+            window.addEventListener('beforeunload', function() {
+                source.close();
+            });
+        });
+        </script>
     {% block custom_javascript %}{% endblock %}
 </body>
 </html>
