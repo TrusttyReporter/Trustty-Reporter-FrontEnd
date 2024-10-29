@@ -29,7 +29,8 @@ async def convert_csv_to_utf8(file_path, encoding):
             df.to_csv(file_path, index=False, encoding='utf-8')
             return True
         except Exception as e:
-            return f"Error converting CSV to UTF-8: {str(e)}"
+            #return f"Error converting CSV to UTF-8: {str(e)}"
+            return f"Error converting CSV to UTF-8:"
 
     return await asyncio.to_thread(_convert)
 
@@ -70,7 +71,8 @@ def handle_post_request(main_url, api_key):
             User_reports.update_task_id(query_id, str(task.id))
             return redirect(url_for("dashboard_v2.index"))
         except Exception as e:
-            return handle_error_with_refund(f"An error occurred: {str(e)}")
+            #return handle_error_with_refund(f"An error occurred: {str(e)}")
+            return handle_error_with_refund(f"An error occurred, please try again.")
         finally:
             loop.close()
 
@@ -183,7 +185,8 @@ async def convert_csv_encoding(file_path):
                 return result  # This will be an error message if conversion failed
         return True
     except Exception as e:
-        return f"Error in convert_csv_encoding: {str(e)}"
+        #return f"Error in convert_csv_encoding: {str(e)}"
+        return f"Error in convert_csv_encoding."
 
 async def make_api_request(main_url, api_key, file_paths):
     api_url = f"{main_url}/api/v1/upload/"
@@ -199,9 +202,11 @@ async def make_api_request(main_url, api_key, file_paths):
             response.raise_for_status()
             return response.json()
         except httpx.RequestError as e:
-            return f"Oops! Something went wrong while processing your request: {str(e)}"
+            #return f"Oops! Something went wrong while processing your request: {str(e)}"
+            return f"Oops! Something went wrong while processing your request, please try again!"
         except (KeyError, json.JSONDecodeError) as e:
-            return f"Hmm, looks like we received an unexpected response: {str(e)}"
+            #return f"Hmm, looks like we received an unexpected response: {str(e)}"
+            return f"Hmm, looks like we received an unexpected response, we apologise. We would appreciate if you could report the issue at support@trusttyreporter.com"
 
 async def prepare_files_for_api(file_paths):
     files = []
