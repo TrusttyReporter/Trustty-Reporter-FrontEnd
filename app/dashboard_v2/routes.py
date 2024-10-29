@@ -298,6 +298,7 @@ def chat_response():
 def send_sse(user_id):
     user = Local_users.query.filter_by(id=user_id).first()
     user_email = user.user_email
+    print(user_email)
     channel_id = hash_channel_id(user_email)
     print(channel_id)
     sse.publish({"instruction": "reload"},{"type": "reload"}, channel=channel_id)
@@ -357,12 +358,15 @@ async def handle_webhook():
 
         if event_name == 'order_created':
             # Handle new order
+            print("order_received")
             order_data = event_data.get('data', {}).get('attributes', {})
             total_amount = order_data.get('first_order_item').get('price')
             if total_amount == 500:
                 credit_amount=5
             elif total_amount == 1000:
                 credit_amount=10
+            else:
+                return None, 204
             print(f"New order received: {order_data.get('identifier')}")
             User_credits.add_pay_as_you_go_credits(
                     user_id=int(user_id),
