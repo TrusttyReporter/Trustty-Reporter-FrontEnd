@@ -372,7 +372,7 @@ async def handle_webhook():
         
         elif event_name == 'order_refunded':
             order_data = event_data.get('data', {}).get('attributes', {})
-            total_amount = order_data.get('total')
+            total_amount = order_data.get('first_order_item').get('price')
             if total_amount == 500:
                 credit_amount=-5
             elif total_amount == 1000:
