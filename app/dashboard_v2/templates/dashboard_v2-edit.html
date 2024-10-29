@@ -213,6 +213,7 @@
         });
     </script>
     <script>
+        console.log("Page is loaded");
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
@@ -227,9 +228,12 @@
     
         // Variable to store the webpage content (shortened for brevity)
         let webpageContent = `{{ report | safe }}`;
+        console.log('Webpage Content:', webpageContent);
         
         // Function to display the webpage content
         function displayWebpage() {
+            //const content = webpageContent.replace(/<\/script>/g, '<\\/script>');
+            //const blob = new Blob([content], { type: 'text/html' });
             const blob = new Blob([webpageContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             webpageDisplay.src = url;

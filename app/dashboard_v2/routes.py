@@ -90,17 +90,20 @@ def get_or_create_channel_id() -> str:
         session['channel_id'] = hash_channel_id(current_user.user_email)
     return session['channel_id']
 
-@dashboard_v2_bp.route('/', methods=['GET', 'POST'])
-@dashboard_v2_bp.route('/<int:page>', methods=['GET', 'POST'])
-@login_required
-def index(page=1):
-    user_id = current_user.id
-    # Get credits information using the user method
+def update_session_credits():
     available_credits = current_user.get_available_credits()
     session['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
     session['customer_portal_url'] = None
     if session['credits_available'] == "Unlimited":
         session['customer_portal_url']= current_user.get_customer_portal_url()
+
+@dashboard_v2_bp.route('/', methods=['GET', 'POST'])
+@dashboard_v2_bp.route('/<int:page>', methods=['GET', 'POST'])
+@login_required
+def index(page=1):
+    user_id = current_user.id
+    update_session_credits()
+    # Get credits information using the user method
     report_count = User_reports.get_report_count_by_user_id(user_id)
     session['total_report_count'] = report_count
     reports_per_page = current_app.config['REPORTS_PER_PAGE']
@@ -110,9 +113,7 @@ def index(page=1):
     page = max(1, min(page, total_pages))
     #print(current_user.user_email)
     channel_id = get_or_create_channel_id()
-    
     #print(channel_id)
-
     template = 'dashboard_v2-home-new.html' if report_count == 0 else 'dashboard_v2-home.html'
     return render_template(template, 
                            username=current_user.first_name, 
@@ -126,6 +127,7 @@ def index(page=1):
 @dashboard_v2_bp.route('/submit-report', methods=['GET', 'POST'])
 @login_required
 def submit_report():
+    update_session_credits()
     if not current_user.can_use_tool():
         error = 'Not enough credits available. Please purchase credits or subscribe.'
         return render_error(error)
@@ -163,6 +165,7 @@ def view_report(report_id):
 @dashboard_v2_bp.route('/view_logs/<report_id>')
 @login_required
 def view_logs(report_id):
+    update_session_credits()
     try:
         response_json = get_checkpointer_response_from_api(main_url, api_key, report_id)
         report_description = response_json.get('answer', {}).get('channel_values', {}).get('messages', [])[0]['content']
@@ -208,6 +211,7 @@ def view_logs(report_id):
 @dashboard_v2_bp.route('/chat_report/<report_id>')
 @login_required
 def chat_report(report_id):
+    update_session_credits()
     chat = User_chats.query.filter_by(thread_id=report_id).first()
     if not chat:
         new_chat = User_chats(user_id=current_user.id, 
@@ -241,6 +245,7 @@ def chat_report(report_id):
     body_close_pos = escaped_report.find("</body>")
     if body_close_pos != -1:
         escaped_report = escaped_report[:body_close_pos] + add_to_chat_script + escaped_report[body_close_pos:]
+        print(escaped_report)
     return render_template('dashboard_v2-edit.html',
                            username=current_user.first_name, 
                            report = escaped_report,
