@@ -490,7 +490,7 @@
                     });
                     if (response.data.checkout_url) {
                         // Open the checkout URL in a new window
-                        window.open(response.data.checkout_url, '_blank');
+                        window.open(response.data.checkout_url, '_self');
                     } else {
                         throw new Error('No checkout URL received');
                     }

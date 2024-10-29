@@ -203,7 +203,7 @@
                     });
                     if (response.data.checkout_url) {
                         // Open the checkout URL in a new window
-                        window.open(response.data.checkout_url, '_blank');
+                        window.open(response.data.checkout_url, '_self');
                     } else {
                         throw new Error('No checkout URL received');
                     }
@@ -219,32 +219,6 @@
         });
     }
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const CHANNEL_ID = "{{ current_user_channel }}";
-            var source = new EventSource(`{{ url_for('sse.stream', _external=True) }}?channel=${encodeURIComponent(CHANNEL_ID)}`);
-            console.log('EventSource for webhook sse created:', source);
-            source.addEventListener('reload', function(event) {
-                var data = JSON.parse(event.data);
-                    console.log('Reload received')
-                    // Check if the instruction is "reload"
-                    if (data.instruction === "reload") {
-                        console.log('Executing reload instruction');
-                        window.location.reload();
-                    }
-            });
-            
-            source.onerror = function(error) {
-                console.error('SSE Webhook Error:', error);
-                source.close();
-            };
-        
-            // Clean up when the page is unloaded
-            window.addEventListener('beforeunload', function() {
-                //source.close();
-            });
-        });
-        </script>
     {% block custom_javascript %}{% endblock %}
 </body>
 </html>

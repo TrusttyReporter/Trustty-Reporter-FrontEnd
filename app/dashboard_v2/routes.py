@@ -41,7 +41,8 @@ api_key= os.environ.get('TRUSTTY_REPORTER_API_KEY') or "24d7f9b5-8325-47cd-9800-
 lemon_api_key=os.environ.get("LEMONSQUEEZY_API_KEY")
 if not lemon_api_key:
     raise ValueError("LEMONSQUEEZY_API_KEY is not set in the environment variables")
-webhook_secret=os.getenv('LEMON_SQUEEZY_WEBHOOK_SECRET') or "supersecret"
+#webhook_secret=os.getenv('LEMON_SQUEEZY_WEBHOOK_SECRET') or "supersecret"
+webhook_secret="supersecret"
 lemon_squeezy = SimpleLemonSqueezy(api_key=lemon_api_key,webhook_secret=webhook_secret)
 
 def async_action(f):
@@ -295,14 +296,6 @@ def chat_response():
 
 #Lemon Squeezy Implementation
 
-def send_sse(user_id):
-    user = Local_users.query.filter_by(id=user_id).first()
-    user_email = user.user_email
-    print(user_email)
-    channel_id = hash_channel_id(user_email)
-    print(channel_id)
-    sse.publish({"instruction": "reload"},{"type": "reload"}, channel=channel_id)
-
 @dashboard_v2_bp.route('/getlsproducts')
 @login_required
 @async_action
@@ -372,7 +365,6 @@ async def handle_webhook():
                     user_id=int(user_id),
                     credit_amount=credit_amount
                 )
-            send_sse(user_id)
         
         elif event_name == 'order_refunded':
             order_data = event_data.get('data', {}).get('attributes', {})
