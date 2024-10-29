@@ -224,6 +224,7 @@ def chat_report(report_id):
     # Escape </script> tags
     escaped_report = html_report.replace("</script>",r"<\/script>")
     escaped_report = escaped_report.replace('`', '\\`')
+    escaped_report = escaped_report.replace('${','\\${')
     add_to_chat_script = r"""<script>
         document.addEventListener('selectionchange', function() {
             const selection = window.getSelection();
