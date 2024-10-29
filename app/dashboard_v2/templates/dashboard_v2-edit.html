@@ -213,7 +213,7 @@
         });
     </script>
     <script>
-        console.log("Page is loaded");
+        //console.log("Page is loaded");
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
@@ -228,7 +228,7 @@
     
         // Variable to store the webpage content (shortened for brevity)
         let webpageContent = `{{ report | safe }}`;
-        console.log('Webpage Content:', webpageContent);
+        //console.log('Webpage Content:', webpageContent);
         
         // Function to display the webpage content
         function displayWebpage() {
@@ -340,7 +340,7 @@
                     appendMessage('ai', response.data, true);
                     
                 } catch (error) {
-                    console.error('Error getting chat response:', error);
+                    //console.error('Error getting chat response:', error);
                     removeTypingIndicator();
                     appendMessage('ai', 'Sorry, there was an error processing your request. Please try again.', true);
                 }
@@ -368,7 +368,7 @@
                     appendMessage('ai', response.data, true);
                 })
                 .catch(error => {
-                    console.error('Error getting chat response:', error);
+                    //console.error('Error getting chat response:', error);
                     removeTypingIndicator();
                     appendMessage('ai', 'Sorry, there was an error processing your request. Please try again.', true);
                 });
@@ -440,7 +440,7 @@
             const products = response.data.products;
             displayProductCards(products);
         } catch (error) {
-            console.error('Error fetching products:', error);
+            //console.error('Error fetching products:', error);
             alert('Failed to load products. Please try again later.');
         } finally {
             loadingSpinner.classList.add('d-none');
@@ -495,7 +495,7 @@
                         throw new Error('No checkout URL received');
                     }
                 } catch (error) {
-                    console.error('Checkout error:', error);
+                    //console.error('Checkout error:', error);
                     alert('Failed to initiate checkout. Please try again.');
                 } finally {
                     // Reset button state

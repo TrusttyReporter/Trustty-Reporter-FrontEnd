@@ -153,7 +153,7 @@
             const products = response.data.products;
             displayProductCards(products);
         } catch (error) {
-            console.error('Error fetching products:', error);
+            //console.error('Error fetching products:', error);
             alert('Failed to load products. Please try again later.');
         } finally {
             loadingSpinner.classList.add('d-none');
@@ -208,7 +208,7 @@
                         throw new Error('No checkout URL received');
                     }
                 } catch (error) {
-                    console.error('Checkout error:', error);
+                    //console.error('Checkout error:', error);
                     alert('Failed to initiate checkout. Please try again.');
                 } finally {
                     // Reset button state

@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         break;
                     default:
-                        console.warn(`Undefined route: ${action.route}`);
+                        //console.warn(`Undefined route: ${action.route}`);
                         link.href = '#';
                         break;
                 }
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                //console.error('Error:', error);
                 alert('Failed to delete report. Please try again.');
             });
         }
@@ -225,16 +225,16 @@ document.addEventListener('DOMContentLoaded', function() {
         //var source = new EventSource(`/stream?channel=${encodeURIComponent(CHANNEL_ID)}`);
         var source = new EventSource(`${SSE_URL}?channel=${encodeURIComponent(CHANNEL_ID)}`);
 
-        console.log('EventSource created:', source);
+        //console.log('EventSource created:', source);
         
         source.onopen = function(event) {
-            console.log('EventSource connection opened:', event);
+            //console.log('EventSource connection opened:', event);
         };
         
         source.addEventListener('status_update', function(event) {
-            console.log('Status update event received:', event);
+            //console.log('Status update event received:', event);
             var data = JSON.parse(event.data);
-            console.log('SSE update received:', data);
+            //console.log('SSE update received:', data);
             
             // Find the row using task_id
             const row = reportRows.get(data.task_id);
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, false);
 
         source.onerror = function(e) {
-            console.error('SSE error:', e);
+            //console.error('SSE error:', e);
             source.close();
             setTimeout(function() {
                 source = new EventSource(`${SSE_URL}?channel=${encodeURIComponent(CHANNEL_ID)}`);
