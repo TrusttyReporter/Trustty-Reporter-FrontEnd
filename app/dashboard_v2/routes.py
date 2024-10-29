@@ -31,6 +31,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime, timezone
 from flask_sse import sse
+import redis
 
 
 main_url = os.environ.get('TRUSTTY_REPORTER_API_END_POINT') or "https://reporting-tool-api-test.onrender.com"
@@ -89,57 +90,6 @@ def get_or_create_channel_id() -> str:
         session['channel_id'] = hash_channel_id(current_user.user_email)
     return session['channel_id']
 
-def update_session_credits_webhook(user_id):
-    """
-    Update credits in the user's session stored in Redis and notify client
-    """
-    print("Starting credit update from webhook")
-    try:
-        # Get user's session from Redis
-        session_interface = current_app.session_interface
-        user = Local_users.query.get(user_id)
-        print(user.id)
-        
-        if user:
-            # Get all session keys from Redis that belong to this user
-            prefix = f"session:"
-            all_sessions = session_interface.redis.keys(f"{prefix}*")
-            
-            for session_key in all_sessions:
-                session_data = session_interface.redis.get(session_key)
-                if session_data:
-                    session_dict = session_interface.serializer.loads(session_data)
-                    
-                    # Check if this session belongs to our user
-                    if session_dict.get('_user_id') == str(user_id):
-                        # Get the channel_id from the session
-                        channel_id = session_dict.get('channel_id')
-                        print(channel_id)
-                        
-                        # Update credits in session
-                        available_credits = user.get_available_credits()
-                        session_dict['credits_available'] = "Unlimited" if available_credits == float('inf') else str(available_credits)
-                        print(session_dict['credits_available'])
-                        if session_dict['credits_available'] == "Unlimited":
-                            session_dict['customer_portal_url'] = user.get_customer_portal_url
-                        else:
-                            session_dict['customer_portal_url'] = None
-                            
-                        # Save updated session back to Redis
-                        session_interface.redis.setex(
-                            session_key,
-                            current_app.permanent_session_lifetime.total_seconds(),
-                            session_interface.serializer.dumps(session_dict)
-                        )
-                        
-                        # Send SSE event using the channel_id from session
-                        if channel_id:
-                            sse.publish({"type": "reload"}, channel=channel_id)
-            
-    except Exception as e:
-        print(f"Error updating session credits: {str(e)}")
-
-
 @dashboard_v2_bp.route('/', methods=['GET', 'POST'])
 @dashboard_v2_bp.route('/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -154,14 +104,14 @@ def index(page=1):
     report_count = User_reports.get_report_count_by_user_id(user_id)
     session['total_report_count'] = report_count
     reports_per_page = current_app.config['REPORTS_PER_PAGE']
-    print(reports_per_page)
+    #print(reports_per_page)
     total_pages = math.ceil(report_count / reports_per_page)
     # Ensure page is within valid range
     page = max(1, min(page, total_pages))
-    print(current_user.user_email)
+    #print(current_user.user_email)
     channel_id = get_or_create_channel_id()
     
-    print(channel_id)
+    #print(channel_id)
 
     template = 'dashboard_v2-home-new.html' if report_count == 0 else 'dashboard_v2-home.html'
     return render_template(template, 
@@ -340,6 +290,13 @@ def chat_response():
 
 #Lemon Squeezy Implementation
 
+def send_sse(user_id):
+    user = Local_users.query.filter_by(id=user_id).first()
+    user_email = user.user_email
+    channel_id = hash_channel_id(user_email)
+    print(channel_id)
+    sse.publish({"instruction": "reload"},{"type": "reload"}, channel=channel_id)
+
 @dashboard_v2_bp.route('/getlsproducts')
 @login_required
 @async_action
@@ -392,7 +349,7 @@ async def handle_webhook():
         # Handle different event types
         event_name = event_data.get('meta', {}).get('event_name')
         user_id = event_data.get('meta', {}).get('custom_data', {}).get('user_id')
-        
+
         if event_name == 'order_created':
             # Handle new order
             order_data = event_data.get('data', {}).get('attributes', {})
@@ -406,7 +363,7 @@ async def handle_webhook():
                     user_id=int(user_id),
                     credit_amount=credit_amount
                 )
-            update_session_credits_webhook(user_id)  # Update session
+            send_sse(user_id)
         
         elif event_name == 'order_refunded':
             order_data = event_data.get('data', {}).get('attributes', {})
@@ -419,7 +376,7 @@ async def handle_webhook():
                     user_id=int(user_id),
                     credit_amount=credit_amount
                 )
-            update_session_credits_webhook(user_id)  # Update session
+            
 
         elif event_name == 'subscription_created':
             # Handle new subscription
@@ -433,7 +390,7 @@ async def handle_webhook():
                                           customer_portal_url=customer_portal_url, 
                                           start_date= datetime.now(timezone.utc)
                                           )
-            update_session_credits_webhook(user_id)  # Update session
+            
 
         elif event_name == 'subscription_cancelled':
             print(event_name)
@@ -444,7 +401,7 @@ async def handle_webhook():
         elif event_name == 'subscription_payment_success':
             print(event_name)
             User_credits.handle_subscription_renewal(user_id=int(user_id), current_date=datetime.utcnow())
-            update_session_credits_webhook(user_id)  # Update session
+            
         
         # Add more event handlers as needed
         

@@ -19,9 +19,9 @@
                     <tr>
                         <th class="col-0">S.No.</th>
                         <th class="col-2">Date Time</th>
-                        <th class="col-4">Report Name</th>
+                        <th class="col-5">Report Name</th>
                         <th class="col-1">Status</th>
-                        <th class="col-5">Actions</th>
+                        <th class="col-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,7 +109,7 @@
     var CHAT_REPORT_URL = "{{ url_for('dashboard_v2.chat_report',report_id='_REPORT_ID_') }}"
     var SSE_URL = "{{ url_for('sse.stream', _external=True) }}";
     var CHANNEL_ID = "{{ current_user_channel }}";
-    console.log('CHANNEL_ID before creating EventSource:', CHANNEL_ID);
+    // console.log('CHANNEL_ID before creating EventSource:', CHANNEL_ID);
 </script>
 <script src="{{ url_for('dashboard_v2.static', filename='js/report-table.js') }}"></script>
 {% endblock %}

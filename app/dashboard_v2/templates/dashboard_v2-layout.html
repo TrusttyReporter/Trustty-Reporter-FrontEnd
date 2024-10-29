@@ -173,7 +173,8 @@
             card.innerHTML = `
             <div class="card w-100">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title align-self-start">${product.attributes.name} @ <b>${product.attributes.price_formatted}</b></h5>
+                    <h5 class="card-title align-self-start">${product.attributes.name}<br></h5>
+                    <h6 class="card-subtitle align-self-start"><b>${product.attributes.price_formatted}</b></h6>
                     <p class="card-text align-self-start">${description}</p>
                     <button class="btn btn-primary align-self-start lemon-checkout" data-product-id="${product.id}" data-store-id="${product.attributes.store_id}">Buy Now</button>
                 </div>
@@ -222,22 +223,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             const CHANNEL_ID = "{{ current_user_channel }}";
             var source = new EventSource(`{{ url_for('sse.stream', _external=True) }}?channel=${encodeURIComponent(CHANNEL_ID)}`);
-            
-            source.addEventListener('message', function(event) {
-                const data = JSON.parse(event.data);
-                if (data.type === 'reload') {
-                    window.location.reload();
-                }
+            console.log('EventSource for webhook sse created:', source);
+            source.addEventListener('reload', function(event) {
+                var data = JSON.parse(event.data);
+                    console.log('Reload received')
+                    // Check if the instruction is "reload"
+                    if (data.instruction === "reload") {
+                        console.log('Executing reload instruction');
+                        window.location.reload();
+                    }
             });
             
             source.onerror = function(error) {
-                console.error('SSE Error:', error);
+                console.error('SSE Webhook Error:', error);
                 source.close();
             };
         
             // Clean up when the page is unloaded
             window.addEventListener('beforeunload', function() {
-                source.close();
+                //source.close();
             });
         });
         </script>

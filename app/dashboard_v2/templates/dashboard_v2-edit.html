@@ -456,7 +456,8 @@
             card.innerHTML = `
             <div class="card w-100">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title align-self-start">${product.attributes.name} @ <b>${product.attributes.price_formatted}</b></h5>
+                    <h5 class="card-title align-self-start">${product.attributes.name}<br></h5>
+                    <h6 class="card-subtitle align-self-start"><b>${product.attributes.price_formatted}</b></h6>
                     <p class="card-text align-self-start">${description}</p>
                     <button class="btn btn-primary align-self-start lemon-checkout" data-product-id="${product.id}" data-store-id="${product.attributes.store_id}">Buy Now</button>
                 </div>

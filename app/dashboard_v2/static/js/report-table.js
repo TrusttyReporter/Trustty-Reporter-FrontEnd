@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nameSpan.className = 'report-name';
             nameSpan.textContent = report.name;
             nameSpan.title = report.name;
-            nameSpan.style.cssText = 'display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px;';
+            nameSpan.style.cssText = 'display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 450px;';
             nameCell.appendChild(nameSpan);
             row.appendChild(nameCell);
             
@@ -113,14 +113,14 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonGroup.appendChild(infoIcon);
 
             // Delete icon
-            const deleteIcon = document.createElement('i');
-            deleteIcon.className = 'bi bi-trash ms-2';
-            deleteIcon.style.cssText = 'font-size: 1em; cursor: pointer;';
-            deleteIcon.setAttribute('data-bs-toggle', 'tooltip');
-            deleteIcon.setAttribute('data-bs-placement', 'top');
-            deleteIcon.setAttribute('title', 'Delete Report');
-            deleteIcon.addEventListener('click', () => deleteReport(report.id, row));
-            buttonGroup.appendChild(deleteIcon);
+            // const deleteIcon = document.createElement('i');
+            // deleteIcon.className = 'bi bi-trash ms-2';
+            // deleteIcon.style.cssText = 'font-size: 1em; cursor: pointer;';
+            // deleteIcon.setAttribute('data-bs-toggle', 'tooltip');
+            // deleteIcon.setAttribute('data-bs-placement', 'top');
+            // deleteIcon.setAttribute('title', 'Delete Report');
+            // deleteIcon.addEventListener('click', () => deleteReport(report.id, row));
+            // buttonGroup.appendChild(deleteIcon);
 
             actionsCell.appendChild(buttonGroup);
             row.appendChild(actionsCell);
