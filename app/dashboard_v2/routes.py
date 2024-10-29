@@ -400,7 +400,7 @@ async def handle_webhook():
 
         elif event_name == 'subscription_payment_success':
             print(event_name)
-            User_credits.handle_subscription_renewal(user_id=int(user_id), current_date=datetime.utcnow())
+            User_credits.handle_subscription_renewal(user_id=int(user_id), current_date=datetime.now(timezone.utc))
             
         
         # Add more event handlers as needed
