@@ -223,6 +223,7 @@ def chat_report(report_id):
     html_report = response_json['answer']['channel_values']['messages'][-1]['content']
     # Escape </script> tags
     escaped_report = html_report.replace("</script>",r"<\/script>")
+    escaped_report = escaped_report.replace('`', '\\`')
     add_to_chat_script = r"""<script>
         document.addEventListener('selectionchange', function() {
             const selection = window.getSelection();
