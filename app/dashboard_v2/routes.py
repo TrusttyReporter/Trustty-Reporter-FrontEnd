@@ -169,16 +169,16 @@ def view_logs(report_id):
     try:
         response_json = get_checkpointer_response_from_api(main_url, api_key, report_id)
         report_description = response_json.get('answer', {}).get('channel_values', {}).get('messages', [])[0]['content']
-        print(report_description)
+        #print(report_description)
         document_summaries = response_json.get('answer', {}).get('channel_values', {}).get('documents')
         csv_summaries = response_json.get('answer', {}).get('channel_values', {}).get('data')
         generating_plan = True if document_summaries is not None and csv_summaries is not None else False
         plan = response_json.get('answer', {}).get('channel_values', {}).get('original_plan')
         past_steps = response_json.get('answer', {}).get('channel_values', {}).get('past_steps')
         prelimary_report_status = True if response_json.get('answer', {}).get('channel_versions', {}).get('Report Writer') else False
-        print(prelimary_report_status)
+        #print(prelimary_report_status)
         html_report_status = True if response_json.get('answer', {}).get('channel_versions', {}).get('HTML Report Convertor') else False
-        print(html_report_status)
+        #print(html_report_status)
 
         if prelimary_report_status == True and html_report_status == True:
             messages = response_json.get('answer', {}).get('channel_values', {}).get('messages', [])
@@ -247,7 +247,7 @@ def chat_report(report_id):
     body_close_pos = escaped_report.find("</body>")
     if body_close_pos != -1:
         escaped_report = escaped_report[:body_close_pos] + add_to_chat_script + escaped_report[body_close_pos:]
-        print(escaped_report)
+        #print(escaped_report)
     return render_template('dashboard_v2-edit.html',
                            username=current_user.first_name, 
                            report = escaped_report,
@@ -314,12 +314,12 @@ async def ls_checkout():
     # Create a checkout
     if request.method == 'POST':
         data = request.get_json()
-        print(data)
+        #print(data)
         product_id = data.get('product_id')
         store_id = data.get('store_id')
         variants = await lemon_squeezy.get_variants(product_id)
         variant_id = variants[0]['id']
-        print(variant_id)
+        #print(variant_id)
         checkout = await lemon_squeezy.create_checkout(
             user_email = current_user.user_email,
             user_id = current_user.id,
@@ -327,7 +327,7 @@ async def ls_checkout():
             variant_id=variant_id,
         )
         checkout_url = checkout['attributes']['url']
-        print(checkout_url)
+        #print(checkout_url)
         return jsonify({"checkout_url": checkout_url})
 
 @dashboard_v2_bp.route('/webhook', methods=['POST'])
@@ -352,7 +352,7 @@ async def handle_webhook():
 
         if event_name == 'order_created':
             # Handle new order
-            print("order_received")
+            #print("order_received")
             order_data = event_data.get('data', {}).get('attributes', {})
             total_amount = order_data.get('first_order_item').get('price')
             if total_amount == 500:
@@ -361,7 +361,7 @@ async def handle_webhook():
                 credit_amount=10
             else:
                 return None, 204
-            print(f"New order received: {order_data.get('identifier')}")
+            #print(f"New order received: {order_data.get('identifier')}")
             User_credits.add_pay_as_you_go_credits(
                     user_id=int(user_id),
                     credit_amount=credit_amount
@@ -383,7 +383,7 @@ async def handle_webhook():
         elif event_name == 'subscription_created':
             # Handle new subscription
             subscription_data = event_data.get('data', {})
-            print(f"New subscription created: {subscription_data.get('id')}")
+            #print(f"New subscription created: {subscription_data.get('id')}")
             subscription_id = subscription_data.get('id')
             customer_portal_url = subscription_data.get('attributes', {}).get('urls', {}).get('customer_portal')
             created_at_str = subscription_data.get('attributes', {}).get('created_at').replace('Z', '+00:00')
@@ -395,13 +395,13 @@ async def handle_webhook():
             
 
         elif event_name == 'subscription_cancelled':
-            print(event_name)
+            pass
         
         elif event_name == 'subscription_resumed':
-            print(event_name)
+            pass
 
         elif event_name == 'subscription_payment_success':
-            print(event_name)
+            #print(event_name)
             User_credits.handle_subscription_renewal(user_id=int(user_id), current_date=datetime.now(timezone.utc))
             
         
