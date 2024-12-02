@@ -61,7 +61,7 @@ class SimpleLemonSqueezy:
         if custom_price is not None:
             payload["data"]["attributes"]["custom_price"] = custom_price
 
-        print(payload)
+        #print(payload)
 
         async with httpx.AsyncClient() as client:
             response = await client.post(f"{self.base_url}/checkouts", json=payload, headers=self.headers)
@@ -90,13 +90,13 @@ class SimpleLemonSqueezy:
             order_data = event_data.get('data', {}).get('attributes', {})
             # Process the order (e.g., update your database, send confirmation email, etc.)
             # You can add your own logic here
-            print(f"New order received: {order_data.get('identifier')}")
+            #print(f"New order received: {order_data.get('identifier')}")
         elif event_name == 'subscription_created':
             # Handle new subscription
             subscription_data = event_data.get('data', {}).get('attributes', {})
             # Process the subscription (e.g., update your database, provision access, etc.)
             # You can add your own logic here
-            print(f"New subscription created: {subscription_data.get('id')}")
+            #print(f"New subscription created: {subscription_data.get('id')}")
         # Add more event handlers as needed
 
         return event_data

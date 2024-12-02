@@ -57,7 +57,7 @@ def handle_post_request(main_url, api_key):
             if isinstance(api_response, str):  # Error occurred
                 return handle_error_with_refund(api_response)
             
-            print(api_response)
+            #print(api_response)
             session['api_response'] = api_response
             query_id = generate_query_id()
             user_id = current_user.id
@@ -231,7 +231,7 @@ def call_celery_task(query_text: str, query_id: str,channel_id: str, temp_dir_na
                             queue='high_priority',
                             time_limit=3600,
                             soft_time_limit=3500)
-        print(f"Celery Task ID : {task.id}")
+        #print(f"Celery Task ID : {task.id}")
         return task
     except kombu.exceptions.OperationalError as e:
         print(f"Celery task creation failed: {e}")

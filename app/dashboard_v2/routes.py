@@ -355,12 +355,19 @@ async def handle_webhook():
             #print("order_received")
             order_data = event_data.get('data', {}).get('attributes', {})
             total_amount = order_data.get('first_order_item').get('price')
-            if total_amount == 500:
-                credit_amount=5
-            elif total_amount == 1000:
-                credit_amount=10
+            product_name = order_data.get('first_order_item', {}).get('product_name')
+            # if total_amount == 500:
+            #     credit_amount=5
+            # elif total_amount == 900:
+            #     credit_amount=10
+            # else:
+            #     return None, 204
+            if "5 Reports" in product_name:
+                credit_amount = 5
+            elif "10 Reports" in product_name:
+                credit_amount = 10
             else:
-                return None, 204
+                return ('', 204)
             #print(f"New order received: {order_data.get('identifier')}")
             User_credits.add_pay_as_you_go_credits(
                     user_id=int(user_id),
@@ -370,10 +377,15 @@ async def handle_webhook():
         elif event_name == 'order_refunded':
             order_data = event_data.get('data', {}).get('attributes', {})
             total_amount = order_data.get('first_order_item').get('price')
-            if total_amount == 500:
-                credit_amount=-5
-            elif total_amount == 1000:
-                credit_amount=-10
+            product_name = order_data.get('first_order_item', {}).get('product_name')
+            # if total_amount == 500:
+            #     credit_amount=-5
+            # elif total_amount == 1000:
+            #     credit_amount=-10
+            if "5 Reports" in product_name:
+                credit_amount = -5
+            elif "10 Reports" in product_name:
+                credit_amount = -10
             User_credits.add_pay_as_you_go_credits(
                     user_id=int(user_id),
                     credit_amount=credit_amount
