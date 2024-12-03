@@ -31,7 +31,7 @@ langchain-community = "0.2.10"  # Missing from initial list, added here
 langchain-core = "0.2.23"  # Missing from initial list, added here
 langchain-text-splitters = "0.2.2"  # Missing from initial list, added here
 api-analytics = {extras = ["flask"], version = "*"}
-httpx = "*"
+httpx = "0.27.2"
 aiofiles = "*"
 flask-moment = "*"
 celery = "*"
