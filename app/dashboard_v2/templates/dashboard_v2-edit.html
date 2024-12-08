@@ -10,24 +10,56 @@
     <!-- Custom CSS -->
     <link href="{{ url_for('dashboard_v2.static', filename='css/report-inputs.css') }}" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .main-container {
+            height: calc(100vh - 76px); /* Subtract header height */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .chat-container, .output-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         #chat-messages {
-            height: 600px;
+            flex: 1;
             overflow-y: auto;
-            border: none;
             padding: 10px;
             margin-bottom: 0;
         }
+
         #output {
-            height: 600px;
+            flex: 1;
+            position: relative;
             overflow: hidden;
             border: 1px solid #ccc;
-            position: relative;
         }
+
         #webpage-display {
             width: 100%;
             height: 100%;
             border: none;
         }
+
+        .input-area {
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #dee2e6;
+        }
+
         #context-menu {
             position: absolute;
             background-color: #f8f9fa;
@@ -38,6 +70,7 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
+
         #context-menu button {
             display: block;
             width: 100%;
@@ -47,24 +80,30 @@
             background: none;
             cursor: pointer;
         }
+
         #context-menu button:hover {
             background-color: #e9ecef;
         }
+
         .user-message { background-color: #f0f0f0; }
         .ai-message { background-color: #e9ecef; }
+        
         .message {
             padding: 1rem;
             border-radius: 0.25rem;
             margin-bottom: 1rem;
             max-width: 80%;
         }
+
         .message .fw-bold {
             margin-bottom: 0.5rem;
         }
+
         .message .text-muted {
             margin-top: 0.5rem;
             font-size: 0.875em;
         }
+
         .typing-indicator span {
             height: 0.5rem;
             width: 0.5rem;
@@ -74,10 +113,23 @@
             opacity: 0.4;
             animation: typing 1s infinite;
         }
+
         @keyframes typing {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-5px); }
             100% { transform: translateY(0px); }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                height: auto;
+                overflow-y: auto;
+            }
+            
+            .chat-container, .output-container {
+                height: 50vh;
+                margin-bottom: 1rem;
+            }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -86,7 +138,7 @@
 <body>
     <!-- Header -->
     <header class="position-relative" style="z-index: 1030;">
-        <nav class="navbar sticky-top navbar-expand-sm bg-body-tertiary bsb-navbar-1 shadow-sm" >
+        <nav class="navbar sticky-top navbar-expand-sm bg-body-tertiary bsb-navbar-1 shadow-sm">
             <div class="container-fluid">
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -108,7 +160,6 @@
                                 <li><a class="dropdown-item" href="{{ customer_portal_url }}" target="_blank">Manage Subscription</a></li>
                                 {% else %}
                                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#buyCreditsModal">Buy Credits</a></li>
-                                <!-- <li><a class="dropdown-item" href="#">Credit History</a></li> -->
                                 {% endif %}
                             </ul>
                         </li>
@@ -117,8 +168,7 @@
                             <a class="nav-link dropdown-toggle bsb-dropdown-toggle-caret-disable" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="position-relative pt-1">
                                     <i class="bi bi-person-fill fs-4"></i>
-                                        <span class="visually-hidden">User</span>
-                                    </span>
+                                    <span class="visually-hidden">User</span>
                                 </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-md-end bsb-dropdown-animation bsb-fadeIn">
@@ -143,11 +193,11 @@
         </nav>
     </header>
  
-    <div class="container-fluid">
-        <div class="row mt-4">
+    <div class="container-fluid main-container">
+        <div class="row h-100">
             <!-- Left side: Chat window -->
-            <div class="col-md-6">
-                <div class="card rounded-3 overflow-hidden">
+            <div class="col-md-6 chat-container">
+                <div class="card rounded-3">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3 px-4">
                         <h2 class="mb-0 fs-4"><i class="bi bi-chat-dots me-2"></i>Chat</h2>
                         <span class="badge bg-light text-primary rounded-pill px-3 py-2">Online</span>
@@ -166,8 +216,8 @@
             </div>
             
             <!-- Right side: Webpage output -->
-            <div class="col-md-6">
-                <div class="card rounded-3 overflow-hidden">
+            <div class="col-md-6 output-container">
+                <div class="card rounded-3">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center py-3 px-4">
                         <h2 class="mb-0 fs-4"><i class="bi bi-file-text-fill me-2"></i>Report</h2>
                     </div>
@@ -175,13 +225,15 @@
                         <iframe id="webpage-display" sandbox="allow-scripts allow-same-origin"></iframe>
                     </div>
                 </div>
-                <div id="context-menu">
-                    <button id="add-to-chat-btn">Explain</button>
-                </div>
-                
             </div>
         </div>
     </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu">
+        <button id="add-to-chat-btn">Explain</button>
+    </div>
+
     <!-- Buy Credits Modal -->
     <div class="modal fade" id="buyCreditsModal" tabindex="-1" aria-labelledby="buyCreditsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
