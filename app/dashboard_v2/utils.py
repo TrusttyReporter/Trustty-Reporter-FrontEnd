@@ -71,6 +71,7 @@ def handle_post_request(main_url, api_key):
             User_reports.update_task_id(query_id, str(task.id))
             return redirect(url_for("dashboard_v2.index"))
         except Exception as e:
+            print("Full error:", str(e))
             return handle_error_with_refund(f"An error occurred: {str(e)}")
             #return handle_error_with_refund(f"An error occurred, please try again.")
         finally:
