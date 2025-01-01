@@ -25,7 +25,7 @@ async def convert_csv_to_utf8(file_path, encoding):
     """
     def _convert():
         try:
-            df = pd.read_csv(file_path, sep=',', encoding=encoding)
+            df = pd.read_csv(file_path, sep=',', encoding=encoding, low_memory=False)
             df.to_csv(file_path, index=False, encoding='utf-8')
             return True
         except Exception as e:
