@@ -34,8 +34,8 @@ class DevelopmentConfig(Config):
     #REDIS_URL = redis.from_url('rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379')
     #SSE_REDIS_URL = 'rediss://red-cs825pq3esus73cp36ag:iyQbpNUzn5cgGHu85uu4YZpMBYB2EdXG@ohio-redis.render.com:6379'
     CHANNEL_HASH_SECRET_KEY = "secret"
-    #SQLALCHEMY_DATABASE_URI = "postgresql://postgres.fnyajpzupimwtjxvuein:H3EsGihRliLpuyRF@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres.howsiamcgeqqpwmjmoph:9!P6rKThL*7UaNY@aws-0-us-east-2.pooler.supabase.com:6543/postgres"
+    SQLALCHEMY_DATABASE_URI = "postgresql://postgres.fnyajpzupimwtjxvuein:H3EsGihRliLpuyRF@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+    #SQLALCHEMY_DATABASE_URI = "postgresql://postgres.howsiamcgeqqpwmjmoph:9!P6rKThL*7UaNY@aws-0-us-east-2.pooler.supabase.com:6543/postgres"
     # SSE_REDIS_KWARGS = {
     #     "ssl": True,
     #     "ssl_cert_reqs": ssl.CERT_NONE  # Use this only if you can't provide a valid certificate

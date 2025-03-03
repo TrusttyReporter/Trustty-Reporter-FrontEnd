@@ -242,7 +242,7 @@ def get_task_status(task_id):
     result = celery.AsyncResult(task_id)
     return result
 
-def get_checkpointer_response_from_api(main_url, api_key,report_id):
+def get_checkpointer_response_from_api(main_url, api_key, report_id):
     url = f"{main_url}/api/v1/getresponse"
     headers = {
         'accept': 'application/json',
@@ -253,14 +253,16 @@ def get_checkpointer_response_from_api(main_url, api_key,report_id):
     }
     
     try:
-        with httpx.Client() as client:
+        with httpx.Client(timeout=30.0) as client:
             response = client.post(url, headers=headers, json=payload)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
         return response.json()
+    except httpx.TimeoutException as e:
+        print(f"Timeout error occurred: {e}")
+        abort(504, description="Request timed out while fetching data")  # 504 is Gateway Timeout
     except httpx.HTTPError as e:
         # Log the error here if you have a logging system set up
         print(f"HTTP error occurred: {e}")
-        raise
         abort(500, description="Error fetching data from API")
     except json.JSONDecodeError as e:
         print(f"JSON decode error occurred: {e}")

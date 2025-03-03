@@ -13,7 +13,6 @@ langchain
 langserve
 fastapi
 Flask-Ext
-'flask[async]'
 flask-session
 redis
 httpx 
