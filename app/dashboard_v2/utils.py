@@ -253,7 +253,7 @@ def get_checkpointer_response_from_api(main_url, api_key, report_id):
     }
     
     try:
-        with httpx.Client(timeout=30.0) as client:
+        with httpx.Client(timeout=80.0) as client:
             response = client.post(url, headers=headers, json=payload)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
         return response.json()
