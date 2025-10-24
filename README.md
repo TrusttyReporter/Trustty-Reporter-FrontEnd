@@ -80,10 +80,11 @@ The more scalable solution is to add a message queue between the the application
 
 ## Future Improvements
 
-1. Implement additional error handling and user feedback mechanisms.
-2. Add support for additional file formats and data sources.
-3. Enhance the report editing interface for a better user experience.
-4. Implement more granular caching strategies to optimize Redis usage.
-5. Add unit and integration tests to ensure reliability.
-6. Develop a cache invalidation strategy for updating stale report data.
-7. Explore advanced features of the Trustty Reporter API to enhance report generation capabilities.
+1. Move to the latest version of LangChain libraries (v1). This is still based on earlier libraries and hence compatibility will need to address for local implementation.
+2. Implement additional error handling and user feedback mechanisms.
+3. Add support for additional file formats and data sources.
+4. Enhance the report editing interface for a better user experience.
+5. Implement more granular caching strategies to optimize Redis usage.
+6. Add unit and integration tests to ensure reliability.
+7. Develop a cache invalidation strategy for updating stale report data.
+8. Explore advanced features of the Trustty Reporter API to enhance report generation capabilities.
