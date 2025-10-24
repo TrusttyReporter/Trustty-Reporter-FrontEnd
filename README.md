@@ -6,7 +6,7 @@ This application is designed to handle file uploads, process data, and generate 
 
 1. **Flask Application**: The core of the web application, built using the Flask framework.
 2. **Flask-Login**: Handles user authentication and session management.
-3. **Trustty Reporter API**: Provides specialized data processing and report generation capabilities.
+3. **Trustty Reporter API**: Provides specialized data processing and report generation capabilities. (https://github.com/TrusttyReporter/Trustty-Reporter-API)
 4. **Celery Message Queue**: Acts as middleware between Flask frontend and FastAPI LangServe (Trustty Reporter API), enabling asynchronous task processing and horizontal scalability with load balancing.
 5. **Server-Sent Events**: Used in Celery server to stream real-time updates back to the Flask frontend.
 6. **Redis Cache**: Manages session data and caches generated reports for improved performance.
